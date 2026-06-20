@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>vip-certification-prep</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>vip-certification-prep</h1>
+
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/vip-certification-prep">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>WordPress VIP Certification Prep</h1>
+<p>Question bank and study material for the <strong>Advanced Professional WordPress Developer</strong> certification exam (Exam Guide v2.3).</p>
+<p>338 scenario-based questions across eight domains, weighted to reflect the exam distribution.</p>
+<h2>Domains</h2>
+<p>| File | Domain | Exam weight | Questions |
+|---|---|---|---|
+| <code>domain-1-wordpress-core.md</code> | WordPress Core | ~15% | 53 |
+| <code>domain-2-custom-development.md</code> | Custom Development | ~15% | 54 |
+| <code>domain-3-security.md</code> | Security | ~15% | 48 |
+| <code>domain-4-performance.md</code> | Performance | ~15% | 41 |
+| <code>domain-5-change-management.md</code> | Change Management | ~10% | 38 |
+| <code>domain-6-debugging.md</code> | Debugging | ~10% | 48 |
+| <code>domain-7-scalability-architecture.md</code> | Scalability &amp; Architecture | ~10% | 29 |
+| <code>domain-8-disaster-recovery.md</code> | Disaster Recovery | ~10% | 27 |
+| <code>exam-guide-v2.3.md</code> | Full exam guide (topics + learning objectives) | — | — |</p>
+<h2>Usage with Claude Code</h2>
+<p>Open this directory in Claude Code. The included <code>CLAUDE.md</code> configures quiz mode automatically.</p>
+<p><strong>Start a session:</strong></p>
+<pre><code>quiz me
+test me on security
+give me 5 questions on performance
+</code></pre>
+<p>Questions are presented one at a time. Claude waits for your answer before revealing the correct response and explanation. Sessions default to 10 questions and finish with a score summary broken down by domain.</p>
+<p>Multi-select questions (&quot;Select all that apply&quot;) require all correct options with no incorrect ones for full credit.</p>
+<h2>Question format</h2>
+<p>Questions are scenario-based — they present a real-world situation and ask you to identify the correct approach. The bank covers:</p>
+<ul>
+<li>Hook order and lifecycle</li>
+<li>Security (sanitize, validate, escape, nonces, capability checks)</li>
+<li>Performance (query optimisation, caching, N+1 problems)</li>
+<li>Custom post types, meta, REST API, and block development</li>
+<li>Debugging tools and techniques</li>
+<li>Multisite, scalability, and disaster recovery patterns</li>
+</ul>
+<h2>Adding questions</h2>
+<p>Use <code>exam-guide-v2.3.md</code> as the authoritative source on what topics should be covered. To identify gaps, ask Claude to compare existing questions against the exam guide objectives for a given domain.</p>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
