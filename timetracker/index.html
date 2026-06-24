@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>timetracker</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>timetracker</h1>
+
+  
+  <div class="project-header__desc">Very lean timetracker</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    <span class="badge">linux</span>
+    
+    <span class="badge">timetracker</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/timetracker">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>Time Tracker</h1>
+<p>Minimal GTK4 time tracking app for elementaryOS. Stays small so you can keep it on screen all day.</p>
+<img width="294" height="221" alt="Screenshot from 2026-06-23 13 57 06" src="https://github.com/user-attachments/assets/940b255b-4933-4171-888b-fc6f6836314f" />
+<h2>Requirements</h2>
+<ul>
+<li>Python 3.12+</li>
+<li><code>python3-gi</code> (GTK4 bindings, system package)</li>
+<li><code>gir1.2-notify-0.7</code> (desktop notifications)</li>
+</ul>
+<p>On elementaryOS / Ubuntu these are typically pre-installed. If not:</p>
+<pre><code class="language-bash">sudo apt install python3-gi gir1.2-notify-0.7
+</code></pre>
+<h2>Run</h2>
+<pre><code class="language-bash">make run
+# or
+python3 timetracker.py
+</code></pre>
+<h2>Install</h2>
+<pre><code class="language-bash">make install
+</code></pre>
+<p>Copies the script to <code>~/.local/bin/timetracker</code> and registers a <code>.desktop</code> entry so it appears in the app launcher.</p>
+<h2>Usage</h2>
+<p>| Action | How |
+|---|---|
+| Start tracking | Click an activity |
+| Pause | Click the active activity again |
+| Switch activity | Click a different activity (pauses current) |
+| Add activity | Click <strong>+ Add activity</strong> |
+| Remove activity | Right-click an activity |
+| Archive day | Click <strong>Archive</strong> |
+| Set working hours | Click the gear icon |</p>
+<h2>Working hours</h2>
+<p>Set a start and end time (HH:MM) via the gear icon. At the start time you get a desktop notification. At the end time the day is archived automatically.</p>
+<h2>Data</h2>
+<p>| File | Contents |
+|---|---|
+| <code>~/.config/timetracker/config.json</code> | Activities, accumulated time, working hours |
+| <code>~/.local/share/timetracker/archive.jsonl</code> | One archived day per line |</p>
+<p>Archive format:</p>
+<pre><code class="language-json">{&quot;date&quot;: &quot;2026-06-23&quot;, &quot;archived_at&quot;: &quot;2026-06-23T17:30:00&quot;, &quot;activities&quot;: [{&quot;name&quot;: &quot;Deep work&quot;, &quot;seconds&quot;: 14400}]}
+</code></pre>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
