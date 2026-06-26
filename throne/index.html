@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>throne</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>throne</h1>
+
+  
+  <div class="project-header__desc">Window Manager Ruler</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/throne">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>Throne (Window Manager Ruler)</h1>
+<p>Automatically applies window manager properties when applications open.</p>
+<h2>Requirements</h2>
+<pre><code>uv add python-xlib tomli        # tomli only needed on Python &lt; 3.11
+sudo apt install wmctrl xdotool x11-utils  # x11-utils provides xprop
+</code></pre>
+<h2>Usage</h2>
+<pre><code class="language-bash"># Install config
+mkdir -p ~/.config/throne
+cp rules.example.toml ~/.config/throne/rules.toml
+
+# Run
+python throne.py
+</code></pre>
+<p>To run on login, add to your session autostart (e.g. <code>~/.xprofile</code> or a systemd user service).</p>
+<h2>Identifying a window's class</h2>
+<p>Run this, then click the target window:</p>
+<pre><code class="language-bash">xprop WM_CLASS
+</code></pre>
+<p>Output looks like: <code>WM_CLASS(STRING) = &quot;instance&quot;, &quot;ClassName&quot;</code> — use either value in <code>match.class</code>.</p>
+<p>To inspect a running window interactively:</p>
+<pre><code class="language-bash">xwininfo        # click a window, shows window ID
+xprop -id 0x… WM_CLASS _NET_WM_NAME _NET_WM_PID
+</code></pre>
+<h2>Rules</h2>
+<p>Config lives at <code>~/.config/throne/rules.toml</code>. Rules are evaluated in order; <strong>all matching rules apply</strong>.</p>
+<pre><code class="language-toml">[[rules]]
+match.class = &quot;zoom&quot;           # match on WM_CLASS (instance or class name, case-insensitive, globs ok)
+match.title = &quot;*meeting*&quot;      # match on window title (glob, case-insensitive)
+match.executable = &quot;obs&quot;       # match on process executable name
+actions = [&quot;always_on_top&quot;]
+</code></pre>
+<p>All <code>match</code> fields are optional and ANDed together. Globs (<code>*</code>, <code>?</code>) are supported in all fields.</p>
+<h2>Actions</h2>
+<h3>Stacking</h3>
+<p>| Action | Effect |
+|---|---|
+| <code>always_on_top</code> | Keep window above all others |
+| <code>always_on_bottom</code> | Keep window below all others |</p>
+<h3>Visibility</h3>
+<p>| Action | Effect |
+|---|---|
+| <code>sticky</code> | Show on all workspaces |
+| <code>skip_taskbar</code> | Hide from taskbar/dock |
+| <code>skip_pager</code> | Hide from workspace pager |
+| <code>fullscreen</code> | Make fullscreen |</p>
+<h3>Size &amp; position</h3>
+<p>| Action | Effect |
+|---|---|
+| <code>maximize</code> | Maximize horizontally and vertically |
+| <code>maximize_vertical</code> | Maximize vertically only |
+| <code>maximize_horizontal</code> | Maximize horizontally only |
+| <code>shade</code> | Roll up to title bar |
+| <code>minimize</code> | Minimize/iconify on open |
+| <code>geometry=WxH+X+Y</code> | Set size and position, e.g. <code>geometry=800x600+100+50</code> |
+| <code>workspace=N</code> | Move to workspace N (1-indexed) |</p>
+<h3>Focus</h3>
+<p>| Action | Effect |
+|---|---|
+| <code>focus</code> | Focus window on open |</p>
+<h3>Appearance</h3>
+<p>| Action | Effect |
+|---|---|
+| <code>opacity=0.0–1.0</code> | Set window opacity, e.g. <code>opacity=0.85</code> |</p>
+<h2>Config reload</h2>
+<p>throne watches the config file and reloads it automatically when it changes — no restart needed.</p>
+<h2>Debugging</h2>
+<p>throne logs matched rules and errors to stdout/stderr. To watch what classes windows have as they open:</p>
+<pre><code class="language-bash">xdotool search --onlyvisible --name &quot;&quot; getwindowclassname %@
+</code></pre>
+<p>Or watch live with:</p>
+<pre><code class="language-bash">while true; do xdotool getactivewindow getwindowclassname 2&gt;/dev/null; sleep 1; done
+</code></pre>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
