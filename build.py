@@ -370,6 +370,7 @@ def build(
     pinned = pinned or set()
     used_slugs: set[str] = set()
     enriched_projects = []
+    site_url = (site_config.get("url") or _derive_site_url()).rstrip("/")
 
     project_template = env.get_template("project.html")
     for project in projects:
@@ -383,6 +384,12 @@ def build(
             slug = f"{slug}-{project.get('gist_id', project['name'])[:7]}"
         used_slugs.add(slug)
         enriched = {**project, **portfolio, "pinned": pin_key in pinned, "slug": slug}
+        # Drop website links that point back at this site itself
+        if site_url:
+            for url_field in ("live_url", "homepage"):
+                url_val = enriched.get(url_field, "")
+                if url_val and url_val.rstrip("/").startswith(site_url):
+                    enriched[url_field] = None
         enriched_projects.append(enriched)
 
         readme_md = get_readme(client, project)
