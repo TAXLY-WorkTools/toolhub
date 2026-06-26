@@ -42,8 +42,6 @@
 
   <div class="project-header__actions">
     
-    <a class="btn btn--primary" href="https://tools.vandragt.com/elementary-patches/">&#8599; Website</a>
-    
     
     
     <a class="btn" href="https://github.com/svandragt/elementaryos-patches">&#8599; GitHub</a>
@@ -63,7 +61,7 @@ for anyone who finds them useful.</p>
 <h2>Packages</h2>
 <p>| Package | Patches | Description |
 |---------|---------|-------------|
-| <a href="io.elementary.notifications/">io.elementary.notifications</a> | <a href="io.elementary.notifications/series">series</a> | Don't steal focus when a notification bubble appears on X11 |
+| <a href="io.elementary.notifications/">io.elementary.notifications</a> | <a href="io.elementary.notifications/series">series</a> | Don't steal focus when a notification bubble appears on X11; fix notifications silently dropped after sleep/resume (GDK frame clock not ready, retry until compositor is up) |
 | <a href="gala/">gala</a> | <a href="gala/series">series</a> | Stop crash loop from unbalanced <code>WorkspaceManager.thaw_remove</code> when a workspace is added outside a swipe gesture; prevent focus-stealing on attention demand |
 | <a href="io.elementary.terminal/">io.elementary.terminal</a> | <a href="io.elementary.terminal/series">series</a> | Restore double-click on empty tab bar to open a new tab (GTK4 regression); open OSC 8 hyperlinks on ctrl-click |
 | <a href="pantheon-files/">pantheon-files</a> | <a href="pantheon-files/series">series</a> | Double-click on empty tab bar opens a new tab (matches terminal behavior) |
