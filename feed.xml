@@ -14,7 +14,10 @@
     <updated>2026-06-25T12:47:08Z</updated>
     <published>2025-05-07T12:06:45Z</published>
     <link rel="alternate" type="text/html" href="https://github.com/svandragt/firefox-addon-move-tab-to-another-window"/>
-    <summary>firefox-addon-move-tab-to-another-window</summary>
+    <summary>A Firefox extension that enables easy movement of tabs between different browser windows through a convenient context menu.</summary>
+    <category term="addon"/>
+    <category term="firefox"/>
+    <category term="tabs"/>
     
   </entry>
   
