@@ -3,10 +3,20 @@
   <id>https://tools.vandragt.com/feed.xml</id>
   <title>~/tools</title>
   <subtitle>Tools &amp; Projects</subtitle>
-  <updated>2026-06-25T12:47:08Z</updated>
+  <updated>2026-07-02T14:03:36Z</updated>
   <link rel="alternate" type="text/html" href="https://tools.vandragt.com"/>
   <link rel="self" type="application/atom+xml" href="https://tools.vandragt.com/feed.xml"/>
   <author><name>svandragt</name></author>
+  
+  <entry>
+    <id>https://github.com/svandragt/git-mcp-broker</id>
+    <title>git-mcp-broker</title>
+    <updated>2026-07-02T14:03:36Z</updated>
+    <published>2026-07-02T14:03:36Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/git-mcp-broker"/>
+    <summary>git-mcp-broker</summary>
+    
+  </entry>
   
   <entry>
     <id>https://github.com/svandragt/firefox-addon-move-tab-to-another-window</id>
@@ -246,16 +256,6 @@
     <published>2026-03-21T09:45:46Z</published>
     <link rel="alternate" type="text/html" href="https://github.com/svandragt/fileshare"/>
     <summary>Simple fileshare for personal use</summary>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/lnk</id>
-    <title>lnk</title>
-    <updated>2026-03-19T09:54:14Z</updated>
-    <published>2026-03-19T09:54:14Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/lnk"/>
-    <summary>Easily create symbolic + hard links</summary>
     
   </entry>
   

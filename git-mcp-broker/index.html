@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>git-mcp-broker</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>git-mcp-broker</h1>
+
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/git-mcp-broker">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>git-mcp-broker</h1>
+<p>Lets a sandboxed coding agent (e.g. a Canonical Workshop container) commit and
+push with the <em>host's</em> git identity, signing key, hooks, and credentials —
+without any of that ever entering the sandbox.</p>
+<p>Two pieces:</p>
+<ul>
+<li><strong><code>git-mcp-host</code></strong> — a single-file MCP server (runs via <code>uv run --script</code>,
+no separate install needed) exposing a small, fail-closed allowlist of git
+operations over MCP streamable HTTP. Structurally absent: force push,
+delete, reset, clean, rebase, amend, <code>--no-verify</code>, arbitrary git args.
+Meant to run on the host, targeting one project directory, reachable from
+inside a sandbox over a tunnel (e.g. a Workshop tunnel interface).</li>
+<li><strong><code>git-broker</code></strong> — a stdlib-only Python CLI that manages <code>git-mcp-host</code>'s
+lifecycle (start/stop/status as a <code>systemd-run --user</code> unit, one per
+project) and can talk to a running instance over its MCP endpoint directly
+(raw tool calls, plus a <code>verify</code> check), without needing node or an agent
+in the loop.</li>
+</ul>
+<h2>Install</h2>
+<pre><code class="language-sh">ln -sf &quot;$PWD/git-mcp-host&quot; ~/.local/bin/git-mcp-host
+ln -sf &quot;$PWD/git-broker&quot; ~/.local/bin/git-broker
+</code></pre>
+<p>(<code>git-broker</code> finds <code>git-mcp-host</code> next to itself, so both need to stay in
+the same directory — the symlinks above just need to point at this repo.)</p>
+<h2>Usage</h2>
+<pre><code class="language-sh">git-broker start [project-dir] [--name NAME] [--port PORT]   # starts git-mcp-host as a systemd unit (defaults to cwd)
+git-broker stop [name]                                        # defaults to cwd's basename
+git-broker status [name]                                      # omit name to list all known brokers
+git-broker call &lt;method&gt; [json-params] [--name NAME]          # raw MCP call, e.g. tools/list
+git-broker verify [--name NAME]                                # git_status + 3 negative checks
+</code></pre>
+<p>Each project gets its own unit (<code>git-mcp-&lt;name&gt;</code>) and port, tracked under
+<code>~/.local/state/git-mcp-broker/&lt;name&gt;.json</code>. <code>--port</code> defaults to 3015 or the
+next free port after it. <code>--name</code> (on every subcommand) defaults to the
+current directory's basename, so running commands from inside the project
+directory generally doesn't need it.</p>
+<p>Wiring the broker into an actual Workshop (tunnel interface, MCP
+registration inside the sandbox) is a separate, Workshop-specific step —
+see the <a href="skills/workshop-git-broker/SKILL.md"><code>workshop-git-broker</code></a> Claude
+Code skill.</p>
+<h2>Negative checks <code>verify</code> runs</h2>
+<ul>
+<li><code>git_push</code> with <code>branch=&quot;--force&quot;</code> → rejected</li>
+<li><code>git_add</code> with a path that escapes the project (<code>../x</code>) → rejected</li>
+<li><code>git_fetch</code> from an unknown remote → rejected</li>
+</ul>
+<p>If any of these succeed instead of erroring, the allowlist is broken, not
+the tunnel.</p>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
