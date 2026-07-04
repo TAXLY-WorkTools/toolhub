@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lessons-ai</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>lessons-ai</h1>
+
+  
+  <div class="project-header__desc">Learn from the llm-agent</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    <a class="btn btn--primary" href="https://lessons.vandragt.com/">&#8599; Website</a>
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/lessons-ai">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>lessons</h1>
+<p>Tools around my TIL lesson notes in <code>~/Documents/lessons/</code>.</p>
+<p>Lessons are markdown files named <code>NNN-slug.md</code> with YAML frontmatter
+(<code>concept</code>, <code>created</code>, <code>project</code>, <code>tags</code>, <code>published</code>). They are
+created by the Claude Code <code>lessons</code> skill (in <code>skill/SKILL.md</code>)
+whenever I type <code>til &lt;topic&gt;</code> or ask about something new. The skill
+scrubs personal/system information, since lessons may be published.</p>
+<h2>Server</h2>
+<p>A single-file web server that renders the lessons:</p>
+<pre><code class="language-bash">uv run server.py          # http://localhost:8321/
+uv run server.py 9000     # custom port
+</code></pre>
+<p>Features:</p>
+<ul>
+<li>Index of all lessons with project, date, and clickable tag pills</li>
+<li>Markdown rendering (tables, fenced code)</li>
+<li>Related lessons on each page, ranked by shared tags</li>
+<li>Tag pages (<code>/tag/django</code>) and full-text search (<code>/search?q=...</code>)</li>
+<li>Footer with a repo credit and, when served from a subdomain, a link
+to the parent domain (derived client-side from the hostname)</li>
+</ul>
+<p>Lessons are re-read on every request, so new lessons show up without a
+restart. Set <code>LESSONS_DIR</code> to point at a different lessons directory.</p>
+<h2>Publishing</h2>
+<p>Lessons start as drafts. The server shows a draft badge and an
+<strong>Approve &amp; publish</strong> button on each draft; clicking it sets
+<code>published: true</code> in the frontmatter and deploys.</p>
+<pre><code class="language-bash">uv run server.py build ./site   # render published lessons to static HTML
+uv run server.py deploy         # build + rsync to $LESSONS_RSYNC_DEST
+</code></pre>
+<p><code>LESSONS_RSYNC_DEST</code> is an rsync target like
+<code>user@example.com:/var/www/lessons/</code>. Set it locally (e.g. in the
+gitignored <code>devbox.json</code>); when set, publishing from the browser
+auto-deploys. A <code>Makefile</code> wraps the common commands: <code>make run</code>,
+<code>make build</code>, <code>make deploy</code>.</p>
+<h2>Installing the skill</h2>
+<p>The <code>lessons</code> skill teaches Claude Code to capture new concepts as
+lesson files. Claude Code discovers skills in <code>~/.claude/skills/</code>, so
+symlink the skill directory there:</p>
+<pre><code class="language-bash">mkdir -p ~/.claude/skills
+ln -s /path/to/this/repo/skill ~/.claude/skills/lessons
+</code></pre>
+<p>Restart Claude Code (or start a new session) and it will offer to save
+a lesson whenever you ask about something new, or when you say things
+like &quot;TIL ...&quot; or &quot;explain X&quot;. Because it's a symlink, editing
+<code>skill/SKILL.md</code> in this repo updates the live skill.</p>
+<h2>Layout</h2>
+<ul>
+<li><code>server.py</code> — the web server (uv inline dependencies, no venv needed)</li>
+<li><code>skill/SKILL.md</code> — the Claude Code lessons skill; symlinked from
+<code>~/dev/llm/skills/lessons</code></li>
+<li><code>~/Documents/lessons/server.py</code> is a symlink here for convenience</li>
+</ul>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
