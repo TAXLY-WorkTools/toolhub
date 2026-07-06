@@ -67,6 +67,12 @@ for anyone who finds them useful.</p>
 | <a href="pantheon-files/">pantheon-files</a> | <a href="pantheon-files/series">series</a> | Double-click on empty tab bar opens a new tab (matches terminal behavior) |
 | <a href="appcenter/">appcenter</a> | <a href="appcenter/series">series</a> | Don't show AppCenter in the dock with a &quot;0&quot; badge when there are no pending updates |</p>
 <p>Target: elementary OS 8 (Ubuntu 24.04 / noble).</p>
+<h2>Tools</h2>
+<p>| Tool | Description |
+|------|-------------|
+| <a href="_crash-dashboard/">_crash-dashboard</a> | Sentry-style POC crash dashboard: single Go binary that collects crashes from <code>coredumpctl</code> and Apport, groups them into issues with stack traces, and serves a localhost web UI. Also runs as a minimal MCP server (<code>-mcp</code>) so an AI assistant can list, inspect, and resolve reported crashes. See its <a href="_crash-dashboard/README.md">README</a>. |</p>
+<p>Underscore-prefixed directories (<code>_scripts/</code>, <code>_crash-dashboard/</code>) are
+tooling, not patch series — <code>ep</code> skips them.</p>
 <h2>Install a patched package (end users)</h2>
 <p>If you just want a patched build of one of these packages on your own machine —
 no contributing, no patch authoring — this is the short path.</p>
