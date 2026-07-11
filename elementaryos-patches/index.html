@@ -61,18 +61,18 @@ for anyone who finds them useful.</p>
 <h2>Packages</h2>
 <p>| Package | Patches | Description |
 |---------|---------|-------------|
-| <a href="io.elementary.notifications/">io.elementary.notifications</a> | <a href="io.elementary.notifications/series">series</a> | Don't steal focus when a notification bubble appears on X11; fix notifications silently dropped after sleep/resume (GDK frame clock not ready, retry until compositor is up) |
-| <a href="gala/">gala</a> | <a href="gala/series">series</a> | Stop crash loop from unbalanced <code>WorkspaceManager.thaw_remove</code> when a workspace is added outside a swipe gesture; prevent focus-stealing on attention demand |
-| <a href="io.elementary.terminal/">io.elementary.terminal</a> | <a href="io.elementary.terminal/series">series</a> | Restore double-click on empty tab bar to open a new tab (GTK4 regression); open OSC 8 hyperlinks on ctrl-click |
-| <a href="pantheon-files/">pantheon-files</a> | <a href="pantheon-files/series">series</a> | Double-click on empty tab bar opens a new tab (matches terminal behavior) |
-| <a href="appcenter/">appcenter</a> | <a href="appcenter/series">series</a> | Don't show AppCenter in the dock with a &quot;0&quot; badge when there are no pending updates |</p>
+| <a href="pkgs/io.elementary.notifications/">io.elementary.notifications</a> | <a href="pkgs/io.elementary.notifications/series">series</a> | Don't steal focus when a notification bubble appears on X11; fix notifications silently dropped after sleep/resume (GDK frame clock not ready, retry until compositor is up) |
+| <a href="pkgs/gala/">gala</a> | <a href="pkgs/gala/series">series</a> | Stop crash loop from unbalanced <code>WorkspaceManager.thaw_remove</code> when a workspace is added outside a swipe gesture; prevent focus-stealing on attention demand |
+| <a href="pkgs/io.elementary.terminal/">io.elementary.terminal</a> | <a href="pkgs/io.elementary.terminal/series">series</a> | Restore double-click on empty tab bar to open a new tab (GTK4 regression); open OSC 8 hyperlinks on ctrl-click |
+| <a href="pkgs/pantheon-files/">pantheon-files</a> | <a href="pkgs/pantheon-files/series">series</a> | Double-click on empty tab bar opens a new tab (matches terminal behavior) |
+| <a href="pkgs/appcenter/">appcenter</a> | <a href="pkgs/appcenter/series">series</a> | Don't show AppCenter in the dock with a &quot;0&quot; badge when there are no pending updates |</p>
 <p>Target: elementary OS 8 (Ubuntu 24.04 / noble).</p>
 <h2>Tools</h2>
 <p>| Tool | Description |
 |------|-------------|
-| <a href="_crash-dashboard/">_crash-dashboard</a> | Sentry-style POC crash dashboard: single Go binary that collects crashes from <code>coredumpctl</code> and Apport, groups them into issues with stack traces, and serves a localhost web UI. Also runs as a minimal MCP server (<code>-mcp</code>) so an AI assistant can list, inspect, and resolve reported crashes. See its <a href="_crash-dashboard/README.md">README</a>. |</p>
-<p>Underscore-prefixed directories (<code>_scripts/</code>, <code>_crash-dashboard/</code>) are
-tooling, not patch series — <code>ep</code> skips them.</p>
+| <a href="crash-dashboard/">crash-dashboard</a> | Sentry-style POC crash dashboard: single Go binary that collects crashes from <code>coredumpctl</code> and Apport, groups them into issues with stack traces, and serves a localhost web UI. Also runs as a minimal MCP server (<code>-mcp</code>) so an AI assistant can list, inspect, and resolve reported crashes. See its <a href="crash-dashboard/README.md">README</a>. |</p>
+<p>Patch series live under <code>pkgs/</code>; <code>scripts/</code> and <code>crash-dashboard/</code> are
+tooling, not patch series.</p>
 <h2>Install a patched package (end users)</h2>
 <p>If you just want a patched build of one of these packages on your own machine —
 no contributing, no patch authoring — this is the short path.</p>
@@ -87,7 +87,7 @@ archive enabled in <code>/etc/apt/sources.list</code> (or a file in
 <h3>2. Clone and run</h3>
 <pre><code class="language-bash">git clone https://github.com/svandragt/elementary-patches.git
 cd elementary-patches
-chmod +x ep _scripts/*.sh
+chmod +x ep scripts/*.sh
 cat quiltrc &gt;&gt; ~/.quiltrc        # one time
 
 ./ep apply io.elementary.notifications       # fetch source + apply patches
@@ -119,7 +119,7 @@ ep status  [package]              Show patch status
 ./ep new     &lt;package&gt; &quot;fix crash on startup&quot; # create the patch
 ./ep edit    &lt;package&gt; path/to/file.vala     # add file to patch and open in $EDITOR
 ./ep refresh &lt;package&gt;                        # finalise the patch
-git add &lt;package&gt;/
+git add pkgs/&lt;package&gt;/
 git commit -m &quot;&lt;package&gt;: fix crash on startup&quot;
 </code></pre>
 <h3>Updating after a new upstream release</h3>
@@ -140,7 +140,7 @@ built <code>.deb</code> has the same version as the stock archive package.)</p>
 manual rebase:</p>
 <pre><code class="language-bash">./ep refresh io.elementary.notifications --rebase
 # Fix any failures (quilt will stop and tell you)
-git add io.elementary.notifications/
+git add pkgs/io.elementary.notifications/
 git commit -m &quot;io.elementary.notifications: rebase patches onto 8.x&quot;
 </code></pre>
 <p>After a <code>rebuild</code> that refreshed patches, review and commit the changed
@@ -154,7 +154,7 @@ from the recorded one so you know to eyeball the result. <code>ep refresh</code>
 <code>VERIFIED</code> on success.</p>
 <p>To record <code>VERIFIED</code> for every package whose patches already apply cleanly
 against the current archive, run the one-shot
-<code>./_scripts/backfill-verified.sh</code> (optionally pass package names to limit it).</p>
+<code>./scripts/backfill-verified.sh</code> (optionally pass package names to limit it).</p>
 <h3>Environment variables</h3>
 <p>| Variable | Default | Description |
 |----------|---------|-------------|
@@ -169,7 +169,7 @@ Permission is hereby granted to integrate the patches upstream.</p>
 <p>This repo is <strong>GPL-3.0</strong> — same as the upstream packages it patches
 (io.elementary.notifications is GPL-3.0). Patch files are derivative works of
 the upstream source they apply to and inherit that licence; the wrapper
-tooling (<code>ep</code>, <code>_scripts/</code>) is licensed under GPL-3.0 too for simplicity.</p>
+tooling (<code>ep</code>, <code>scripts/</code>) is licensed under GPL-3.0 too for simplicity.</p>
 <p>See <a href="LICENSE">LICENSE</a> for the full text.</p>
 
 </div>

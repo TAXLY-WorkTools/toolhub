@@ -63,6 +63,7 @@
 # or
 python3 timetracker.py
 </code></pre>
+<p>Pass <code>--debug</code> to log system D-Bus signal activity (lock/unlock/sleep events) to stderr — useful when diagnosing auto-pause issues.</p>
 <h2>Install</h2>
 <pre><code class="language-bash">make install
 </code></pre>
@@ -73,6 +74,8 @@ python3 timetracker.py
 | Start tracking | Click an activity |
 | Pause | Click the active activity again |
 | Switch activity | Click a different activity (pauses current) |
+| Track multiple activities at once | Ctrl+click additional activities |
+| Split tracked time across activities | While tracking, ctrl+click others — time splits evenly, live, across all active activities |
 | Add activity | Click <strong>+ Add activity</strong> |
 | Remove activity | Right-click an activity |
 | Archive day | Click <strong>Archive</strong> |
