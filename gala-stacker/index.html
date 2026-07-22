@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>gala-stacker</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>gala-stacker</h1>
+
+  
+  <div class="project-header__desc">Window organiser for gala</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/gala-stacker">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>gala-stacker</h1>
+<p>I wanted <a href="https://github.com/paperwm/PaperWM">PaperWM</a>-style tiling on
+elementaryOS, so this is a horizontal tiling plugin for
+<a href="https://github.com/elementary/gala">Gala</a>, the window manager behind
+Pantheon.</p>
+<p>Windows on a workspace sit in a single horizontal row, each one full height.
+You reorder them, switch between them with the keyboard, and the focused
+window gets a highlighted border so you can always tell where you are.</p>
+<p>It does <strong>not</strong> touch how workspaces work – Pantheon's existing workspace
+switching (<code>Super+Left/Right</code> by default) is untouched. It's only the layout
+<em>within</em> a workspace that changes.</p>
+<h2>What it does</h2>
+<ul>
+<li>Every normal window on a workspace tiles edge-to-edge in a row, full
+height, keeping whatever width it currently has – windows never overlap,
+except a maximised window, which is left alone to fill the monitor as
+normal and snaps back into its row slot on unmaximise.</li>
+<li>Each monitor gets its own independent row per workspace.</li>
+<li>A newly opened window lands right after whichever window you last had
+focused in that row, not always at the end.</li>
+<li>The focused window gets a highlighted border, so you can always tell which
+window has focus at a glance.</li>
+<li>Windows dragged onto a different monitor move into that monitor's row.</li>
+<li>Resizing the edge a window shares with its row-neighbour moves that shared
+boundary like elementary's own snapped-window divider – the neighbour
+resizes in tandem instead of leaving a gap or an overlap. That one I added
+after noticing it's how elementary already handles two windows snapped
+left/right, and it felt wrong not to have it for tiled windows too.</li>
+</ul>
+<h2>Keyboard shortcuts</h2>
+<p>| Shortcut | Action |
+|---|---|
+| <code>Super+[</code> / <code>Super+]</code> | Move keyboard focus to the window left/right in the row |
+| <code>Super+Shift+[</code> / <code>Super+Shift+]</code> | Move the focused window itself left/right in the row |
+| <code>Super+R</code> | Cycle the focused window's width between 33%, 50%, and 67% of the monitor |</p>
+<p>Every <code>Super</code>+arrow-key combination is already claimed by Pantheon/GNOME
+defaults (workspace switching, move-to-monitor, move-to-workspace, tiling),
+so these use the bracket keys instead — check <code>gsettings list-recursively</code>
+against <code>org.gnome.desktop.wm.keybindings</code>, <code>org.gnome.mutter.keybindings</code>,
+and <code>io.elementary.desktop.wm.keybindings</code> before picking something else.</p>
+<p>Rebind these in a terminal with <code>gsettings</code>, e.g.:</p>
+<pre><code>gsettings set org.pantheon.desktop.gala.plugins.stacker focus-left &quot;['&lt;Super&gt;comma']&quot;
+</code></pre>
+<h2>Mouse</h2>
+<p>Drag a window and drop it between two others in the row to reorder it there.</p>
+<p>Drag the edge a window shares with its row-neighbour to resize both at once,
+the shared boundary moving like a divider.</p>
+<h2>Installing</h2>
+<p>Requires <code>libgala-dev</code> and a Gala source checkout (for <code>libmutter-14.vapi</code>,
+which Ubuntu's Mutter packages don't ship separately — point
+<code>gala_vapi_dir</code> at yours if it's not at the default path in <code>meson_options.txt</code>).</p>
+<pre><code>make install
+</code></pre>
+<p>(equivalent to <code>meson setup build &amp;&amp; ninja -C build &amp;&amp; sudo ninja -C build install</code>)</p>
+<p>Then log out and back in to pick it up. Don't use <code>gala --replace</code> or
+<code>systemctl --user kill</code> to reload in place — both are known to trigger an
+unrelated, pre-existing Mutter crash (<code>meta_x11_barriers_free</code> assertion on
+teardown) that's confusing to debug around if you don't know it's coming.</p>
+<h2>Uninstalling</h2>
+<pre><code>make uninstall
+</code></pre>
+<p>Then log out and back in the same as above.</p>
+<h2>Known limitations</h2>
+<ul>
+<li>Built and tested against Gala 8.5.1 / Mutter 46 (elementaryOS 8-era). Other
+versions may need adjusting the <code>HAS_MUTTER*</code> defines in <code>meson.build</code>.</li>
+<li>Connecting or disconnecting a monitor while Gala is running isn't picked up
+live — restart Gala afterwards to get a row on the new monitor.</li>
+<li>No animation on retile yet; windows snap into place instantly.</li>
+<li>No horizontal scrolling/viewport: the row tiles left-to-right in fixed
+screen coordinates, so once it's wider than the monitor, overflowing
+windows stack on top of each other at the right edge instead of becoming
+pannable. I tried a real scrolling viewport twice and reverted both times.
+First because auto-scrolling to reveal the focused window turned into a
+feedback loop – moving its geometry made Mutter re-affirm focus, which
+re-triggered the reveal, which oscillated the scroll position. Second
+because there's no way to actually hide an out-of-view window: Mutter
+refuses to place a window far enough outside every monitor's bounds (I
+confirmed this live – even an external <code>wmctrl</code> move request gets silently
+clamped back near real screen bounds, per an unconditional constraint in
+Mutter's own placement logic with no bypass), and minimising it instead
+felt too disruptive, with the dock animation and the involuntary focus
+loss. A real fix would need a patch to Mutter itself, not just this
+plugin.</li>
+<li>This is a young, unofficial plugin, not an elementary/Gala project. If Gala
+crashes after installing it, remove the <code>.so</code> from the plugins directory
+and reload Gala to get back to a stock session.</li>
+</ul>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>

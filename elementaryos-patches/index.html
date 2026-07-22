@@ -104,7 +104,7 @@ upstream package will be replaced; remove it later with
 <p>The end-user steps above already get you a working dev environment. From there:</p>
 <h3>Full command reference</h3>
 <pre><code>ep apply   &lt;package&gt;              Fetch source and apply all patches
-ep new     &lt;package&gt; &lt;desc&gt;       Create a new patch
+ep new     &lt;package&gt; &lt;desc&gt;       Create a new patch (--local for an untracked patch)
 ep edit    &lt;package&gt; &lt;file&gt;       Add a file to current patch and open editor
 ep refresh &lt;package&gt;              Refresh top patch after editing
 ep refresh &lt;package&gt; --rebase     Rebase all patches onto new upstream version
@@ -145,6 +145,15 @@ git commit -m &quot;io.elementary.notifications: rebase patches onto 8.x&quot;
 </code></pre>
 <p>After a <code>rebuild</code> that refreshed patches, review and commit the changed
 <code>.patch</code> files the same way.</p>
+<h3>Local, untracked patches</h3>
+<p><code>ep new &lt;package&gt; &lt;desc&gt; --local</code> creates the patch under <code>pkgs/&lt;package&gt;/local/</code>
+instead of <code>pkgs/&lt;package&gt;/</code>. That directory is gitignored — for patches you
+want built and installed locally but never committed (work in progress,
+or changes too speculative/personal for the tracked series). <code>ep apply</code>,
+<code>ep rebuild</code>, and <code>ep refresh --rebase</code> all apply the tracked series first,
+then <code>local/</code> on top, so local patches build on the committed ones.
+<code>ep edit</code>/<code>ep refresh</code> right after <code>ep new --local</code> write back to <code>local/</code>
+automatically. <code>ep status</code> lists local patches separately when present.</p>
 <h3>Verified-against version</h3>
 <p>Each package directory contains (or will contain after the next refresh) a
 <code>VERIFIED</code> file recording the upstream version the patch series was last
