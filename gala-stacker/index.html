@@ -23,7 +23,7 @@
   <h1>gala-stacker</h1>
 
   
-  <div class="project-header__desc">Window organiser for gala</div>
+  <div class="project-header__desc">Window organiser for gala (elementaryOS)</div>
   
 
   <div class="project-header__meta">
@@ -62,8 +62,10 @@ normal and snaps back into its row slot on unmaximise.</li>
 <li>Each monitor gets its own independent row per workspace.</li>
 <li>A newly opened window lands right after whichever window you last had
 focused in that row, not always at the end.</li>
-<li>The focused window gets a highlighted border, so you can always tell which
-window has focus at a glance.</li>
+<li>The focused window gets a highlighted border, coloured to match your
+System Settings → Appearance accent colour, so you can always tell which
+window has focus at a glance – and it updates live if you change the
+accent colour.</li>
 <li>Windows dragged onto a different monitor move into that monitor's row.</li>
 <li>Resizing the edge a window shares with its row-neighbour moves that shared
 boundary like elementary's own snapped-window divider – the neighbour
@@ -76,7 +78,7 @@ left/right, and it felt wrong not to have it for tiled windows too.</li>
 |---|---|
 | <code>Super+[</code> / <code>Super+]</code> | Move keyboard focus to the window left/right in the row |
 | <code>Super+Shift+[</code> / <code>Super+Shift+]</code> | Move the focused window itself left/right in the row |
-| <code>Super+R</code> | Cycle the focused window's width between 33%, 50%, and 67% of the monitor |</p>
+| <code>Super+R</code> | Cycle the focused window's width between 33%, 50%, and 67% of the monitor, shrinking or growing its row-neighbour to compensate |</p>
 <p>Every <code>Super</code>+arrow-key combination is already claimed by Pantheon/GNOME
 defaults (workspace switching, move-to-monitor, move-to-workspace, tiling),
 so these use the bracket keys instead — check <code>gsettings list-recursively</code>
@@ -84,6 +86,26 @@ against <code>org.gnome.desktop.wm.keybindings</code>, <code>org.gnome.mutter.ke
 and <code>io.elementary.desktop.wm.keybindings</code> before picking something else.</p>
 <p>Rebind these in a terminal with <code>gsettings</code>, e.g.:</p>
 <pre><code>gsettings set org.pantheon.desktop.gala.plugins.stacker focus-left &quot;['&lt;Super&gt;comma']&quot;
+</code></pre>
+<p>...or through <strong>System Settings → Tiling</strong> — a <code>switchboard-plug</code> package
+(<code>make install</code> installs it alongside the plugin itself). Shortcuts get a
+proper capture UI there: click a row, press the combo, done, with support
+for more than one shortcut per action. The exclusion lists below are plain
+comma-separated text fields instead, since they're free-form strings rather
+than key combos.</p>
+<h2>Excluding windows from tiling</h2>
+<p>Panels, docks, and similar chrome are excluded from the row rather than being tiled at
+full monitor width. Wingpanel and Plank are excluded by default, matched by a substring
+in their window title; anything else can be added the same way, or by GTK application ID
+if the app has more than one window and only some of them should be excluded — either via
+System Settings → Tiling, or with <code>gsettings</code>:</p>
+<pre><code>gsettings set org.pantheon.desktop.gala.plugins.stacker excluded-title-keywords &quot;['wingpanel', 'plank', 'some-substring']&quot;
+gsettings set org.pantheon.desktop.gala.plugins.stacker excluded-app-ids &quot;['com.vandragt.sidewing', 'some.other.app']&quot;
+</code></pre>
+<p>Small popups and confirmation dialogs (auth prompts, save-changes dialogs) are also left
+alone rather than tiled, based on a minimum width/height in pixels (default 150,
+<code>min-tileable-size</code>):</p>
+<pre><code>gsettings set org.pantheon.desktop.gala.plugins.stacker min-tileable-size 200
 </code></pre>
 <h2>Mouse</h2>
 <p>Drag a window and drop it between two others in the row to reorder it there.</p>
@@ -111,21 +133,13 @@ versions may need adjusting the <code>HAS_MUTTER*</code> defines in <code>meson.
 <li>Connecting or disconnecting a monitor while Gala is running isn't picked up
 live — restart Gala afterwards to get a row on the new monitor.</li>
 <li>No animation on retile yet; windows snap into place instantly.</li>
-<li>No horizontal scrolling/viewport: the row tiles left-to-right in fixed
-screen coordinates, so once it's wider than the monitor, overflowing
-windows stack on top of each other at the right edge instead of becoming
-pannable. I tried a real scrolling viewport twice and reverted both times.
-First because auto-scrolling to reveal the focused window turned into a
-feedback loop – moving its geometry made Mutter re-affirm focus, which
-re-triggered the reveal, which oscillated the scroll position. Second
-because there's no way to actually hide an out-of-view window: Mutter
-refuses to place a window far enough outside every monitor's bounds (I
-confirmed this live – even an external <code>wmctrl</code> move request gets silently
-clamped back near real screen bounds, per an unconditional constraint in
-Mutter's own placement logic with no bypass), and minimising it instead
-felt too disruptive, with the dock animation and the involuntary focus
-loss. A real fix would need a patch to Mutter itself, not just this
-plugin.</li>
+<li>No horizontal scrolling/viewport: once a row is wider than the monitor,
+overflowing windows just stack on top of each other at the right edge
+instead of becoming pannable. I tried building a real scrolling viewport
+twice and reverted both times – Mutter has no clean way to actually hide
+a window that's scrolled out of view, and everything I tried around that
+either fought the window manager or felt worse than just living with the
+overflow.</li>
 <li>This is a young, unofficial plugin, not an elementary/Gala project. If Gala
 crashes after installing it, remove the <code>.so</code> from the plugins directory
 and reload Gala to get back to a stock session.</li>
