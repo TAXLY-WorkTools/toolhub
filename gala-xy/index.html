@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>gala-stacker</title>
+  <title>gala-xy</title>
   <link rel="stylesheet" href="../static/style.css">
   <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
 </head>
@@ -20,7 +20,7 @@
 <div class="project-header">
   <a class="project-header__back" href="../index.html">&#8592; all projects</a>
 
-  <h1>gala-stacker</h1>
+  <h1>gala-xy</h1>
 
   
   <div class="project-header__desc">Window organiser for gala (elementaryOS)</div>
@@ -36,13 +36,13 @@
     
     
     
-    <a class="btn" href="https://github.com/svandragt/gala-stacker">&#8599; GitHub</a>
+    <a class="btn" href="https://github.com/svandragt/gala-xy">&#8599; GitHub</a>
     
   </div>
 </div>
 
 <div class="readme">
-  <h1>gala-stacker</h1>
+  <h1>gala-xy</h1>
 <p>I wanted <a href="https://github.com/paperwm/PaperWM">PaperWM</a>-style tiling on
 elementaryOS, so this is a horizontal tiling plugin for
 <a href="https://github.com/elementary/gala">Gala</a>, the window manager behind
@@ -85,7 +85,7 @@ so these use the bracket keys instead — check <code>gsettings list-recursively
 against <code>org.gnome.desktop.wm.keybindings</code>, <code>org.gnome.mutter.keybindings</code>,
 and <code>io.elementary.desktop.wm.keybindings</code> before picking something else.</p>
 <p>Rebind these in a terminal with <code>gsettings</code>, e.g.:</p>
-<pre><code>gsettings set org.pantheon.desktop.gala.plugins.stacker focus-left &quot;['&lt;Super&gt;comma']&quot;
+<pre><code>gsettings set org.pantheon.desktop.gala.plugins.xy focus-left &quot;['&lt;Super&gt;comma']&quot;
 </code></pre>
 <p>...or through <strong>System Settings → Tiling</strong> — a <code>switchboard-plug</code> package
 (<code>make install</code> installs it alongside the plugin itself). Shortcuts get a
@@ -99,13 +99,13 @@ full monitor width. Wingpanel and Plank are excluded by default, matched by a su
 in their window title; anything else can be added the same way, or by GTK application ID
 if the app has more than one window and only some of them should be excluded — either via
 System Settings → Tiling, or with <code>gsettings</code>:</p>
-<pre><code>gsettings set org.pantheon.desktop.gala.plugins.stacker excluded-title-keywords &quot;['wingpanel', 'plank', 'some-substring']&quot;
-gsettings set org.pantheon.desktop.gala.plugins.stacker excluded-app-ids &quot;['com.vandragt.sidewing', 'some.other.app']&quot;
+<pre><code>gsettings set org.pantheon.desktop.gala.plugins.xy excluded-title-keywords &quot;['wingpanel', 'plank', 'some-substring']&quot;
+gsettings set org.pantheon.desktop.gala.plugins.xy excluded-app-ids &quot;['com.vandragt.sidewing', 'some.other.app']&quot;
 </code></pre>
 <p>Small popups and confirmation dialogs (auth prompts, save-changes dialogs) are also left
 alone rather than tiled, based on a minimum width/height in pixels (default 150,
 <code>min-tileable-size</code>):</p>
-<pre><code>gsettings set org.pantheon.desktop.gala.plugins.stacker min-tileable-size 200
+<pre><code>gsettings set org.pantheon.desktop.gala.plugins.xy min-tileable-size 200
 </code></pre>
 <h2>Mouse</h2>
 <p>Drag a window and drop it between two others in the row to reorder it there.</p>
