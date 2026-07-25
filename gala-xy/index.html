@@ -72,13 +72,17 @@ boundary like elementary's own snapped-window divider – the neighbour
 resizes in tandem instead of leaving a gap or an overlap. That one I added
 after noticing it's how elementary already handles two windows snapped
 left/right, and it felt wrong not to have it for tiled windows too.</li>
+<li>A window can be floated out of the row entirely – it keeps whatever
+position and size it has and is left alone by tiling until you unfloat it
+again (repeat the same drag/shortcut, cycle its width, or maximise it).</li>
 </ul>
 <h2>Keyboard shortcuts</h2>
 <p>| Shortcut | Action |
 |---|---|
 | <code>Super+[</code> / <code>Super+]</code> | Move keyboard focus to the window left/right in the row |
 | <code>Super+Shift+[</code> / <code>Super+Shift+]</code> | Move the focused window itself left/right in the row |
-| <code>Super+R</code> | Cycle the focused window's width between 33%, 50%, and 67% of the monitor, shrinking or growing its row-neighbour to compensate |</p>
+| <code>Super+R</code> | Cycle the focused window's width between 33%, 50%, and 67% of the monitor, shrinking or growing its row-neighbour to compensate |
+| <code>Super+Escape</code> | Toggle floating for the focused window |</p>
 <p>Every <code>Super</code>+arrow-key combination is already claimed by Pantheon/GNOME
 defaults (workspace switching, move-to-monitor, move-to-workspace, tiling),
 so these use the bracket keys instead — check <code>gsettings list-recursively</code>
@@ -111,6 +115,8 @@ alone rather than tiled, based on a minimum width/height in pixels (default 150,
 <p>Drag a window and drop it between two others in the row to reorder it there.</p>
 <p>Drag the edge a window shares with its row-neighbour to resize both at once,
 the shared boundary moving like a divider.</p>
+<p>Drag a window to the bottom edge of its monitor to float it out of the row –
+drag it there again to unfloat it.</p>
 <h2>Installing</h2>
 <p>Requires <code>libgala-dev</code> and a Gala source checkout (for <code>libmutter-14.vapi</code>,
 which Ubuntu's Mutter packages don't ship separately — point
