@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>appstate-backup</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>appstate-backup</h1>
+
+  
+  <div class="project-header__desc">Back up installed Flatpak and Snap application lists </div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/appstate-backup">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>appstate-backup</h1>
+<p>A minimal GTK4/Libadwaita desktop app for backing up installed Flatpak and Snap application lists on Ubuntu 24.04+. Built with Vala and Meson.</p>
+<img width="682" height="542" alt="Screenshot from 2026-03-05 10 35 39" src="https://github.com/user-attachments/assets/7f16d478-ead8-43bd-a2af-8057a0a0f8db" />
+<h2>Features</h2>
+<ul>
+<li>Two tabs: <strong>Backup</strong> and <strong>Restore</strong> (stub)</li>
+<li>Detects installed platforms (Flatpak, Snap) at runtime</li>
+<li>Exports app lists to text files and bundles them into a timestamped zip</li>
+<li>Saves backups to your Desktop with unique names</li>
+<li>Status bar shows progress and completion</li>
+</ul>
+<h2>Backup Output</h2>
+<p>A backup creates a zip like:</p>
+<pre><code>~/Desktop/appstate-YYYYMMDD-HHMMSS.zip
+├── flatpaks.txt   # one &quot;app.id remote&quot; per line
+└── snaps.txt      # one snap name per line
+</code></pre>
+<h2>Restore (planned)</h2>
+<p>Restore is currently a placeholder in the UI.</p>
+<h2>Requirements</h2>
+<ul>
+<li>Ubuntu 24.04+</li>
+<li>GTK4 (&gt;= 4.10)</li>
+<li>Libadwaita (&gt;= 1.4)</li>
+<li>Vala (&gt;= 0.56)</li>
+<li>Meson (&gt;= 0.60)</li>
+<li><code>zip</code> installed</li>
+</ul>
+<h2>Build &amp; Run</h2>
+<pre><code class="language-bash">meson setup build
+meson compile -C build
+./build/appstate-backup
+</code></pre>
+<h2>Tests</h2>
+<pre><code class="language-bash">meson test -C build
+</code></pre>
+<h2>Notes</h2>
+<ul>
+<li>Backup destinations use your XDG Desktop directory when available.</li>
+<li>Checkbox states do not persist between sessions.</li>
+</ul>
+<h2>License</h2>
+<p>TBD</p>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>

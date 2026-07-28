@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>claudegauge</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>claudegauge</h1>
+
+  
+  <div class="project-header__desc">Shows current Claude usage as a fill gauge (weekly background, 5h-block foreground)</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    <span class="badge">claude</span>
+    
+    <span class="badge">streamdeck</span>
+    
+    
+    <span class="badge">MIT</span>
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/claudegauge">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>Claude Gauge</h1>
+<p>An <a href="https://github.com/nekename/OpenDeck">OpenDeck</a> / Elgato Stream Deck plugin that turns one key into a fill gauge of your current Claude usage.</p>
+<ul>
+<li><strong>Background fill (yellow)</strong> — current week's tokens vs. the peak of your prior 4 weeks.</li>
+<li><strong>Foreground fill (green → red)</strong> — current 5-hour block vs. your historical peak block.</li>
+</ul>
+<p>Both numbers come from <a href="https://github.com/ryoppippi/ccusage">ccusage</a>, which reads <code>~/.claude/projects/**/*.jsonl</code> locally. No Anthropic API calls, no tokens, no plan-quota knowledge — both bars are relative to your own usage history.</p>
+<h2>Requirements</h2>
+<ul>
+<li><strong>Node.js 18+</strong> on PATH.</li>
+<li><strong>OpenDeck</strong> (Linux deb / Flatpak) or <strong>Elgato Stream Deck</strong> software.</li>
+<li><code>npm install</code> fetches <code>ccusage</code> (pinned in <code>package.json</code>); needs network at install time.</li>
+</ul>
+<h2>Install</h2>
+<h3>OpenDeck (Linux, deb)</h3>
+<pre><code class="language-sh">git clone https://github.com/svandragt/claudegauge.git com.vandragt.claudegauge.sdPlugin
+cd com.vandragt.claudegauge.sdPlugin
+npm install
+cp -r . ~/.config/opendeck/plugins/com.vandragt.claudegauge.sdPlugin
+</code></pre>
+<p>Restart OpenDeck, then drag <strong>Claude Gauge</strong> onto a key.</p>
+<h3>OpenDeck (Flatpak)</h3>
+<p>Same as above, but the plugins dir is <code>~/.var/app/me.amankhanna.opendeck/data/opendeck/plugins/</code>. You'll also need to grant read access to your Claude data:</p>
+<pre><code class="language-sh">flatpak override --user --filesystem=~/.claude:ro me.amankhanna.opendeck
+flatpak override --user --filesystem=~/.config/claude:ro me.amankhanna.opendeck
+</code></pre>
+<h3>Elgato Stream Deck</h3>
+<p>Zip the folder, rename to <code>claudegauge.streamDeckPlugin</code>, double-click to install.</p>
+<h2>How it works</h2>
+<pre><code>OpenDeck/Elgato host  ─spawn─►  run.sh  ─exec─►  node plugin.js
+                                                    │
+                              websocket on 127.0.0.1:&lt;port&gt;
+                                                    │
+                                            ┌───────┴───────┐
+                                            │   plugin.js   │  drives the WS, polls every 60s
+                                            └──┬─────────┬──┘
+                                               │         │
+                                          render.js   usage.js
+                                          (SVG icon)  (spawns ccusage)
+</code></pre>
+<p>Per the <a href="https://docs.elgato.com/streamdeck/sdk/references/websocket/plugin/">Stream Deck WebSocket SDK</a>, the host launches <code>run.sh</code> with <code>-port</code>, <code>-pluginUUID</code>, <code>-registerEvent</code>, <code>-info</code> flags. <code>plugin.js</code> connects back, registers itself, tracks visible keys via <code>willAppear</code> / <code>willDisappear</code>, and pushes a fresh SVG to every visible key on a 60-second loop.</p>
+<h2>Configuration</h2>
+<p>None. Both fill levels are derived from your ccusage history. If you have less than four weeks of usage data the weekly bar will pin near 100% until history builds up.</p>
+<h2>Troubleshooting</h2>
+<p>Logs are written next to the installed plugin: <code>plugin.log</code> (and OpenDeck's own logs at <code>~/.config/opendeck/logs/</code>).</p>
+<ul>
+<li><strong>&quot;no 'node' on PATH&quot;</strong> in <code>plugin.log</code> — install Node or expose your existing install to the host's spawn environment.</li>
+<li><strong><code>ccusage … failed</code></strong> — make sure <code>~/.claude/projects/</code> exists and has at least one session JSONL. For Flatpak OpenDeck, check the filesystem overrides above.</li>
+</ul>
+<h2>Development</h2>
+<pre><code class="language-sh">npm install
+npm test           # unit tests for the parsers and renderer
+make test          # live ccusage call against your own data
+</code></pre>
+<p>CI (GitHub Actions) runs <code>npm test</code> plus a CLI surface check against ccusage, so dependabot bumps that would break the plugin fail the PR.</p>
+<h2>License</h2>
+<p>MIT — see <a href="LICENSE">LICENSE</a>.</p>
+<h2>Author</h2>
+<p>Sander van Dragt &lt;sander@vandragt.com&gt; — <a href="https://vandragt.com">https://vandragt.com</a></p>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>

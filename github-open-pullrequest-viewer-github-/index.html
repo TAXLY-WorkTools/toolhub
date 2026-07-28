@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>github-open-pullrequest-viewer</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>github-open-pullrequest-viewer</h1>
+
+  
+  <div class="project-header__desc">View ongoing work on PRs</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+    <span class="badge">GPL-3.0</span>
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/github-open-pullrequest-viewer">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>GitHub Pull Request Viewer</h1>
+<p>A desktop application built with Python and Tkinter that helps you manage and monitor your GitHub Pull Requests efficiently.</p>
+<p><img src="https://github.com/user-attachments/assets/7ff306c8-2d47-4ce3-89d7-296fcc7caf3e" alt="Screenshot_011" /></p>
+<h2>Features</h2>
+<ul>
+<li>👀 View all your open Pull Requests in one place</li>
+<li>🔄 Snapshot review status tracking</li>
+<li>🔍 Filter between your PRs under your username and your PRs in other repositories</li>
+<li>🔄 Cache system for improved performance</li>
+<li>🎯 Double-click to open PRs in your default browser</li>
+<li>⚡ Sort PRs by title, state, or repository</li>
+<li>⚙️ Configurable settings with GUI interface</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>Python 3.10 or higher</li>
+<li>Required Python packages:
+<ul>
+<li>requests</li>
+</ul>
+</li>
+</ul>
+<h2>Installation</h2>
+<ol>
+<li>Clone this repository:</li>
+</ol>
+<pre><code class="language-bash">git clone https://github.com/svandragt/github-open-pullrequest-viewer
+</code></pre>
+<ol start="2">
+<li>Install the required dependencies:</li>
+</ol>
+<pre><code class="language-bash">pip install requests
+</code></pre>
+<h2>Configuration</h2>
+<ol>
+<li>Launch the application</li>
+<li>Click on the &quot;Settings&quot; button</li>
+<li>Enter your:
+<ul>
+<li>GitHub username</li>
+<li>GitHub personal access token (requires 'repo' scope for private repositories)</li>
+</ul>
+</li>
+</ol>
+<p>The configuration will be automatically saved for future sessions.</p>
+<h2>Usage</h2>
+<ol>
+<li>Start the application:</li>
+</ol>
+<pre><code class="language-bash">python github-viewer.py
+</code></pre>
+<ol start="2">
+<li>Use the interface to:
+<ul>
+<li>View your open Pull Requests</li>
+<li>Click &quot;Refresh PRs&quot; to update the list</li>
+<li>Toggle between viewing your PRs or PRs in other repositories</li>
+<li>Double-click any PR to open it in your browser</li>
+<li>Sort PRs by clicking on column headers</li>
+</ul>
+</li>
+</ol>
+<h2>Features in Detail</h2>
+<h3>Pull Request Information</h3>
+<ul>
+<li>Title of the PR</li>
+<li>Current review state</li>
+<li>Repository name</li>
+<li>Direct link to PR</li>
+</ul>
+<h3>Review States</h3>
+<ul>
+<li>APPROVED</li>
+<li>ALL_APPROVED</li>
+<li>CHANGES_REQUESTED</li>
+<li>REVIEW_REQUIRED</li>
+<li>REVIEW_IN_PROGRESS</li>
+<li>UNKNOWN (in case of API errors)</li>
+</ul>
+<h3>Caching</h3>
+<ul>
+<li>PR data is cached for 15 minutes, or until you press Refresh.</li>
+<li>Review states are cached separately</li>
+<li>Cache is automatically saved on exit and loaded on startup</li>
+</ul>
+<h2>Environment Variables</h2>
+<p>You can optionally set your GitHub token as an environment variable:</p>
+<pre><code class="language-bash">export GITHUB_TOKEN=your_token_here
+</code></pre>
+<h2>Notes</h2>
+<ul>
+<li>The application requires a GitHub token with 'repo' scope for accessing private repositories.</li>
+<li>Cache files (<code>review_cache.json</code> and <code>pr_cache.json</code>) are created in the application directory.</li>
+<li>Configuration is stored in <code>config.json</code>.</li>
+</ul>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>

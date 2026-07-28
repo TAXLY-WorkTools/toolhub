@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>fafi</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>fafi</h1>
+
+  
+  <div class="project-header__desc">Web content indexing and search tool</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    <span class="badge">bookmarks</span>
+    
+    <span class="badge">cli</span>
+    
+    <span class="badge">favourites</span>
+    
+    <span class="badge">firefox</span>
+    
+    <span class="badge">indexer</span>
+    
+    <span class="badge">python</span>
+    
+    <span class="badge">search-engine</span>
+    
+    <span class="badge">tui</span>
+    
+    <span class="badge">webui</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/fafi">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>fafi</h1>
+<p>Web content indexing and search tool.</p>
+<ol>
+<li>Easily index your browser bookmarks: importing list of files, a live Firefox profile, and individual URLs</li>
+<li>Store the readability content of each bookmark</li>
+<li>Full text search matching the title and contents of the collection</li>
+<li>Detect non-text bookmarks (PDFs, images, video, audio) — saved with a category icon, skipped for article extraction.</li>
+</ol>
+<p>In the latest incarnation:</p>
+<ul>
+<li>Aim of the rewrite in GO is to have a single binary that starts a webserver which can be started via systemd and queried via firefox.</li>
+<li>On launch it will index any missing bookmarks (in a background process)</li>
+</ul>
+<p>This is how it looks:</p>
+<img width="1908" height="982" alt="Screenshot 2026-07-22 at 22-34-02 Fafi" src="https://github.com/user-attachments/assets/2bc93abc-7e91-42e1-92df-91091f847a73" />
+<h2>Searching</h2>
+<p>The search box accepts plain words plus a few extras:</p>
+<ul>
+<li><strong>Phrase queries</strong> — wrap words in double quotes: <code>&quot;react hooks&quot;</code>.</li>
+<li><strong>Prefix queries</strong> — the last unquoted token is auto-prefixed, so <code>lidar</code> also matches <code>lidarr</code>. Add an explicit <code>*</code> (e.g. <code>desig*</code>) to control where prefixing applies.</li>
+<li><strong>Domain queries</strong> — paste a URL or host (e.g. <code>lidarr.audio</code>); punctuation is split into tokens so it still matches.</li>
+<li><strong>Porter stemming</strong> — <code>design</code> matches <code>designs</code>, <code>designed</code>, <code>designing</code>. Powered by the FTS5 <code>porter unicode61</code> tokenizer.</li>
+<li><strong>Highlighting</strong> — matched terms are highlighted in titles, URLs, and snippets. Click a snippet to expand the full extracted text.</li>
+<li>Results are filtered by HTTP status with the chips above the list (2xx / 3xx / 4xx / 5xx / none).</li>
+</ul>
+<h2>Keyboard shortcuts</h2>
+<p>Press <kbd>?</kbd> in the UI for the full list. Currently:</p>
+<p>| Key | Action |
+| --- | --- |
+| <kbd>/</kbd> | Focus the search box |
+| <kbd>Esc</kbd> | Clear search, then blur |
+| <kbd>j</kbd> / <kbd>↓</kbd> | Next result |
+| <kbd>k</kbd> / <kbd>↑</kbd> | Previous result |
+| <kbd>Enter</kbd> | Open the selected result |
+| <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd> | Open in new tab |
+| <kbd>?</kbd> | Toggle the shortcut help |</p>
+<h2>Managing bookmarks</h2>
+<p>Each row has inline actions:</p>
+<ul>
+<li><strong>Reindex</strong> — re-fetches the page and refreshes the stored title/text.</li>
+<li><strong>Delete</strong> — soft-deletes the bookmark. Soft-deleted entries are hidden and blocked from re-import (e.g. on the next Firefox sync), so accidental re-adds don't bring them back.</li>
+</ul>
+<h2>Environment variables</h2>
+<p>If the working directory contains a <code>.env</code> file, then the following configuration can be declared:</p>
+<pre><code class="language-env"># Defaults are below:
+
+# Port number for the webserver.
+FAFI_PORT=8080
+# Set to non-empty value to skip populating the database with sample records.
+FAFI_SKIP_RECORDS=0
+# Set to 0 to disable indexing on startup
+FAFI_ENABLE_INDEXING=1
+# Set to 1 to clear the indexed state on every bookmark before indexing
+# (forces a full re-index). Also migrates legacy databases to the latest
+# schema version. Unset after one run.
+FAFI_RESET_INDEX=0
+# Set to 1 to clear every stored HTTP status and re-probe all bookmarks
+# (destructive). Unset after one run.
+FAFI_RESET_STATUS=0
+# Set to 1 to probe only bookmarks that have no stored HTTP status, leaving
+# known-good entries alone. Idempotent — safe to leave on but typically set
+# once after a schema upgrade then unset. Also re-probes rows whose previous
+# probe failed at the network layer (DNS, timeout, refused), and runs the
+# auto-soft-delete pass for stale unreachable bookmarks (&gt;=3 failures, first
+# failure &gt;14 days ago, no scraped text).
+FAFI_BACKFILL_STATUS=0
+# Set to 1 to soft-delete every bookmark whose probe currently fails AND has
+# no scraped text. Manual escape hatch — bypasses the time/strike rule.
+FAFI_PURGE_UNREACHABLE=0
+# Default database path:
+FAFI_DB_FILEPATH=/home/user/fafi.sqlite3
+
+# Enable importing bookmarks from Firefox profile db:
+FAFI_FIREFOX=/home/san.../32kuswpy.default-release/places.sqlite
+
+# Privacy-preserving malware blocklist. On by default. Downloads the
+# URLhaus &quot;online URLs&quot; feed to FAFI_BLOCKLIST_DIR on the configured
+# interval; all per-bookmark checks happen locally against the snapshot.
+# Set FAFI_BLOCKLIST_ENABLED=0 to disable the feature entirely.
+FAFI_BLOCKLIST_ENABLED=1
+FAFI_BLOCKLIST_DIR=blocklists
+FAFI_BLOCKLIST_REFRESH=6h
+</code></pre>
+<h2>Command-line arguments</h2>
+<p>Each of the environment variables are available as a longform command-line argument by discarding <code>FAFI_</code> and lower-casing the result, replacing underscores with dashes. For example <code>FAFI_ENABLE_INDEXING=0</code> and <code>--enable-indexing=0</code> are equivalent.</p>
+<h2>Build and run</h2>
+<p>The project uses <a href="https://www.jetify.com/devbox">devbox</a> to pin the Go toolchain. With devbox installed:</p>
+<pre><code class="language-shell">make build              # build tmp/fafi2 (--tags fts5)
+make test               # go test -race ./...
+make run                # build and run locally
+make restart            # systemctl --user restart fafi.service
+make migrate            # build + restart (schema migrations run on startup)
+</code></pre>
+<p>Schema migrations run automatically on every startup — scraped content
+is preserved, so upgrading the binary and restarting the service is all
+that's needed. Use <code>FAFI_RESET_INDEX=1</code> only when you want to force a
+full re-scrape.</p>
+<p>To build without <code>make</code>:</p>
+<pre><code class="language-shell">$ devbox run -- go build --tags fts5 -o tmp/fafi2 fafi2
+$ tmp/fafi2 --firefox=/path/to/firefox/profile/places.sqlite
+</code></pre>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>

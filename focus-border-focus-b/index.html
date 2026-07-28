@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>focus-border</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>focus-border</h1>
+
+  
+  <div class="project-header__desc">Small app that focuses the border of the active window.</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/focus-border">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>Focus Border</h1>
+<p><code>Focus Border</code> is a small background app for X11 desktops. It polls the active window and draws a transparent, click-through border around it so the focused window is easier to spot.</p>
+<h2>Requirements</h2>
+<ul>
+<li><code>python3</code></li>
+<li><code>PyGObject</code> with GTK 3</li>
+<li><code>xprop</code></li>
+<li><code>xwininfo</code></li>
+</ul>
+<h2>Run</h2>
+<pre><code class="language-bash">python3 focus_border.py
+</code></pre>
+<p>Useful flags:</p>
+<ul>
+<li><code>--color ff5f57</code></li>
+<li><code>--alpha 0.95</code></li>
+<li><code>--thickness 4</code></li>
+<li><code>--radius 10</code></li>
+<li><code>--inset 6</code></li>
+<li><code>--poll-ms 120</code></li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-bash">python3 focus_border.py --color 00b894 --thickness 6 --radius 14
+</code></pre>
+<h2>Start At Login</h2>
+<p>Install the desktop entry into your autostart folder:</p>
+<pre><code class="language-bash">python3 focus_border.py --install-autostart
+</code></pre>
+<p>That copies <a href="/home/sander/tmp/2026-04-03/io.github.sander.FocusBorder.desktop">io.github.sander.FocusBorder.desktop</a> into <code>~/.config/autostart/</code>.</p>
+<h2>Notes</h2>
+<ul>
+<li>This targets X11. It will not work on native Wayland-only sessions.</li>
+<li>Fullscreen windows are ignored so the overlay does not sit on top of full-screen apps or videos.</li>
+<li>The desktop entry currently points at this checkout: <a href="/home/sander/tmp/2026-04-03/focus_border.py">focus_border.py</a></li>
+</ul>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>

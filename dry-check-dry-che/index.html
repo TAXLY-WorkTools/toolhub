@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>dry-check</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>dry-check</h1>
+
+  
+  <div class="project-header__desc">Can I take the dog out?</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    <span class="badge">dry</span>
+    
+    <span class="badge">python</span>
+    
+    <span class="badge">rain</span>
+    
+    <span class="badge">weather</span>
+    
+    
+    <span class="badge">GPL-3.0</span>
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/dry-check">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>🌤 dry-check</h1>
+<p>A tiny Python utility that notifies you <strong>the next time it stops raining</strong> — perfect for deciding when to take the dog out.</p>
+<p>Powered by <a href="https://open-meteo.com">Open-Meteo</a> and <code>notify-send</code>, built for Linux (tested on ElementaryOS 7 / Ubuntu 22.04).</p>
+<hr />
+<h2>🧩 Features</h2>
+<ul>
+<li>Checks your local weather periodically using Open-Meteo</li>
+<li>Sends a desktop notification via <code>notify-send</code> when it becomes dry</li>
+<li>Configurable interval, latitude/longitude, and single/recurring alerts</li>
+<li>YAML-based config (no code changces needed)</li>
+<li>Runs cleanly with <a href="https://docs.astral.sh/uv/">uv</a> or system Python</li>
+</ul>
+<hr />
+<h2>⚙️ Installation</h2>
+<h3>Prerequisites</h3>
+<pre><code class="language-bash">sudo apt install libnotify-bin
+</code></pre>
+<h3>Clone &amp; setup</h3>
+<pre><code class="language-bash">git clone https://github.com/&lt;your-username&gt;/dry-check.git
+cd dry-check
+</code></pre>
+<p>Create a virtual environment with <strong>uv</strong> (recommended):</p>
+<pre><code class="language-bash">uv sync
+</code></pre>
+<hr />
+<h2>🧾 Configuration</h2>
+<p>Edit <code>config.yaml</code>:</p>
+<pre><code class="language-yaml">latitude: 51.538
+longitude: 0.711
+check_interval: 300  # seconds between checks
+alert_once: true     # notify only the first time it’s dry
+</code></pre>
+<hr />
+<h2>▶️ Usage</h2>
+<p>Run directly:</p>
+<pre><code class="language-bash">uv run dry_check.py
+</code></pre>
+<p>Or in the background:</p>
+<pre><code class="language-bash">nohup uv run dry_check.py &amp;
+</code></pre>
+<p>You’ll see console logs like:</p>
+<pre><code>[2025-12-09 17:12:00] 🌧️ Raining (current precip=0.3mm)
+[2025-12-09 17:17:00] 🌤️ Dry (current precip=0.0mm)
+</code></pre>
+<p>When rain stops, you’ll get a desktop notification:</p>
+<blockquote>
+<p>🌤 Dry Now — Rain stopped, time to go out!</p>
+</blockquote>
+<hr />
+<h2>🧰 Tech notes</h2>
+<ul>
+<li>Weather data: <a href="https://open-meteo.com/">Open-Meteo API</a></li>
+<li>Notifications: <code>notify-send</code> (<code>libnotify-bin</code>)</li>
+<li>Dependencies: <code>requests</code>, <code>PyYAML</code></li>
+<li>Compatible with Python ≥ 3.8</li>
+</ul>
+<hr />
+<p>Would you like me to add the <strong>“run-once” mode instructions</strong> and flag to the README (so users can use it from cron without a loop)?</p>
+<pre><code></code></pre>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>

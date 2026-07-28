@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shared pre-push hook with npm lint and repository hook support</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>Shared pre-push hook with npm lint and repository hook support</h1>
+
+  
+  <div class="project-header__desc">Shared pre-push hook with npm lint and repository hook support</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">gist</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://gist.github.com/svandragt/4ca7ae0f07223b6cbec22d1f248273da">&#8599; Gist</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>Shared pre-push hook</h1>
+<p>This global Git hook:</p>
+<ul>
+<li>runs <code>npm run lint</code> when a repository defines an npm <code>lint</code> script;</li>
+<li>runs <code>composer lint:pre-push</code> when available, otherwise <code>composer lint</code>;</li>
+<li>calls an executable <code>.repo-hooks.sh</code> from the repository root;</li>
+<li>falls back to the older <code>repo-hooks.sh</code> filename.</li>
+</ul>
+<h2>Install</h2>
+<p>Save <code>pre-push</code> to your global Git hooks directory, then run:</p>
+<pre><code class="language-bash">chmod +x ~/.config/git/hooks/pre-push
+git config --global core.hooksPath ~/.config/git/hooks
+</code></pre>
+<p>Composer repositories can define <code>lint:pre-push</code> when linting needs access to
+Git's pre-push ref data. Repositories can also provide other pre-push behavior
+in an executable <code>.repo-hooks.sh</code> file.</p>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
