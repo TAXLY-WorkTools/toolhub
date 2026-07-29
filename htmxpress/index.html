@@ -76,6 +76,12 @@ This repository is exploring the opportunities.</p>
 </ul>
 <h2>Screencast of Demo</h2>
 <p>https://user-images.githubusercontent.com/594871/183612860-b2eb29f7-cfa0-4de1-97fc-b2a5f393cfd2.mp4</p>
+<h2>Composer install</h2>
+<p>Requires PHP &gt;= 8.0. For <code>composer.json</code>-based WordPress projects, install HTMXpress as a VCS dependency:</p>
+<pre><code class="language-shell">composer config repositories.htmxpress vcs git@github.com:svandragt/htmxpress.git
+composer require svandragt/htmxpress:dev-main --no-update
+composer update svandragt/htmxpress --prefer-source
+</code></pre>
 <h1>Project use</h1>
 <ol>
 <li><strong>By default HTMX is loaded from an external CDN</strong>. While the CDN approach is extremely simple, you may want

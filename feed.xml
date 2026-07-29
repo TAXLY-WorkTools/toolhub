@@ -3,10 +3,20 @@
   <id>https://tools.vandragt.com/feed.xml</id>
   <title>~/tools</title>
   <subtitle>Tools &amp; Projects</subtitle>
-  <updated>2026-07-27T16:07:10Z</updated>
+  <updated>2026-07-28T15:49:51Z</updated>
   <link rel="alternate" type="text/html" href="https://tools.vandragt.com"/>
   <link rel="self" type="application/atom+xml" href="https://tools.vandragt.com/feed.xml"/>
   <author><name>svandragt</name></author>
+  
+  <entry>
+    <id>https://github.com/svandragt/nethealth</id>
+    <title>nethealth</title>
+    <updated>2026-07-28T15:49:51Z</updated>
+    <published>2026-07-28T14:28:43Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/nethealth"/>
+    <summary>Network health check for freezing video calls and slow page loads. Measures jitter, loss and latency under load, then tells you whether to blame your wifi or your ISP.</summary>
+    
+  </entry>
   
   <entry>
     <id>https://gist.github.com/svandragt/4ca7ae0f07223b6cbec22d1f248273da</id>
@@ -214,19 +224,6 @@
     <published>2026-07-02T14:03:36Z</published>
     <link rel="alternate" type="text/html" href="https://github.com/svandragt/git-mcp-broker"/>
     <summary>git-mcp-broker</summary>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/firefox-addon-move-tab-to-another-window</id>
-    <title>firefox-addon-move-tab-to-another-window</title>
-    <updated>2026-06-25T12:47:08Z</updated>
-    <published>2025-05-07T12:06:45Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/firefox-addon-move-tab-to-another-window"/>
-    <summary>A Firefox extension that enables easy movement of tabs between different browser windows through a convenient context menu.</summary>
-    <category term="addon"/>
-    <category term="firefox"/>
-    <category term="tabs"/>
     
   </entry>
   

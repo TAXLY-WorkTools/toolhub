@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>nethealth</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>nethealth</h1>
+
+  
+  <div class="project-header__desc">Network health check for freezing video calls and slow page loads. Measures jitter, loss and latency under load, then tells you whether to blame your wifi or your ISP.</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/nethealth">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>nethealth</h1>
+<p>A one-shot network check for the two problems you actually notice: video calls
+that freeze, and websites that load slowly.</p>
+<p>Speed tests tell you your line is fast. They don't tell you why your call is
+breaking up. This measures the things that actually cause it — jitter, packet
+loss, and latency under load — and then says in plain words which one is your
+problem and whether to blame your wifi or your ISP.</p>
+<p>Go standard library only, no dependencies, no root required.</p>
+<h2>Install</h2>
+<pre><code class="language-sh">go install github.com/svandragt/nethealth@latest
+</code></pre>
+<p>No Go toolchain? Grab a prebuilt binary from the
+<a href="https://github.com/svandragt/nethealth/releases">releases page</a>.</p>
+<p>Or build and install locally:</p>
+<pre><code class="language-sh">make install          # builds and installs to ~/.local/bin
+make install PREFIX=/usr/local
+make build            # just the binary, in place
+make run              # build and run a full check
+make quick            # build and run the fast check
+</code></pre>
+<h2>Use</h2>
+<pre><code class="language-sh">nethealth                              # full run, ~25s
+nethealth -quick                       # skip the speed tests, ~8s
+nethealth -site https://example.com    # time a specific site's page load
+nethealth -no-color                    # plain output
+nethealth -version                     # which build this is
+</code></pre>
+<p>Run it <em>while</em> things are bad. A clean result taken an hour later tells you
+nothing.</p>
+<h2>What it measures</h2>
+<p>| Section | What it tells you |
+| --- | --- |
+| wifi / router | Latency, jitter and loss to your own gateway. Separates a bad first hop from a bad ISP. |
+| internet path | The same to 1.1.1.1, falling back to 8.8.8.8 and 9.9.9.9. |
+| dns | A warm lookup, an uncached lookup (median across five zones), and the identical uncached test through 1.1.1.1 as a control. |
+| page load | DNS / TCP / TLS / first-byte breakdown of one real request. |
+| download, upload | Throughput, plus latency measured <em>while the line is saturated</em>. |</p>
+<p>Then a verdict: separate lines for video calls and websites, where the fault
+lies, and what to change.</p>
+<h2>Notes on method</h2>
+<p><strong>Jitter and loss matter more than speed.</strong> A 500Mbps line with 3% loss makes
+worse calls than a 20Mbps line with none. The verdict weights them that way.</p>
+<p><strong>Latency under load is the headline number.</strong> If your latency jumps by 100ms+
+while something else is downloading, that is bufferbloat, and it's the usual
+reason a call freezes the moment someone else in the house does anything. The
+fix is a smart queue (cake or fq_codel) on the router, not a faster plan.</p>
+<p><strong>DNS is compared against a control.</strong> An uncached lookup is slow partly because
+of the authoritative servers, which is nobody's fault and not fixable by you.
+Running the same test through 1.1.1.1 cancels that cost out, so the tool only
+flags DNS when your resolver is genuinely behind. Five separate zones are
+sampled and the median taken, so one slow nameserver can't skew the result.</p>
+<p><strong>ICMP when it can, TCP when it can't.</strong> Real packet loss needs ICMP echo, which
+this does over an unprivileged datagram socket — no setuid, no sudo. If the
+kernel disallows it, the tool falls back to timing TCP handshakes and says so,
+because a retransmitted SYN can hide light loss. To enable ICMP:</p>
+<pre><code class="language-sh">sudo sysctl -w net.ipv4.ping_group_range=&quot;0 2147483647&quot;
+</code></pre>
+<p>Gateway detection and unprivileged ICMP are Linux-only. Elsewhere it runs fine
+with the TCP fallback and skips the gateway test.</p>
+<p>Throughput uses Cloudflare's public speed endpoints.</p>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
