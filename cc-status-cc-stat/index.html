@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>cc-status</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>cc-status</h1>
+
+  
+  <div class="project-header__desc">Claude/Codex status</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/cc-status">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>cc-status</h1>
+<p>cc-status shows one traffic light per AI agent session — Claude Code and Codex —
+in a minimal Vala + GTK4 window. Each agent's hooks feed it over a Unix domain
+socket at <code>/tmp/cc-status.sock</code>.</p>
+<pre><code>    Session            Status                 Where
+🔴  claude/7a11ffff    error in Edit          pts/4 · hairness
+🟡  claude/9f3c1d2e    working (after Bash)   pts/12 · wikimediafoundation-org
+🟢  codex/t9           idle                   pts/9 · shiro
+</code></pre>
+<p>This project started as an embedded libghostty-vt terminal; that's gone now (see
+git history if you want a VT surface back). What survives from it is the OSC 2
+transport below, which still uses libghostty-vt's parser through the hand-written
+binding in <code>vapi/</code>.</p>
+<h2>The status feed</h2>
+<p>Status lines use one format,
+<code>&lt;agent&gt;/&lt;session_id&gt;&lt;TAB&gt;&lt;status text&gt;[&lt;TAB&gt;&lt;where&gt;]</code>. Any number of sessions of
+either agent can send them, over either of two transports.</p>
+<h3>Traffic lights</h3>
+<p>Each session is independent, so it gets its own light on its own row in a
+<code>Gtk.ListBox</code>. Rows are sorted by key, so they keep their place. Each row shows a
+shortened ID (hover for the full one), and the light's tooltip explains what its
+colour means.</p>
+<p><strong>Double-click a row to focus that session's terminal window</strong> (a single click
+selects the row). Only rows that resolve to an open window are clickable: they
+hover, take Enter, and carry a ↗; the rest are inert, and their tooltip explains
+why. The match walks the session's process ancestry (<code>ps -eo pid=,ppid=</code>) up to
+whichever pid <code>wmctrl -lp</code> lists as owning a window, so it reaches a session in
+any tab, not just the one whose title currently shows. If that fails — an older
+hook that never reported a pid — it falls back to matching a window whose title
+contains the session key, which is there because the hook wrote it over OSC 2.
+Either way, <code>wmctrl -ia</code> raises the window. Without <code>wmctrl</code> or <code>ps</code> on <code>PATH</code>, no
+row is clickable.</p>
+<p>This still can't select a specific tab: X exposes windows, not tabs, and
+switching to one would mean synthesising keystrokes and watching the title
+change, which isn't worth it. It also can't distinguish separate windows of a
+terminal that runs every window through one shared daemon process — there, every
+window resolves to the same pid.</p>
+<h3>Which terminal tab is that?</h3>
+<p>(Tested on elementary Terminal 8.0: it honours OSC 2 in the window title, but
+labels tabs with the working directory regardless — so the title identifies the
+active tab, and for background tabs, match the directory in the tab label
+against the project half of the Where column.)</p>
+<p>Two ways, both from <code>hooks/where.sh</code>:</p>
+<ul>
+<li>The <strong>Where</strong> column names the agent's tty and project. Run <code>tty</code> in a tab,
+and the matching row is that tab. Hooks run without a controlling terminal, so
+<code>cc_status_tty</code> walks up the parent processes (bounded at 8) until it finds one
+with a tty — that's the agent process, and so its tab. The project is the
+hook's cwd, which both agents set to the project root.</li>
+<li>The hook also names the tab after the session, by writing an OSC 2 title
+(<code>claude/9f3c1d2e: running Bash</code>) straight to that tty (<code>/dev/pts/N</code>, found the
+same way). Set <code>CC_STATUS_NO_TITLE=1</code> to leave titles alone. A shell that
+rewrites the title on every prompt (zsh <code>precmd</code> and similar) takes it back as
+soon as the agent stops, so this labels a tab only while it's busy.</li>
+</ul>
+<p>Road-sign semantics — red means something is broken, not merely that you are
+wanted:</p>
+<p>| Light | Meaning | Status text |
+|---|---|---|
+| 🔴 | something went wrong | <code>error in &lt;tool&gt;</code> |
+| 🟡 | still working | <code>thinking</code>, <code>running &lt;tool&gt;</code>, <code>working (after &lt;tool&gt;)</code> |
+| 🟢 | done — your turn | <code>idle</code>, <code>idle (notified)</code>, <code>idle (permission)</code>, <code>idle (approval)</code> |</p>
+<p>Green means <strong>your input is possible</strong>, and only that. Four events keep it
+honest:</p>
+<ul>
+<li><code>Stop</code> (and Codex's <code>agent-turn-complete</code>) → <code>idle</code>: the turn is over, type
+away;</li>
+<li>a <code>Notification</code> that is not a permission prompt — the idle-timeout nudge —
+→ <code>idle (notified)</code>: it is waiting on you, so green, not a warning;</li>
+<li>a permission prompt (Claude Code's <code>Notification</code> with <code>notification_type: permission_prompt</code>, Codex's approval request) → <code>idle (permission)</code> /
+<code>idle (approval)</code>: nothing happens until you decide, which is exactly as
+green as nothing happens until you type;</li>
+<li><code>UserPromptSubmit</code> → <code>thinking</code>: between your prompt and the first tool call
+nothing else fires, so without it the row would sit on green while the agent
+works.</li>
+</ul>
+<p><code>PostToolUse</code> fires between tool calls with the agent still going, which is why
+it reads <code>working (after …)</code> and stays amber.</p>
+<p>The <strong>window title</strong> carries one light for the lot, so the taskbar/window list
+answers &quot;is there anything for me to do?&quot; without focusing the app. That's not
+severity — green wins: one session ready for input turns the title green even
+while others work. Only with nothing green does a failure show (🔴), and 🟡 means
+every session is busy. Until a session reports, the title stays plain.</p>
+<h3>The two agents</h3>
+<p>| | Claude Code | Codex |
+|---|---|---|
+| mechanism | hooks in <code>~/.claude/settings.json</code> | <code>notify</code> in <code>~/.codex/config.toml</code> |
+| entry point | <code>hooks/cc-status.sh</code> (JSON on stdin) | <code>hooks/codex-notify.sh</code> (JSON in <code>argv[1]</code>) |
+| derivation | <code>hooks/derive.jq</code> | <code>hooks/derive-codex.jq</code> |
+| states seen | prompt submitted, per-tool start/end, failures, permission prompts, notifications, turn end | turn end (and approval requests, version depending) |</p>
+<p>Codex's <code>notify</code> only fires at those few points, so a Codex row never shows
+tool-by-tool progress — that would need a Codex plugin with real hooks, a much
+bigger lift than one notify script. Failure detection is Claude-Code-only for
+the same reason: its <code>PostToolUse</code> payload carries the tool result.</p>
+<h3>Transports</h3>
+<ul>
+<li><strong>plain line</strong> — what the hook writes by default;</li>
+<li><strong>OSC 2</strong> (set window title) — a real terminal escape sequence, parsed with
+<strong>libghostty-vt</strong> via the hand-written Vala binding in <code>vapi/</code>. This is the
+transport an actual terminal delivers, so a hook running in a real terminal
+can use it directly (set <code>CC_STATUS_OSC=1</code>).</li>
+</ul>
+<h2>libghostty-vt status</h2>
+<p>cc-status builds against libghostty-vt from <strong>upstream main</strong>, which
+<code>scripts/build-libghostty.sh</code> installs into <code>./.local</code>. The distro package
+(0.1.0) isn't enough even for the OSC parser alone: its headers still name the
+opaque structs <code>struct GhosttyOscParser</code> rather than <code>...Impl</code>, so the binding
+won't compile against it.</p>
+<p><code>vapi/libghostty-vt.vapi</code> is hand-written because the API isn't GObject-based
+(opaque handles, plain enums), so <code>vapigen</code> can't generate it. It binds the OSC
+parser only. The API is explicitly unstable: if <code>./build/osc-check</code> starts
+failing after you rebuild libghostty, update the binding.</p>
+<h2>Build</h2>
+<pre><code class="language-sh">make            # build-libghostty.sh + meson setup + ninja, as needed
+make test       # every check below
+make run        # build, then launch
+</code></pre>
+<p>Or by hand:</p>
+<pre><code class="language-sh">scripts/build-libghostty.sh    # once, builds libghostty-vt into ./.local
+PKG_CONFIG_PATH=$PWD/.local/share/pkgconfig meson setup build
+ninja -C build
+</code></pre>
+<p><code>--vapidir</code> is opaque to meson, so changing <code>vapi/</code> doesn't trigger a rebuild on
+its own: touch the <code>.vala</code> sources, or use a fresh build directory.</p>
+<h2>Run</h2>
+<pre><code class="language-sh">./build/cc-status
+</code></pre>
+<p>A window opens, empty until the next hook event. Each hook event updates the
+matching row. A second launch just raises the running window — the socket
+belongs to the first instance.</p>
+<h2>Wiring up the agents</h2>
+<p>On startup, cc-status looks for <code>claude</code> and <code>codex</code> on <code>PATH</code>. For whichever is
+installed but not yet reporting, it <strong>asks once</strong> before touching anything —
+these are edits to your own config, so it never happens silently. Choose &quot;Not
+now&quot; and it writes <code>~/.config/cc-status/hooks-declined</code>; it won't ask again.</p>
+<p>Run the same steps by hand, or to redo them after declining:</p>
+<pre><code class="language-sh">scripts/install-hooks.sh &quot;$PWD/hooks/cc-status.sh&quot;              # ~/.claude/settings.json
+scripts/install-codex-notify.sh &quot;$PWD/hooks/codex-notify.sh&quot;    # ~/.codex/config.toml
+</code></pre>
+<p><code>install-hooks.sh</code> is idempotent per event: it leaves an event that already
+runs the hook alone and adds one that doesn't, so re-running it on a config
+from an older version picks up any newly needed event. <code>install-codex-notify.sh</code>
+is idempotent on the hook path. Both keep a <code>.bak</code> and leave the rest of the
+file alone. The Codex installer refuses to replace a <code>notify</code> that's already
+set to something else. Install <code>socat</code> and <code>jq</code> first, and restart any running
+session — both agents read their config only at session start.</p>
+<p>For per-project Claude Code hooks instead of user-wide ones, merge
+<code>examples/claude-settings.json</code> into that project's <code>.claude/settings.json</code>.</p>
+<p>Set <code>CC_STATUS_OSC=1</code> in the hook's environment to send status as an OSC 2
+sequence instead of a plain line.</p>
+<h2>Acceptance tests</h2>
+<p>Run all the binding checks via meson: <code>meson test -C build</code>.</p>
+<p>Check both agents' jq derivations for regressions — this runs the real
+<code>derive.jq</code> / <code>derive-codex.jq</code> the hook scripts use, not a copy (no GTK app
+needed):</p>
+<pre><code class="language-sh">./hooks/test-derive.sh
+</code></pre>
+<p>Check that the hand-written binding still matches libghostty-vt's ABI: it
+parses OSC 0/2 titles (BEL- and ST-terminated), OSC 7 pwd, and invalid input.</p>
+<pre><code class="language-sh">./build/osc-check
+</code></pre>
+<p>Check the pure logic in <code>src/status.vala</code>: the status-to-light mapping, how
+session keys become rows, and window matching by process ancestry.</p>
+<pre><code class="language-sh">./build/status-check
+</code></pre>
+<p>Check both installers: settings merge correctly, a second run doesn't
+duplicate anything, and the Codex installer refuses to clobber an existing
+<code>notify</code>. Both write only to a temp directory.</p>
+<pre><code class="language-sh">./tests/install-hooks-check.sh
+./tests/install-codex-check.sh
+</code></pre>
+<p>Run an end-to-end check of the hook script over a real socket (no GTK app
+needed — useful in headless environments):</p>
+<pre><code class="language-sh">rm -f /tmp/cc-status.sock
+socat UNIX-LISTEN:/tmp/cc-status.sock,fork - &amp;
+echo '{&quot;session_id&quot;:&quot;s1&quot;,&quot;hook_event_name&quot;:&quot;PreToolUse&quot;,&quot;tool_name&quot;:&quot;Bash&quot;}' | hooks/cc-status.sh
+# the listener's stdout should print: claude/s1&lt;TAB&gt;running Bash&lt;TAB&gt;pts/N · &lt;project&gt;
+</code></pre>
+<h2>Notes</h2>
+<ul>
+<li>A bound socket whose path has been unlinked stays open for this process, but
+no hook can reach it — <code>connect()</code> resolves the name, not the inode, and
+nothing would notice. Anything else that binds the same path and exits takes
+ours with it (<code>socat UNIX-LISTEN</code> unlinks on exit), so cc-status watches the
+path with a <code>FileMonitor</code> and rebinds when it disappears.</li>
+<li>cc-status never persists statuses — they're live only: a freshly opened
+window stays empty until the next hook event, and says so.</li>
+<li>Every agent and session shares one socket at <code>/tmp/cc-status.sock</code> — that's
+what lets one window show all of them, and it also means only one copy of the
+app can listen. A second launch just raises the first window
+(<code>GtkApplication</code> is single-instance); cc-status binds the socket in
+<code>activate</code> rather than <code>main</code> so a second launch can't unlink it on its way
+out.</li>
+<li><code>parse_status</code> truncates every field to 200 characters and renders it with
+<code>set_text</code> (never markup), since it comes from a hook script, not a trusted
+source. Long text is ellipsized rather than allowed to stretch the window.</li>
+<li>cc-status rebuilds the table from scratch on every update: there's a handful
+of rows, so diffing which one changed would take more code than redrawing all
+of them. It uses a <code>Gtk.ListBox</code> of label rows for whole-row activation,
+rather than a <code>Gtk.Grid</code> (no notion of an activatable row) or a
+<code>Gtk.ColumnView</code> (sortable columns and a list model, neither needed, at the
+cost of an item GObject and a factory per column). Columns line up via shared
+<code>width_chars</code>, and the header sits outside the list so the keyboard doesn't
+have to skip over it.</li>
+<li><code>vapi/libghostty-vt.vapi</code> is named to match the <code>.pc</code> file so meson's
+automatic <code>--pkg libghostty-vt</code> picks it up. It passes a NULL allocator to
+<code>ghostty_osc_new</code>, which avoids binding the allocator vtable at all.</li>
+</ul>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
