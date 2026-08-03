@@ -19,26 +19,6 @@
   </entry>
   
   <entry>
-    <id>https://github.com/svandragt/cc-status</id>
-    <title>cc-status</title>
-    <updated>2026-07-31T07:34:09Z</updated>
-    <published>2026-07-31T07:34:09Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/cc-status"/>
-    <summary>Claude/Codex status</summary>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/cc-status</id>
-    <title>cc-status</title>
-    <updated>2026-07-31T07:34:09Z</updated>
-    <published>2026-07-31T07:34:09Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/cc-status"/>
-    <summary>Claude/Codex status</summary>
-    
-  </entry>
-  
-  <entry>
     <id>https://github.com/svandragt/nethealth</id>
     <title>nethealth</title>
     <updated>2026-07-28T15:49:51Z</updated>
@@ -55,26 +35,6 @@
     <published>2026-07-27T16:07:10Z</published>
     <link rel="alternate" type="text/html" href="https://gist.github.com/svandragt/4ca7ae0f07223b6cbec22d1f248273da"/>
     <summary>Shared pre-push hook with npm lint and repository hook support</summary>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/calibrate</id>
-    <title>calibrate</title>
-    <updated>2026-07-27T08:56:41Z</updated>
-    <published>2026-07-27T08:56:41Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/calibrate"/>
-    <summary>Per-project model policy for Claude Code: calibrate which model plans, codes, and reviews — then prove the token savings.</summary>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/calibrate</id>
-    <title>calibrate</title>
-    <updated>2026-07-27T08:56:41Z</updated>
-    <published>2026-07-27T08:56:41Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/calibrate"/>
-    <summary>Per-project model policy for Claude Code: calibrate which model plans, codes, and reviews — then prove the token savings.</summary>
     
   </entry>
   
@@ -131,64 +91,6 @@
   </entry>
   
   <entry>
-    <id>https://github.com/svandragt/gala-xy</id>
-    <title>gala-xy</title>
-    <updated>2026-07-22T22:01:52Z</updated>
-    <published>2026-07-21T13:08:41Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/gala-xy"/>
-    <summary>Window organiser for gala (elementaryOS)</summary>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/gala-xy</id>
-    <title>gala-xy</title>
-    <updated>2026-07-22T22:01:52Z</updated>
-    <published>2026-07-21T13:08:41Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/gala-xy"/>
-    <summary>Window organiser for gala (elementaryOS)</summary>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/fafi</id>
-    <title>fafi</title>
-    <updated>2026-07-22T21:31:30Z</updated>
-    <published>2020-03-08T12:05:45Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/fafi"/>
-    <summary>Web content indexing and search tool</summary>
-    <category term="bookmarks"/>
-    <category term="cli"/>
-    <category term="favourites"/>
-    <category term="firefox"/>
-    <category term="indexer"/>
-    <category term="python"/>
-    <category term="search-engine"/>
-    <category term="tui"/>
-    <category term="webui"/>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/fafi</id>
-    <title>fafi</title>
-    <updated>2026-07-22T21:31:30Z</updated>
-    <published>2020-03-08T12:05:45Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/fafi"/>
-    <summary>Web content indexing and search tool</summary>
-    <category term="bookmarks"/>
-    <category term="cli"/>
-    <category term="favourites"/>
-    <category term="firefox"/>
-    <category term="indexer"/>
-    <category term="python"/>
-    <category term="search-engine"/>
-    <category term="tui"/>
-    <category term="webui"/>
-    
-  </entry>
-  
-  <entry>
     <id>https://github.com/svandragt/fafi</id>
     <title>fafi</title>
     <updated>2026-07-22T21:31:30Z</updated>
@@ -238,12 +140,107 @@
   </entry>
   
   <entry>
-    <id>https://github.com/svandragt/git-mcp-broker</id>
-    <title>git-mcp-broker</title>
-    <updated>2026-07-02T14:03:36Z</updated>
-    <published>2026-07-02T14:03:36Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/git-mcp-broker"/>
-    <summary>git-mcp-broker</summary>
+    <id>https://github.com/svandragt/firefox-addon-move-tab-to-another-window</id>
+    <title>firefox-addon-move-tab-to-another-window</title>
+    <updated>2026-06-25T12:47:08Z</updated>
+    <published>2025-05-07T12:06:45Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/firefox-addon-move-tab-to-another-window"/>
+    <summary>A Firefox extension that enables easy movement of tabs between different browser windows through a convenient context menu.</summary>
+    <category term="addon"/>
+    <category term="firefox"/>
+    <category term="tabs"/>
+    
+  </entry>
+  
+  <entry>
+    <id>https://github.com/svandragt/throne</id>
+    <title>throne</title>
+    <updated>2026-06-25T12:29:06Z</updated>
+    <published>2026-06-25T12:29:06Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/throne"/>
+    <summary>Window Manager Ruler</summary>
+    
+  </entry>
+  
+  <entry>
+    <id>https://github.com/svandragt/timetracker</id>
+    <title>timetracker</title>
+    <updated>2026-06-23T12:56:14Z</updated>
+    <published>2026-06-23T12:56:14Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/timetracker"/>
+    <summary>Very lean timetracker</summary>
+    <category term="linux"/>
+    <category term="timetracker"/>
+    
+  </entry>
+  
+  <entry>
+    <id>https://github.com/svandragt/vip-certification-prep</id>
+    <title>vip-certification-prep</title>
+    <updated>2026-06-19T15:34:41Z</updated>
+    <published>2026-06-19T15:34:41Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/vip-certification-prep"/>
+    <summary>vip-certification-prep</summary>
+    
+  </entry>
+  
+  <entry>
+    <id>https://github.com/svandragt/svandragt</id>
+    <title>svandragt</title>
+    <updated>2026-06-10T09:37:59Z</updated>
+    <published>2026-06-10T09:37:59Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/svandragt"/>
+    <summary>svandragt</summary>
+    
+  </entry>
+  
+  <entry>
+    <id>https://github.com/svandragt/system-update</id>
+    <title>system-update</title>
+    <updated>2026-06-08T10:14:55Z</updated>
+    <published>2024-10-10T13:20:46Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/system-update"/>
+    <summary>Linux system update script for developers</summary>
+    
+  </entry>
+  
+  <entry>
+    <id>https://github.com/svandragt/pysize</id>
+    <title>pysize</title>
+    <updated>2026-05-31T11:59:26Z</updated>
+    <published>2026-05-31T11:59:26Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/pysize"/>
+    <summary>Find the install size of a PyPI package — wheel + all dependencies.</summary>
+    <category term="cost"/>
+    <category term="dependencies"/>
+    <category term="performance"/>
+    <category term="pypi"/>
+    <category term="python"/>
+    
+  </entry>
+  
+  <entry>
+    <id>https://github.com/svandragt/claudegauge</id>
+    <title>claudegauge</title>
+    <updated>2026-05-15T07:31:16Z</updated>
+    <published>2026-05-15T07:31:16Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/claudegauge"/>
+    <summary>Shows current Claude usage as a fill gauge (weekly background, 5h-block foreground)</summary>
+    <category term="claude"/>
+    <category term="streamdeck"/>
+    
+  </entry>
+  
+  <entry>
+    <id>https://github.com/svandragt/hello-browser</id>
+    <title>hello-browser</title>
+    <updated>2026-05-05T12:54:24Z</updated>
+    <published>2023-06-15T07:11:14Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/hello-browser"/>
+    <summary>Hello Browser is a webview window for desktop web apps (written in vala, GTK4).</summary>
+    <category term="localhost"/>
+    <category term="vala"/>
+    <category term="webview"/>
     
   </entry>
   
