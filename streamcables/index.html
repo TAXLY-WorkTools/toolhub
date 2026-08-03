@@ -29,14 +29,18 @@
   <div class="project-header__meta">
     <span class="badge badge--type">repo</span>
     
+    <span class="badge">info</span>
+    
+    <span class="badge">stream</span>
+    
+    <span class="badge">syndication</span>
+    
     
     <span class="badge">MIT</span>
     
   </div>
 
   <div class="project-header__actions">
-    
-    <a class="btn btn--primary" href="https://streamcables.com">&#8599; Website</a>
     
     
     
@@ -47,10 +51,10 @@
 
 <div class="readme">
   <h1>Introduction</h1>
-<p>StreamCables, on the most basic level, is a tool that connects to audio streams and sends information to other place. It's been primarily written to connect to icecast and shoutcast streams, and stream tracklists to social media. However, it can connect read and write to multiple services, and is written for extensibility.</p>
+<p>StreamCables connects to audio streams and sends the metadata to other places. It's built mainly to post track lists to social media, and it's written for extensibility so it can read from and write to multiple services.</p>
 <p>Currently it supports these readers:</p>
 <ul>
-<li>icecast</li>
+<li>Icecast</li>
 </ul>
 <p>Currently it supports these writers:</p>
 <ul>
@@ -58,26 +62,20 @@
 <li>Twitter</li>
 </ul>
 <p>Feel free to submit a pull request if your workflow is missing.</p>
-<h1>Prerequisites</h1>
-<p>On OpenSUSE Tumbleweed the python development libraries must be installed to compile
-StreamCables' dependencies:</p>
-<pre><code>sudo zypper install gcc
-sudo zypper install python3-devel-3.6.5-3.3
-</code></pre>
 <h1>Setup</h1>
-<p>StreamCables requires  <a href="https://docs.python-guide.org/">Python 3.6, pip and pipenv</a>.
-Installation:</p>
+<p>StreamCables requires Python 3.11+ and <a href="https://docs.astral.sh/uv/">uv</a>.
+Install it as follows:</p>
 <pre><code>git clone &lt;repository url&gt; streamcables
 cd streamcables
-pipenv install
+uv sync
 </code></pre>
 <p>Run the program as follows:</p>
-<pre><code>pipenv run python streamcables/streamcables.py
+<pre><code>uv run python streamcables/streamcables.py
 # shorter version
 make run
 </code></pre>
-<h1>Settings and Configuration</h1>
-<p>You will be asked to create a settings file, the location will be printed to the screen if it doesn't exist. This settings file must contain one reader and one or more writers. To use Twitter functionality, a registered Twitter developer account and application is required which provides the key and secret.</p>
+<h1>Settings and configuration</h1>
+<p>On first run, StreamCables asks you to create a settings file, and prints the expected location to the screen. This settings file must contain one reader and one or more writers. To use the Twitter functionality, you need a registered Twitter developer account and application, which gives you the key and secret.</p>
 <p>Example settings.toml:</p>
 <pre><code>[main]
 reader = 'icecast'
@@ -91,8 +89,7 @@ url=&quot;http://localhost:8000/status.xsl&quot;
 consumer-key=&quot;Your twitter app consumer key&quot;
 consumer-secret=&quot;Your twitter app consumer secret&quot;
 </code></pre>
-<h1>readers</h1>
-<p>Readers must return a dict containing hash and now</p>
+<p>For details on how readers and writers work, and how to add your own, see <a href="CLAUDE.md#architecture">CLAUDE.md</a>.</p>
 
 </div>
 

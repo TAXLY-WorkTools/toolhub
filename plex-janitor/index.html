@@ -56,7 +56,7 @@
 <li>It keeps the last seen episode of a show, so you can continue where you left off.</li>
 <li>Prevent your favourites from being deleted by putting series / films in a Keep collection.</li>
 </ul>
-<p>It requires python 3.9+ and <a href="https://python-poetry.org/">poetry</a>.</p>
+<p>It requires python 3.9+ and <a href="https://docs.astral.sh/uv/">uv</a>.</p>
 <p>Install:</p>
 <p>Create <code>config.ini</code> with the following contents:</p>
 <pre><code class="language-ini">[Plex]
@@ -65,8 +65,7 @@ password = &lt;password&gt;
 servername = &lt;plex servername&gt;
 </code></pre>
 <p>Run the script:</p>
-<pre><code class="language-shell">poetry install
-poetry run python plexjanitor.py
+<pre><code class="language-shell">uv run python plexjanitor.py
 </code></pre>
 <p>The script makes the following assumptions:</p>
 <ul>
@@ -83,6 +82,11 @@ poetry run python plexjanitor.py
 </ul>
 <p>This script will then go through each section and list deletable items. For TV Shows the most recent episode will be kept, as a marker for the last seen episode.</p>
 <p>By default deletable items are listed but not deleted. By passing <code>delete</code> as a script parameter, items will be actually deleted!</p>
+<h2>Development</h2>
+<pre><code class="language-shell">uv run ruff check .          # lint
+uv run ruff format .         # format
+uv run pytest                # run tests
+</code></pre>
 
 </div>
 

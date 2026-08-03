@@ -45,14 +45,13 @@
   <p>Proof of concept using web technologies for UI, and python to produce a desktop application.</p>
 <p>The stack is currently:</p>
 <ul>
-<li>pyenv: manage python versions.</li>
-<li>poetry: python dependency management</li>
+<li>uv: python version and dependency management</li>
 <li>pywebview: qt/gtk webview</li>
 <li>flask: local server and web framework</li>
 <li>pex: packaging</li>
 <li>makefile: build configuration</li>
 </ul>
-<p>This produces a 4mb executable, runnable by Python 3.8 and up. Tested on ubuntu 22.04.</p>
+<p>This produces a 4mb executable, runnable by Python 3.12 and up. Tested on ubuntu 22.04.</p>
 <p><img src="https://github.com/svandragt/webview-flask/assets/594871/1a1c452a-8ee8-4954-a6ed-f9b019333008" alt="image" /></p>
 <h2>Installation</h2>
 <p>Multiple options:</p>
@@ -63,12 +62,15 @@
 <h1>Contributing</h1>
 <p>The project can also run from a venv:</p>
 <p>Setup:</p>
-<pre><code class="language-shell">poetry install
-poetry run webview-flask
+<pre><code class="language-shell">uv sync --dev
+uv run webview-flask
+</code></pre>
+<p>Run the tests:</p>
+<pre><code class="language-shell">uv run pytest
 </code></pre>
 <p>Makefile:</p>
 <ul>
-<li><code>make build</code>: use <code>pex</code> to build a single executable (<code>dist/webview_flask</code>) with Python 3.8-3.11 as its only dependency.</li>
+<li><code>make build</code>: use <code>pex</code> to build a single executable (<code>dist/webview_flask</code>) with Python 3.12+ as its only dependency.</li>
 <li><code>make run-build</code>: run it.</li>
 </ul>
 
