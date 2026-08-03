@@ -45,16 +45,26 @@ def paginate(
     desc: str = "",
     item_label=None,
 ) -> list[dict]:
-    """Fetch all pages from a paginated GitHub API endpoint."""
+    """Fetch all pages from a paginated GitHub API endpoint.
+
+    GitHub's Link-header pagination can hand back an item already seen on an
+    earlier page (observed with sort=updated), so results are deduplicated by
+    "id" once collection is complete.
+    """
     results = []
     seen_urls = set()
+    seen_ids = set()
     while url:
         if url in seen_urls:
             break
         seen_urls.add(url)
         response = client.get(url, params=params)
         response.raise_for_status()
-        results.extend(response.json())
+        for item in response.json():
+            if item["id"] in seen_ids:
+                continue
+            seen_ids.add(item["id"])
+            results.append(item)
         url = response.links.get("next", {}).get("url")
         params = {}  # already encoded in the next URL
         if desc:

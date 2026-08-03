@@ -212,6 +212,21 @@ def get_readme(client: httpx.Client, project: dict) -> str:
     return content
 
 
+def unique_slug(name: str, gist_id: str, used_slugs: set[str]) -> str:
+    """Return an output slug for `name` that isn't already in `used_slugs`,
+    adding it to the set. Falls back to appending a counter so that 3+
+    same-named entries (e.g. from an upstream duplicate-fetch bug) don't all
+    collapse onto one slug and overwrite each other's page."""
+    suffix = gist_id[:7] if gist_id else name[:7]
+    slug = name
+    n = 1
+    while slug in used_slugs:
+        n += 1
+        slug = f"{name}-{suffix}" if n == 2 else f"{name}-{suffix}-{n}"
+    used_slugs.add(slug)
+    return slug
+
+
 def _gist_raw_url(client: httpx.Client, project: dict) -> str:
     """Resolve the raw_url for a gist's .md file via the API."""
     from lib.github import BASE_URL
@@ -379,10 +394,7 @@ def build(
         # A project is pinned by repo name or gist ID
         pin_key = project["name"] if project["type"] == "repo" else project.get("gist_id", "")
         # Deduplicate output slugs (repo and gist can share the same name)
-        slug = project["name"]
-        if slug in used_slugs:
-            slug = f"{slug}-{project.get('gist_id', project['name'])[:7]}"
-        used_slugs.add(slug)
+        slug = unique_slug(project["name"], project.get("gist_id", ""), used_slugs)
         enriched = {**project, **portfolio, "pinned": pin_key in pinned, "slug": slug}
         # Drop website links that point back at this site itself
         if site_url:

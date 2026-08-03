@@ -210,14 +210,6 @@ def main() -> None:
         print("Fetching gists (filtering to .md only)...")
         gists = fetch_gists(client)
         gists = [g for g in gists if g["id"] not in exclusions]
-        # Deduplicate by gist ID (pagination can return duplicates)
-        seen_ids: set[str] = set()
-        deduped = []
-        for g in gists:
-            if g["id"] not in seen_ids:
-                seen_ids.add(g["id"])
-                deduped.append(g)
-        gists = deduped
         print(f"  Found {len(gists)} gists with .md files\n")
 
         print("Building entries (fetching portfolio.toml where present)...")
