@@ -3,10 +3,20 @@
   <id>https://tools.vandragt.com/feed.xml</id>
   <title>~/tools</title>
   <subtitle>Tools &amp; Projects</subtitle>
-  <updated>2026-08-03T21:46:54Z</updated>
+  <updated>2026-08-04T13:04:01Z</updated>
   <link rel="alternate" type="text/html" href="https://tools.vandragt.com"/>
   <link rel="self" type="application/atom+xml" href="https://tools.vandragt.com/feed.xml"/>
   <author><name>svandragt</name></author>
+  
+  <entry>
+    <id>https://github.com/svandragt/yt-listen-later</id>
+    <title>yt-listen-later</title>
+    <updated>2026-08-04T13:04:01Z</updated>
+    <published>2026-08-04T13:04:01Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/yt-listen-later"/>
+    <summary>yt-listen-later</summary>
+    
+  </entry>
   
   <entry>
     <id>https://github.com/svandragt/plex-janitor</id>
@@ -227,21 +237,6 @@
     <published>2024-10-10T13:20:46Z</published>
     <link rel="alternate" type="text/html" href="https://github.com/svandragt/system-update"/>
     <summary>Linux system update script for developers</summary>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/pysize</id>
-    <title>pysize</title>
-    <updated>2026-05-31T11:59:26Z</updated>
-    <published>2026-05-31T11:59:26Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/pysize"/>
-    <summary>Find the install size of a PyPI package — wheel + all dependencies.</summary>
-    <category term="cost"/>
-    <category term="dependencies"/>
-    <category term="performance"/>
-    <category term="pypi"/>
-    <category term="python"/>
     
   </entry>
   

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>yt-listen-later</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>yt-listen-later</h1>
+
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/yt-listen-later">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>yt-listen-later</h1>
+<p>Turn a YouTube playlist into a podcast RSS feed you can subscribe to in Overcast
+(or any other podcast app). Add a video to the playlist on your phone, and the
+audio shows up as a new episode.</p>
+<p>A single <a href="https://docs.astral.sh/uv/">uv</a> script does the whole job: it reads the
+playlist with <code>yt-dlp</code>, extracts audio with <code>ffmpeg</code>, writes an iTunes-flavoured
+<code>feed.xml</code>, and serves both over HTTP with byte-range support so seeking works.</p>
+<p>To run it on a server, go straight to <a href="#deploying-with-docker">Deploying with Docker</a>
+— that needs nothing on the host but Docker itself.</p>
+<h2>Running it locally</h2>
+<p>Needs <code>uv</code> (which fetches Python and the script's dependencies itself) and
+<code>ffmpeg</code> on <code>PATH</code>.</p>
+<pre><code class="language-sh">cp .env.example .env
+$EDITOR .env          # set YOUTUBE_PLAYLIST_URL and BASE_URL
+</code></pre>
+<p>Or let <a href="https://www.jetify.com/devbox">devbox</a> provide both dependencies, so
+neither lands on your system:</p>
+<pre><code class="language-sh">devbox shell           # uv + ffmpeg on PATH
+devbox run sync        # also: feed, serve, run, test
+</code></pre>
+<h2>Usage</h2>
+<pre><code class="language-sh">uv run ./yt_listen_later.py sync     # download new audio, rebuild feed.xml
+uv run ./yt_listen_later.py serve    # serve public/ over HTTP
+uv run ./yt_listen_later.py run      # sync now, then serve + re-sync on a timer
+uv run ./yt_listen_later.py feed     # rebuild feed.xml only, no downloads
+</code></pre>
+<p>The script is executable, so <code>./yt_listen_later.py run</code> works too.</p>
+<p>Then subscribe in Overcast: <strong>+ → Add URL</strong> and paste <code>$BASE_URL/feed.xml</code>.</p>
+<h2>Making it reachable from Overcast</h2>
+<p>Overcast fetches the feed from its own servers, so <code>localhost</code> won't do —
+<code>BASE_URL</code> has to be publicly reachable and must match how the feed is served.
+Any of these work:</p>
+<ul>
+<li>the bundled Caddy container (see below) — the simplest option on a server</li>
+<li><code>tailscale funnel 8000</code></li>
+<li><code>cloudflared tunnel --url http://localhost:8000</code></li>
+<li><code>ngrok http 8000</code></li>
+<li>nginx in front of <code>serve</code>, or just rsync <code>public/</code> to any static host</li>
+</ul>
+<p>Set <code>BASE_URL</code> to the resulting HTTPS URL and re-run <code>sync</code> (or <code>feed</code>) so the
+enclosure URLs are regenerated.</p>
+<p>Anyone with the URL can read the feed and the audio — there's no auth. Keep the
+URL private, or put basic auth on the reverse proxy.</p>
+<h2>Deploying with Docker</h2>
+<p>This is the supported way to run it on a server. The image carries ffmpeg and the
+Python dependencies, so the VPS needs nothing but Docker.</p>
+<pre><code class="language-sh">git clone https://github.com/svandragt/yt-listen-later &amp;&amp; cd yt-listen-later
+cp .env.example .env
+$EDITOR .env                          # playlist + BASE_URL
+
+mkdir -p data &amp;&amp; sudo chown -R 1000:1000 data   # container runs as uid 1000
+
+docker compose up -d --build
+docker compose logs -f
+</code></pre>
+<p>That runs <code>run</code>: one sync on startup, then serving while re-syncing every
+<code>REFRESH_MINUTES</code>. A single foreground process, restarted by Docker if it dies.</p>
+<p>Add HTTPS — which Overcast requires — with the bundled Caddy service:</p>
+<pre><code class="language-sh">$EDITOR deploy/Caddyfile               # replace listen.example.com
+docker compose --profile tls up -d
+</code></pre>
+<p>Caddy fetches a certificate on first request and proxies to the app container.
+Set <code>BASE_URL</code> to the same hostname, then subscribe in Overcast to
+<code>$BASE_URL/feed.xml</code>.</p>
+<h3>Day-to-day</h3>
+<pre><code class="language-sh">docker compose exec yt-listen-later sync    # sync now, don't wait for the timer
+docker compose exec yt-listen-later feed    # rebuild feed.xml after editing .env
+docker compose run --rm yt-listen-later ./test_yt_listen_later.py
+docker compose up -d --build               # upgrade after a git pull
+docker compose logs -f yt-listen-later
+</code></pre>
+<p>Everything mutable lives in <code>./data</code> — audio, <code>feed.xml</code>, and the state file — so
+that's the only thing to back up, and destroying the container loses nothing.</p>
+<h3>Notes for a small VPS</h3>
+<p>Disk is usually the binding constraint, and audio accumulates quietly:</p>
+<ul>
+<li><strong><code>MAX_TOTAL_MB</code></strong> caps the media directory in MiB. Past the cap the oldest
+episodes are deleted and <em>not</em> re-downloaded on the next sync — <code>MAX_EPISODES</code>
+bounds the episode count, this bounds the bytes. Set it to something like two
+thirds of the free space on the volume.</li>
+<li><strong><code>AUDIO_FORMAT=opus</code></strong> with <code>AUDIO_QUALITY=48K</code> is roughly a third the size of
+the default m4a for talking-head video, and Overcast plays opus fine. Pick this
+before the first sync — changing it later won't re-encode what you already have.</li>
+<li>Compose caps the container at 1 CPU and 768 MB so ffmpeg can't make the box
+unresponsive, and caps the JSON log at 30 MB total.</li>
+<li>Downloads are checkpointed per episode, so a sync killed by an OOM or a reboot
+resumes instead of restarting the backlog.</li>
+<li>The app binds to <code>127.0.0.1:8000</code> on the host, so nothing is exposed until you
+put the reverse proxy in front of it.</li>
+</ul>
+<h3>Without compose</h3>
+<pre><code class="language-sh">docker build -t yt-listen-later .
+docker run -d --name yt-listen-later --restart unless-stopped \
+  --env-file .env -e PUBLIC_DIR=/data/public \
+  -v &quot;$PWD/data:/data&quot; -p 127.0.0.1:8000:8000 \
+  yt-listen-later
+</code></pre>
+<p>Pass a subcommand to override the default: <code>docker run --rm ... yt-listen-later sync</code>.</p>
+<h2>Keeping it fresh</h2>
+<p><code>run</code> re-syncs every <code>REFRESH_MINUTES</code> in-process, which is convenient on a
+laptop. On a server prefer the systemd timer above, or plain cron:</p>
+<pre><code class="language-sh">*/30 * * * * cd /srv/yt-listen-later &amp;&amp; /usr/local/bin/uv run ./yt_listen_later.py sync &gt;&gt; sync.log 2&gt;&amp;1
+</code></pre>
+<h2>How it works</h2>
+<ul>
+<li><code>public/.state.json</code> records every downloaded episode, so <code>sync</code> only fetches
+what's new and survives interruptions mid-playlist.</li>
+<li>Episodes are keyed by video ID and the RSS <code>guid</code> is <code>yt:video:&lt;id&gt;</code>, stable
+across re-runs — podcast apps won't re-download episodes you've already heard.</li>
+<li><code>pubDate</code> comes from the video's upload date, falling back to download time.</li>
+<li>When a video leaves the playlist its audio is deleted (<code>PRUNE_REMOVED=false</code>
+keeps it). Overcast drops the episode on its next refresh.</li>
+<li><code>MAX_TOTAL_MB</code> evictions are remembered in the state file, so a capped feed
+doesn't re-download the same old episode every sync forever. Clearing the cap
+backfills them on the next run.</li>
+<li>Private or age-gated playlists need cookies; see <code>COOKIES_FROM_BROWSER</code> and
+<code>COOKIE_FILE</code> in <code>.env.example</code>.</li>
+</ul>
+<h2>Tests</h2>
+<p><code>uv run ./test_yt_listen_later.py</code> covers the sync logic — incremental
+downloads, resume after a failed video, pruning, <code>MAX_EPISODES</code>, and feed
+ordering — with the network stubbed out, so it needs neither YouTube nor ffmpeg.</p>
+<h2>Configuration</h2>
+<p>Everything lives in <code>.env</code> — see <a href=".env.example">.env.example</a> for the full,
+commented list.</p>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
