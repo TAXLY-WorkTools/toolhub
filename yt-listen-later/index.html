@@ -105,9 +105,9 @@ docker compose --profile tls up -d
 Set <code>BASE_URL</code> to the same hostname, then subscribe in Overcast to
 <code>$BASE_URL/feed.xml</code>.</p>
 <h3>Day-to-day</h3>
-<pre><code class="language-sh">docker compose exec yt-listen-later sync    # sync now, don't wait for the timer
-docker compose exec yt-listen-later feed    # rebuild feed.xml after editing .env
-docker compose run --rm yt-listen-later ./test_yt_listen_later.py
+<pre><code class="language-sh">docker compose exec yt-listen-later app-python /app/yt_listen_later.py sync   # sync now, don't wait for the timer
+docker compose exec yt-listen-later app-python /app/yt_listen_later.py feed   # rebuild feed.xml after editing .env
+docker compose run --rm yt-listen-later app-python /app/test_yt_listen_later.py
 docker compose up -d --build               # upgrade after a git pull
 docker compose logs -f yt-listen-later
 </code></pre>
@@ -157,6 +157,11 @@ doesn't re-download the same old episode every sync forever. Clearing the cap
 backfills them on the next run.</li>
 <li>Private or age-gated playlists need cookies; see <code>COOKIES_FROM_BROWSER</code> and
 <code>COOKIE_FILE</code> in <code>.env.example</code>.</li>
+<li>YouTube requires a PO token for datacenter IPs (any VPS) before it'll return
+audio formats, even with valid cookies — without one every download fails
+with &quot;Requested format is not available&quot;. Docker runs a bundled
+<code>pot-provider</code> service for this automatically; see <code>POT_PROVIDER_URL</code> in
+<code>.env.example</code> if running outside Docker.</li>
 </ul>
 <h2>Tests</h2>
 <p><code>uv run ./test_yt_listen_later.py</code> covers the sync logic — incremental
