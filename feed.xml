@@ -3,10 +3,20 @@
   <id>https://tools.vandragt.com/feed.xml</id>
   <title>~/tools</title>
   <subtitle>Tools &amp; Projects</subtitle>
-  <updated>2026-08-04T13:04:01Z</updated>
+  <updated>2026-08-06T13:39:29Z</updated>
   <link rel="alternate" type="text/html" href="https://tools.vandragt.com"/>
   <link rel="self" type="application/atom+xml" href="https://tools.vandragt.com/feed.xml"/>
   <author><name>svandragt</name></author>
+  
+  <entry>
+    <id>https://github.com/svandragt/memory-games</id>
+    <title>memory-games</title>
+    <updated>2026-08-06T13:39:29Z</updated>
+    <published>2026-08-06T13:39:29Z</published>
+    <link rel="alternate" type="text/html" href="https://github.com/svandragt/memory-games"/>
+    <summary>memory-games</summary>
+    
+  </entry>
   
   <entry>
     <id>https://github.com/svandragt/yt-listen-later</id>
@@ -227,16 +237,6 @@
     <published>2026-06-10T09:37:59Z</published>
     <link rel="alternate" type="text/html" href="https://github.com/svandragt/svandragt"/>
     <summary>svandragt</summary>
-    
-  </entry>
-  
-  <entry>
-    <id>https://github.com/svandragt/system-update</id>
-    <title>system-update</title>
-    <updated>2026-06-08T10:14:55Z</updated>
-    <published>2024-10-10T13:20:46Z</published>
-    <link rel="alternate" type="text/html" href="https://github.com/svandragt/system-update"/>
-    <summary>Linux system update script for developers</summary>
     
   </entry>
   
