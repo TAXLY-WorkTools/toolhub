@@ -45,7 +45,7 @@
 
 <div class="readme">
   <h1>Fileshare</h1>
-<p>A self-hosted file sharing app in a single PHP file. No framework, no Composer dependencies, no database.</p>
+<p>A self-hosted file sharing app in plain PHP. No framework, no Composer, no database — the only requirement is PHP with <code>ext-fileinfo</code>.</p>
 <img width="1698" height="1014" alt="image" src="https://github.com/user-attachments/assets/81d5e234-25a7-44a6-9332-623a15235fe9" />
 <h2>Features</h2>
 <ul>
@@ -83,9 +83,18 @@ CRON_SECRET=...
 chown www-data: uploads data   # replace www-data with your PHP-FPM user if different
 </code></pre>
 <h2>Development server</h2>
-<pre><code class="language-bash">composer serve
+<pre><code class="language-bash">make serve
 # → http://localhost:8000
 </code></pre>
+<p>To use a different port, set <code>PORT</code>:</p>
+<pre><code class="language-bash">make serve PORT=8080
+</code></pre>
+<h2>Tests</h2>
+<p>The project has no dependencies and no test framework. Run the smoke test with PHP alone:</p>
+<pre><code class="language-bash">make test     # or: php tests/smoke.php
+make check    # lint and test, the same commands CI runs
+</code></pre>
+<p>It copies the app to a temporary directory, starts the built-in server against that copy, and exercises the cron endpoint. Your real <code>.env</code>, <code>uploads/</code>, and <code>data/</code> are never touched.</p>
 <h2>Project structure</h2>
 <pre><code>src/
   index.php       — bootstrap, constants, router
@@ -113,7 +122,7 @@ data/
 | <code>POST</code> | <code>/delete/{path}</code> | Delete a file |
 | <code>POST</code> | <code>/toggle/{path}</code> | Toggle public/private |
 | <code>POST</code> | <code>/expiry/{path}</code> | Set or update expiry |
-| <code>GET</code> | <code>/cron?secret=&lt;CRON_SECRET&gt;</code> | Delete expired files (403 without valid secret) |</p>
+| <code>GET</code> | <code>/cron</code> | Delete expired files (403 without a valid <code>X-Cron-Secret</code> header or <code>?secret=</code> parameter) |</p>
 <h2>Nginx configuration</h2>
 <pre><code class="language-nginx">server {
     listen 443 ssl;
@@ -145,13 +154,40 @@ data/
 <li>Confirm <code>uploads/</code>, <code>data/</code>, and <code>.env</code> are outside the Nginx <code>root</code></li>
 <li>Confirm <code>uploads/</code> and <code>data/</code> are writable by the PHP-FPM user (<code>chown www-data: uploads data</code>)</li>
 <li>Set <code>upload_max_filesize = 50M</code> and <code>post_max_size = 52M</code> in <code>php.ini</code></li>
+<li>Do not add a browser-caching block such as <code>location ~* \.(jpg|css|js)$</code>. A regex location takes precedence over the <code>location /</code> prefix match, so <code>/download/photo.jpg</code> is looked up on disk instead of reaching <code>index.php</code>, and returns 404.</li>
 </ul>
 </blockquote>
 <h2>Cron</h2>
-<p>Set up a system cron to trigger expiry cleanup. The <code>CRON_SECRET</code> from <code>.env</code> is required as a query parameter:</p>
+<p>Set up a system cron to trigger expiry cleanup. Pass the <code>CRON_SECRET</code> from <code>.env</code> in the <code>X-Cron-Secret</code> header:</p>
 <pre><code># Run expiry cleanup every hour
-0 * * * * curl -s &quot;https://example.com/cron?secret=&lt;CRON_SECRET&gt;&quot;
+0 * * * * curl -s -H &quot;X-Cron-Secret: &lt;CRON_SECRET&gt;&quot; https://example.com/cron
 </code></pre>
+<p>Read the secret from a root-only file rather than writing it into the crontab:</p>
+<pre><code>0 * * * * curl -s -H &quot;X-Cron-Secret: $(cat /etc/fileshare-cron-secret)&quot; https://example.com/cron
+</code></pre>
+<p>The endpoint also accepts <code>?secret=&lt;CRON_SECRET&gt;</code> for existing deployments, but avoid it: query strings are recorded in the crontab, the Nginx access log, and any proxy log in between. Treat any secret used that way as exposed and rotate it.</p>
+<h3>Rotate the cron secret</h3>
+<p>Rotate whenever the secret has been sent as a query parameter, has appeared in a log or crontab, or when someone with server access leaves. Cleanup stops running between steps 2 and 3, so the only cost of a mistake is a delayed cleanup, not lost files.</p>
+<ol>
+<li>
+<p>Generate a new secret:</p>
+<pre><code>php -r &quot;echo bin2hex(random_bytes(32));&quot;
+</code></pre>
+</li>
+<li>
+<p>Write it to <code>CRON_SECRET</code> in <code>.env</code>. No restart is needed — <code>.env</code> is read on every request.</p>
+</li>
+<li>
+<p>Update the caller with the same value: edit the crontab entry, or write the new secret to <code>/etc/fileshare-cron-secret</code> if you use the file form.</p>
+</li>
+<li>
+<p>Confirm the new secret works and the old one does not:</p>
+<pre><code>curl -s -o /dev/null -w '%{http_code}\n' -H &quot;X-Cron-Secret: &lt;new-secret&gt;&quot; https://example.com/cron  # 200
+curl -s -o /dev/null -w '%{http_code}\n' -H &quot;X-Cron-Secret: &lt;old-secret&gt;&quot; https://example.com/cron  # 403
+</code></pre>
+</li>
+</ol>
+<p>If the secret leaked through a URL, also purge or rotate the Nginx access logs that recorded it.</p>
 <h2>Security notes</h2>
 <ul>
 <li><code>uploads/</code>, <code>data/</code>, and <code>.env</code> are outside the webroot and not served by Nginx</li>
