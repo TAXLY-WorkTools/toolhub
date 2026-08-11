@@ -87,10 +87,7 @@ park migrate &lt;dest-dir&gt;            # copy DB to new location, print PARK_D
 park rename-remote &lt;old&gt; &lt;new&gt;     # update remote URL across all items
 park help                          # show usage (also --help, -h)
 </code></pre>
-<p><code>add</code> automatically captures hostname, remote, and current branch. Both git and
-<a href="https://docs.jj-vcs.dev/latest/">jj</a> repos are supported: git is tried first, with a
-jj fallback (nearest bookmark for branch, <code>jj git remote list</code> for remote) so
-non-colocated jj repos and jj changes without a git branch also get populated.
+<p><code>add</code> automatically captures hostname, git remote, and current git branch.
 If the remote has been renamed (e.g. a GitHub repo rename), <code>add</code> detects the
 redirect and updates all existing items to the canonical URL automatically.</p>
 <h2>Configuration</h2>
@@ -104,6 +101,23 @@ redirect and updates all existing items to the canonical URL automatically.</p>
 cp .claude/skills/park/SKILL.md ~/.claude/skills/park/SKILL.md
 </code></pre>
 <p>Once installed, Claude will recognize park-related phrases and call the <code>park</code> CLI automatically.</p>
+<h3>Surface parked items at session start</h3>
+<p><code>park list</code> only gets run when you already suspect something is parked. To make the
+agent tell you instead, install a <code>SessionStart</code> hook:</p>
+<pre><code class="language-bash">park hook --install
+</code></pre>
+<p>This adds <code>park hook run</code> to <code>~/.claude/settings.json</code> (Claude Code) and
+<code>~/.codex/hooks.json</code> (Codex), for whichever of the two exists. Both agents use the same
+hook format. Run <code>park hook</code> on its own to print the config block without writing anything,
+or pass <code>--agent claude</code>, <code>--agent codex</code>, or <code>--settings &lt;path&gt;</code> to target one file.</p>
+<p>At the start of each session, <code>park hook run</code> reads the session's working directory,
+resolves its git remote, and injects that repo's active items as session context. You also
+see a short summary of the parked items, so you know the hook ran. It
+prints nothing when there is no remote, no database, or nothing parked — a session that
+opens with a hook error is worse than one with no hook.</p>
+<p>The installer merges into any existing <code>SessionStart</code> hooks rather than replacing them.
+Hooks load at session start, so the change takes effect next session; in Claude Code,
+<code>/hooks</code> forces a reload.</p>
 <h2>Build</h2>
 <pre><code class="language-bash">go build ./...
 go test ./...

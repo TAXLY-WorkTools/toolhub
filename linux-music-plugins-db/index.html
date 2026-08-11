@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>linux-music-plugins-db</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>linux-music-plugins-db</h1>
+
+  
+  <div class="project-header__desc">ProtonDB-like for yabridge</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    <a class="btn btn--primary" href="https://svandragt.github.io/linux-music-plugins-db/">&#8599; Website</a>
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/linux-music-plugins-db">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>yabridge compatibility tracker</h1>
+<p><em>unofficial · crowd-sourced · not affiliated with yabridge</em></p>
+<p>There's no ProtonDB for yabridge. This is a manually compiled read of what's
+floating around forums and the yabridge GitHub, cross-checked for how many
+independent sources actually back each entry.</p>
+<p>This table is an index. Each plugin has a page with the dated reports behind it,
+the host DAW and Wine or yabridge versions involved, and the fixes that were
+needed — the detail that would make this table unreadable.</p>
+<h2>Read this first</h2>
+<p><strong>What this is:</strong> second-hand reports, collected by hand, about software none of
+the people here maintain. It is a starting point for your own testing, not a
+compatibility guarantee.</p>
+<p><strong>Where it will be wrong:</strong></p>
+<ul>
+<li>Nobody here retested these plugins. Almost every entry summarises what someone
+else wrote, often years ago. Every source now cited has been opened and read —
+two forum threads only through the Internet Archive, because the live sites are
+behind bot challenges. Where a claim could not be traced to a source that opens,
+it was withdrawn, and the page says so.</li>
+<li>Compatibility is version-bound and moves fast. A row is only about the Wine,
+yabridge, plugin and host versions named on its page — and a fix on yabridge's
+<code>master</code> branch is not in a release. Your combination is probably different.</li>
+<li><code>verified</code> means two independent people reported the same thing. It does not
+mean anyone confirmed it on your distribution, your host, or your hardware.</li>
+<li><code>confirmed broken</code> means broken in the reports we found. A vendor or Wine update
+may have fixed it since; a working plugin may have broken since.</li>
+<li>Check each page's <em>last checked</em> date before trusting it.</li>
+</ul>
+<p><strong>Don't buy a plugin on the strength of a row here.</strong> Use the vendor's trial, and
+ask the vendor about Linux and Wine before paying. Very few of these vendors
+support Wine at all, and using their plugins this way may fall outside their terms
+— that is between you and them.</p>
+<p>Not affiliated with, endorsed by, or speaking for yabridge, WineHQ, or any plugin
+vendor named here. Product and brand names belong to their owners; they appear
+only to identify what a report is about. No warranty, express or implied.</p>
+<p>Found something wrong or out of date? That's the useful contribution — open an
+issue or a pull request.</p>
+<h2>Scope</h2>
+<p><strong>In scope:</strong> Windows audio plugins running on Linux through a translation layer —
+yabridge above all, and plain Wine or LinVst where a report covers them. That is
+where the information is scattered, contradictory and undated, which is the only
+reason this database earns its keep.</p>
+<p><strong>Out of scope:</strong> cataloguing native Linux plugins. Not because they don't matter
+— they are usually the better answer — but because the question &quot;does this ship a
+Linux build?&quot; already has an authoritative answer on the vendor's own page, and
+the lists below already do the cataloguing:</p>
+<ul>
+<li><a href="https://wiki.linuxaudio.org/apps/all">Linux Audio applications index</a> — over
+1,500 indexed entries, alphabetical</li>
+<li><a href="https://github.com/nodiscc/awesome-linuxaudio">awesome-linuxaudio</a> — curated
+LV2, LADSPA and VST plugins alongside hosts and utilities</li>
+</ul>
+<p>Nothing here needs two independent sources: a vendor either ships a Linux build or
+it doesn't. Verification is for claims nobody official will make.</p>
+<p><strong>Where the two meet:</strong> when a plugin already in this table also has a native
+Linux build of <em>the same product</em>, its page says so under <strong>Native alternative</strong>,
+because the best outcome of landing on one of these rows is finding out you don't
+need to bridge anything. That's a note on an existing row, not an invitation to
+add rows for plugins that were never bridged.</p>
+<h2>Legend</h2>
+<ul>
+<li><strong>verified</strong> — 2+ independent sources</li>
+<li><strong>reported</strong> — single source only</li>
+<li><strong>confirmed broken</strong> — does not work</li>
+</ul>
+<p>A source is a report you can open and read: a GitHub issue, a forum post, a
+CHANGELOG entry. yabridge's own README and CHANGELOG count as one source between
+them, since they are one project's voice. Vendor testimonials are not sources.</p>
+<h2>Plugins</h2>
+<p>| Plugin / brand | Last checked | Status |
+| --- | --- | --- |
+| <a href="plugins/fabfilter.md">FabFilter</a> | 2026-08-10 | verified |
+| <a href="plugins/neural-dsp.md">Neural DSP</a> | 2026-08-10 | verified |
+| <a href="plugins/kontakt.md">Kontakt (Native Instruments)</a> | 2026-08-10 | verified |
+| <a href="plugins/kilohearts.md">KiloHearts</a> | 2026-08-10 | verified |
+| <a href="plugins/meldaproduction.md">MeldaProduction</a> | 2026-08-10 | verified |
+| <a href="plugins/chromaphone.md">Chromaphone 3 (Applied Acoustics)</a> | 2026-08-10 | verified |
+| <a href="plugins/soundtoys-psp.md">Soundtoys / PSPaudioware</a> | 2026-08-10 | verified |
+| <a href="plugins/arturia.md">Arturia</a> | 2026-08-10 | verified |
+| <a href="plugins/sforzando.md">Sforzando (Plogue)</a> | 2026-08-10 | verified |
+| <a href="plugins/voxengo.md">Voxengo</a> | 2026-08-10 | verified |
+| <a href="plugins/ujam-gorilla-engine.md">ujam / Gorilla Engine / Loopcloud</a> | 2026-08-10 | verified |
+| <a href="plugins/serum-1.md">Serum 1 (Xfer Records)</a> | 2026-08-10 | reported |
+| <a href="plugins/brainworx.md">Brainworx / Plugin Alliance</a> | 2026-08-10 | reported |
+| <a href="plugins/valhalla-room.md">Valhalla Room</a> | 2026-08-10 | reported |
+| <a href="plugins/klanghelm.md">Klanghelm</a> | 2026-08-10 | reported |
+| <a href="plugins/tdr-nova.md">TDR Nova (Tokyo Dawn Records)</a> | 2026-08-10 | reported |
+| <a href="plugins/scaler-2.md">Scaler 2</a> | 2026-08-10 | reported |
+| <a href="plugins/kick2-the-drop.md">Sonic Academy Kick 2 / Cytomic The Drop</a> | 2026-08-10 | reported |
+| <a href="plugins/cherry-audio.md">Cherry Audio</a> | 2026-08-10 | reported |
+| <a href="plugins/vital.md">Vital</a> | 2026-08-10 | reported |
+| <a href="plugins/pianoteq.md">Pianoteq 9 (Modartt)</a> | 2026-08-10 | reported |
+| <a href="plugins/aurora-fm-mcrocklin.md">Aurora FM / McRocklin Suite</a> | 2026-08-10 | reported |
+| <a href="plugins/squash-apunmask.md">Minimal Audio Squash / apulSoft apUnmask</a> | 2026-08-10 | reported |
+| <a href="plugins/pulsar-audio.md">Pulsar Audio</a> | 2026-08-10 | reported |
+| <a href="plugins/toontrack.md">Toontrack (Superior Drummer 3, EZdrummer, EZkeys)</a> | 2026-08-10 | reported, mixed |
+| <a href="plugins/spire.md">Spire (Reveal Sound)</a> | 2026-08-10 | reported, mixed |
+| <a href="plugins/dmg-audio.md">DMG Audio</a> | 2026-08-10 | reported, mixed |
+| <a href="plugins/uad-plugin-alliance.md">UAD (native plugins)</a> | 2026-08-10 | reported, mixed |
+| <a href="plugins/spitfire-audio.md">Spitfire Audio (BBC SO, LABS)</a> | 2026-08-10 | reported, mixed |
+| <a href="plugins/serum-2.md">Serum 2 (Xfer Records)</a> | 2026-08-10 | confirmed broken |
+| <a href="plugins/omnisphere.md">Omnisphere (Spectrasonics)</a> | 2026-08-10 | confirmed broken |
+| <a href="plugins/toneboosters.md">ToneBoosters</a> | 2026-08-10 | confirmed broken |
+| <a href="plugins/waves-v13-vst3.md">Waves V13 VST3</a> | 2026-08-10 | confirmed broken |
+| <a href="plugins/izotope.md">iZotope</a> | 2026-08-10 | confirmed broken |
+| <a href="plugins/d16-group.md">D16 Group</a> | 2026-08-10 | confirmed broken |
+| <a href="plugins/juce8-direct2d.md">JUCE 8 plugins needing Direct2D 1.3</a> | 2026-08-10 | confirmed broken |</p>
+<h2>Hosts and Wine</h2>
+<p>Status often depends on the host and the Wine version rather than the plugin.</p>
+<p>| Date | What breaks | Environment |
+| --- | --- | --- |
+| 2026-07-09 | VST3 editor crashes on close (<a href="https://github.com/robbert-vdh/yabridge/issues/488">#488</a>, open) | Wine 11.12, KDE Plasma 6 Wayland |
+| 2026-06-28 | REAPER stops redrawing its UI (<a href="https://github.com/robbert-vdh/yabridge/issues/472">#472</a>, fixed) | GNOME, NVIDIA |
+| 2025-03-01 | Mouse clicks don't register on Wine 9.22 through 11.x with released yabridge 5.1.1 — use Wine 9.21 or a dev build (<a href="https://github.com/robbert-vdh/yabridge/issues/409">#409</a>) | any host |
+| 2024-10-20 | Prebuilt binaries hang and eat memory until the host dies (<a href="https://github.com/robbert-vdh/yabridge/issues/377">#377</a>, fixed) | Ubuntu/Kubuntu 24.10 with Ardour, Bitwig, Studio One |
+| 2024-07-16 | Bitwig gives up on indexing when a plugin scan is slow (<a href="https://github.com/robbert-vdh/yabridge/issues/354">#354</a>, fixed) | Bitwig |
+| 2026-08-10 | VST3 modules stay loaded unless 'Allow complete unload of VST plug-ins' is on; drag-and-drop needs <code>editor_force_dnd</code> | REAPER, Ardour, Qtractor |</p>
+<p>Reference point for everything above: yabridge's latest release is 5.1.1
+(2024-12-23), so any fix described as landing on master is unreleased.</p>
+<h2>Contributing</h2>
+<p>Edit the table above and the plugin's page, then open a pull request. Every claim
+needs a source you can open. See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> for the
+status rules and how the page is built.</p>
+<h2>Sources</h2>
+<ul>
+<li><a href="https://github.com/robbert-vdh/yabridge#known-issues-and-fixes">yabridge — known issues and fixes</a></li>
+<li><a href="https://github.com/robbert-vdh/yabridge/issues">yabridge issue tracker</a></li>
+<li><a href="https://github.com/robbert-vdh/yabridge/blob/master/CHANGELOG.md">yabridge CHANGELOG</a></li>
+<li><a href="https://gearspace.com/board/music-computers/1449241-linux-compatible-hardware-software-plugins.html">Gearspace: Linux-compatible hardware/software/plugins</a></li>
+</ul>
+<p>No centralized compatibility database exists for yabridge, so this list is
+assembled by hand and will drift as Wine, yabridge and plugin versions change.
+Each page carries the date it was last checked.</p>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
