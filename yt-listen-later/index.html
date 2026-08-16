@@ -113,6 +113,25 @@ docker compose logs -f yt-listen-later
 </code></pre>
 <p>Everything mutable lives in <code>./data</code> — audio, <code>feed.xml</code>, and the state file — so
 that's the only thing to back up, and destroying the container loses nothing.</p>
+<h3>Cookies</h3>
+<p>A server needs them. YouTube answers <em>&quot;Sign in to confirm you're not a bot&quot;</em> for
+nearly every video from a datacentre IP, so without cookies a deployment syncs
+<code>+0 new</code> forever while looking perfectly healthy.</p>
+<p>Export your YouTube cookies in Netscape format and drop them at <code>data/cookies.txt</code>
+— compose already points <code>COOKIE_FILE</code> there, so nothing else needs configuring:</p>
+<pre><code class="language-sh">install -m 600 -o 1000 -g 1000 cookies.txt data/cookies.txt
+docker compose exec yt-listen-later /app/docker-entrypoint.sh sync
+</code></pre>
+<p>Export <strong>only</strong> <code>youtube.com</code>, not your whole browser — a full dump ships every
+site's session cookies to the server for no benefit. <code>0600</code> owned by uid 1000
+matches the container's <code>app</code> user.</p>
+<p>Cookies expire every few months, and the symptom is silent: syncs keep succeeding
+with <code>+0 new</code>. A working sync says <code>+N new</code>, so that number is the thing to check —
+<code>+0 new</code> on its own only means the playlist hasn't changed, but <code>+0 new</code> while
+you're waiting on a video you definitely added means the cookies have lapsed.
+Re-export and re-run the sync above. A missing or expired file logs
+<code>COOKIE_FILE does not exist, continuing without cookies</code> and keeps serving the
+existing feed rather than taking the service down.</p>
 <h3>Notes for a small VPS</h3>
 <p>Disk is usually the binding constraint, and audio accumulates quietly:</p>
 <ul>
@@ -139,8 +158,8 @@ docker run -d --name yt-listen-later --restart unless-stopped \
 </code></pre>
 <p>Pass a subcommand to override the default: <code>docker run --rm ... yt-listen-later sync</code>.</p>
 <h2>Keeping it fresh</h2>
-<p><code>run</code> re-syncs every <code>REFRESH_MINUTES</code> in-process, which is convenient on a
-laptop. On a server prefer the systemd timer above, or plain cron:</p>
+<p><code>run</code> re-syncs every <code>REFRESH_MINUTES</code> in-process, and that's what the Docker
+deployment above uses. Outside Docker, plain cron works too:</p>
 <pre><code class="language-sh">*/30 * * * * cd /srv/yt-listen-later &amp;&amp; /usr/local/bin/uv run ./yt_listen_later.py sync &gt;&gt; sync.log 2&gt;&amp;1
 </code></pre>
 <h2>How it works</h2>
@@ -155,8 +174,15 @@ keeps it). Overcast drops the episode on its next refresh.</li>
 <li><code>MAX_TOTAL_MB</code> evictions are remembered in the state file, so a capped feed
 doesn't re-download the same old episode every sync forever. Clearing the cap
 backfills them on the next run.</li>
-<li>Private or age-gated playlists need cookies; see <code>COOKIES_FROM_BROWSER</code> and
-<code>COOKIE_FILE</code> in <code>.env.example</code>.</li>
+<li>A video that fails to download is retried on the next sync, then backed off
+exponentially (1h, 2h, 4h … capped at 12h) and reported in the sync summary.
+Failures are never permanent: the usual cause is a transient block rather than
+a bad video, so everything still failing recovers by itself once the cause is
+fixed. <code>1 video(s) failing</code> in the log with no progress over a day means the
+block is real — start with cookies and <code>pot-provider</code>, below.</li>
+<li>Cookies are needed for private and age-gated videos, and in practice for any
+server deployment at all — see <a href="#cookies">Cookies</a> above, plus
+<code>COOKIES_FROM_BROWSER</code> and <code>COOKIE_FILE</code> in <code>.env.example</code>.</li>
 <li>YouTube requires a PO token for datacenter IPs (any VPS) before it'll return
 audio formats, even with valid cookies — without one every download fails
 with &quot;Requested format is not available&quot;. Docker runs a bundled
