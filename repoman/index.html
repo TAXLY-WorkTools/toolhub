@@ -53,19 +53,21 @@
 <p>When run without input, repoman scans the working directory for .git folders and echoes its relative path with the git remote. You can save this into a file.</p>
 <p>Parameters:</p>
 <ul>
+<li>No parameter (default): Only list repositories that have a remote configured</li>
 <li><code>-n</code>, <code>--no-remote</code>: Only list repositories that don't have a remote configured</li>
 <li><code>-a</code>, <code>--all</code>: List all repositories (both with and without remotes)</li>
+<li><code>-x</code>, <code>--exclude</code>: Skip repositories at the given path or below it. Repeat the option to exclude more than one.</li>
 <li><code>-h</code>, <code>--help</code>: Show help information</li>
 </ul>
+<p>The exclude pattern is a path relative to the working directory, and it can be a glob. Quote globs so the shell passes them through:</p>
+<pre><code class="language-bash">repoman.sh -x work -x 'tmp*' &gt; repos.txt
+</code></pre>
 <h3>Import Mode</h3>
-<p>When contents are piped into Repoman, repositories will be cloned into this directory structure.</p>
-<h2>Examples</h2>
-<p>Parameters:</p>
-<ul>
-<li><code>-n</code> or <code>--no-remote</code>: Only list repositories that don't have a remote configured</li>
-</ul>
-<h3>Import Mode</h3>
-<p>When contents are piped into Repoman, repositories will be cloned into this directory structure.</p>
+<p>Pass a list as a file argument, or pipe it in, and Repoman clones the repositories into this directory structure:</p>
+<pre><code class="language-bash">repoman.sh repoman.lst
+cat repoman.lst | repoman.sh
+</code></pre>
+<p>Lines without a remote (the output of <code>-n</code>, and part of the output of <code>-a</code>) can't be cloned. Repoman reports them as invalid entries and carries on.</p>
 <h2>Why use this</h2>
 <p>It's bad practice to use cloud sync solutions to sync working copies (https://git.seveas.net/how-to-back-up-a-git-repository.html).</p>
 <p>Repoman helps you work on the same projects on multiple devices, by syncing an intermediate file.</p>
