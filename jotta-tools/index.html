@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jotta-tools</title>
+  <link rel="stylesheet" href="../static/style.css">
+  <link rel="alternate" type="application/atom+xml" title="~/tools" href="../feed.xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <span class="site-header__name"><a href="../index.html">~/tools</a></span>
+      
+    </div>
+  </header>
+
+  <main>
+    
+<div class="project-header">
+  <a class="project-header__back" href="../index.html">&#8592; all projects</a>
+
+  <h1>jotta-tools</h1>
+
+  
+  <div class="project-header__desc">Jottacloud diagnostics and tooling</div>
+  
+
+  <div class="project-header__meta">
+    <span class="badge badge--type">repo</span>
+    
+    <span class="badge">jottacloud</span>
+    
+    <span class="badge">linux</span>
+    
+    <span class="badge">monitoring</span>
+    
+    <span class="badge">monitoring-tool</span>
+    
+    
+    <span class="badge">GPL-3.0</span>
+    
+  </div>
+
+  <div class="project-header__actions">
+    
+    
+    
+    <a class="btn" href="https://github.com/svandragt/jotta-tools">&#8599; GitHub</a>
+    
+  </div>
+</div>
+
+<div class="readme">
+  <h1>jotta-canary</h1>
+<p>Alerts your phone when a machine's Jottacloud sync folder stops moving, plus
+<a href="#jotta-buddy"><code>jotta-buddy</code></a> for checking sync and backup by hand.</p>
+<p>Jotta sync wedges silently. <code>jotta-cli status</code> keeps reporting <code>listening to events</code> or <code>Up to date</code> while the sync loop retries the same fatal error, and
+<code>jotta-cli sync log</code> only records downloads. Neither tells you whether your
+files still reach the server.</p>
+<p>This canary checks end to end instead. Every hour it writes a timestamp to a
+file in the sync folder, waits, then asks the server for that file's checksum.
+If the checksum doesn't match what's on disk, the upload never landed, and you
+get a push notification.</p>
+<h2>What you need</h2>
+<ul>
+<li><code>jotta-cli</code>, logged in, with sync enabled. The folder can be anywhere; both
+scripts ask jottad where it is.</li>
+<li><code>curl</code>, <code>jq</code>, <code>make</code> and systemd user services.</li>
+<li><code>~/.local/bin</code> on your <code>PATH</code>. That is where the script installs.</li>
+<li>An <a href="https://ntfy.sh">ntfy</a> topic, subscribed to on your phone.</li>
+</ul>
+<p>Examples below write <code>~/me/sync</code> for the sync folder. Substitute your own if it
+differs; <code>jotta-buddy</code> prints it on the <code>local</code> row, or ask jottad directly with
+<code>jotta-cli status --json | jq -r .Sync.RootPath</code>.</p>
+<h2>Install</h2>
+<p>Run this on each machine that syncs.</p>
+<ol>
+<li>
+<p>Clone the repo:</p>
+<pre><code class="language-sh">git clone https://github.com/svandragt/jotta-canary
+cd jotta-canary
+</code></pre>
+</li>
+<li>
+<p>Write your ntfy topic to the config file. Use the same topic on every
+machine so all the alerts arrive in one place:</p>
+<pre><code class="language-sh">mkdir -p ~/.config/jotta-canary
+echo YOUR-TOPIC &gt; ~/.config/jotta-canary/topic
+</code></pre>
+<p>The topic is the only thing protecting your alerts, so it stays out of this
+repo. Pick an unguessable one.</p>
+</li>
+<li>
+<p>Install the script and the timer:</p>
+<pre><code class="language-sh">make install
+</code></pre>
+<p>Install each machine from its own clone. Overriding <code>BIN</code> to a directory
+inside the sync folder turns installing into publishing: every other machine
+gets the script whether you meant it or not, and two machines installing
+different revisions leave you with a conflicted copy. Watch for a <code>~/bin</code>
+that is a symlink into the sync folder.</p>
+</li>
+<li>
+<p>Confirm the alert path reaches your phone:</p>
+<pre><code class="language-sh">make test
+</code></pre>
+</li>
+</ol>
+<p>To see when the check last ran and whether it passed:</p>
+<pre><code class="language-sh">make status
+</code></pre>
+<h2>How it works</h2>
+<p><code>jotta-canary</code> asks jottad for the sync folder (<code>.Sync.RootPath</code> from
+<code>jotta-cli status --json</code>), writes the current Unix time to
+<code>&lt;root&gt;/.canary-$(hostname)</code>, sleeps for the upload grace period, then reads
+the newest revision's checksum from <code>jotta-cli ls Sync/.canary-$(hostname)</code>. A
+match means sync is alive. A mismatch, or a missing remote file, sends the
+alert and exits non-zero, so the failure also shows up in
+<code>systemctl --user status jotta-canary.service</code>.</p>
+<p>Asking for the path rather than assuming one is what stops the canary watching
+a directory nothing syncs, which would pass forever. The same query doubles as
+a liveness check: if jottad accepts the connection but never replies, the
+canary alerts immediately instead of waiting out the grace period.</p>
+<p>The canary is per host. A single shared canary file has as many writers as you
+have machines, and Jotta turns that into conflicted copies.</p>
+<p>The grace period is <code>UPLOAD_GRACE_SECONDS</code> in the script, 10 minutes by
+default. Raise it if a machine has a slow uplink or a large backlog. The
+service unit allows 20 minutes, so raise <code>TimeoutStartSec</code> too if you go above
+that.</p>
+<h2>jotta-buddy</h2>
+<p><code>make install</code> also puts <code>jotta-buddy</code> on your <code>PATH</code>. Where the canary runs
+unattended and alerts you about uploads that never land, this one is for the
+moment you are already suspicious and want to look:</p>
+<pre><code>jotta buddy Mon 18:51:04
+
+  daemon    running  pid 4321, up 06:24
+  query     responsive
+  action    none  faults present are ones jottad retries by itself
+
+  sync      clean  full-check completed 18:46:18
+    state     Idle 12s ago
+    local     91234 files  40.2 GiB  /home/user/me/sync
+    remote    98765 files  71.5 GiB
+    not local 7531 files  31.3 GiB
+    transfer  up 192/7201 files  727.0 KiB of 6.6 GiB
+
+  backup    clean  scan completed 18:44:02 in 21s
+    files     1050041 files  200.4 GiB  /home/user
+    transfer  up 7756 files  7.0 GiB
+    error     Error uploading [#N] /home/user/.config/Slack/Service
+              Worker/CacheStorage/ID/UUID/ID_0 =&gt; upload: 421 CorruptUploadOpenApiException
+              18:20:14 - 18:44:02, seen 3x, 399 of this kind
+
+  recent
+    18:46:18  * sync full-check completed in 1m32.404821291s
+    18:46:19  sync.state [Idle] =&gt; [Evaluating] after 501.615159ms
+</code></pre>
+<p>That is the ordinary healthy shape, errors and all: a few hundred faults on files that
+rewrite themselves mid-upload, which jottad retries until they land.</p>
+<p>Read the <code>action</code> line and stop there if it says <code>none</code>. Everything below it is
+detail for when it does not. The other form names what to do:</p>
+<pre><code>  action    sync stopped 22m ago and has not restarted -- systemctl --user restart jottad
+</code></pre>
+<p>It cannot be answered by naming faults, because the next fault is always one nobody
+has seen. It can be answered by recovery, which splits them cleanly: a 421, a
+<code>DeadlineExceeded</code> or a DNS timeout stops the event loop and jottad restarts it
+within thirty seconds, while a case collision, a name the server refuses, a wedge or
+a stopped daemon wait for a person. So the test is not which error but whether the
+loop came back — a stop with no restart and no completed check after it, well past
+the thirty second retry, is one that is not recovering. A non-zero backup failure
+count counts too, since that is jottad reporting files left behind.</p>
+<p>Sync and backup get a verdict each because they fail differently. Sync stops its
+event loop and goes quiet, so it fails loudly and you notice. Backup keeps
+cycling whatever happens, so it fails silently — it can skip a subtree for months
+without a word. The one that hides its failures is the one that needs the row.</p>
+<p>Run it with no arguments and it refreshes every 30 seconds, because watching a
+stall clear is the usual reason you opened it. To print one report and exit:</p>
+<pre><code class="language-sh">jotta-buddy --once
+</code></pre>
+<p>The refresh is <code>watch(1)</code>, and it only kicks in when output is a terminal, so a
+script or a timer gets a single report and a usable exit code without asking for
+<code>--once</code>. Anything other than <code>--once</code> or <code>--help</code> is rejected rather than treated
+as a cue to start watching.</p>
+<p>Colour follows the terminal. To keep it when piping, set <code>JOTTA_BUDDY_COLOR</code>:</p>
+<pre><code class="language-sh">JOTTA_BUDDY_COLOR=1 jotta-buddy --once | less -R
+</code></pre>
+<p>| Variable | Default | What it does |
+|---|---|---|
+| <code>JOTTA_BUDDY_INTERVAL</code> | <code>30</code> | Refresh, in seconds |
+| <code>JOTTA_BUDDY_COLOR</code> | unset | Any value forces colour off a terminal |
+| <code>JOTTA_BUDDY_SINCE</code> | <code>-30min</code> | Window for the <code>recent</code> list |
+| <code>JOTTA_BUDDY_ERRSINCE</code> | <code>-4h</code> | Window for errors and the verdicts |
+| <code>JOTTA_BUDDY_DEADLINE</code> | <code>15</code> | Seconds to wait for jottad before calling it wedged |</p>
+<p>Widen <code>JOTTA_BUDDY_ERRSINCE</code> to look further back, at about a second of extra
+journal reading per additional four hours. It has to stay wider than the slowest
+retry that matters, since backup scans are hourly and anything under that makes
+hourly furniture read as breaking news.</p>
+<p>The <code>not local</code> row counts files the server holds and this machine does not. It
+is not a backlog draining: a folder deleted locally but kept remotely sits there
+for good, while sync still reports itself up to date.</p>
+<p>After <code>action</code>, the two verdicts. Every indented row reports what jottad is <em>doing</em>,
+and none of them says whether it worked — so a healthy machine and a broken one
+both show a list of errors, and there is no telling them apart at a glance. There
+are always some errors in a few hours of log. A completed pass is the only
+positive evidence:</p>
+<pre><code>  sync      clean  full-check completed 18:46:18
+  sync      event loop stopped 21:45:42, no clean pass since
+  backup    clean  scan completed 18:44:02 in 21s
+  backup    12 files failed  4.2 MiB last scan
+</code></pre>
+<p>The second form of each is the one to act on, whatever the <code>errors</code> row says: a
+sync stop more recent than the last completion means nothing has synced since,
+and a non-zero backup failure count is the only number that distinguishes files
+left behind from files merely queued.</p>
+<p>Errors are ranked and reported inside each subsystem, under its own verdict, so a
+red verdict always comes with a lead:</p>
+<pre><code>  sync      event loop stopped 00:02:20, no clean pass since
+    error     unable to perform local actions upload group failed: sync.uploadF
+              at 00:02:20
+
+  backup    clean  scan completed 23:22:23 in 20s
+    error     Error deleting /backup/UUID/user/.config/Slack/IndexedDB/https_
+              at 23:23:25
+              5x Error deleting /backup/UUID/user/.config/mozilla/firefox/
+</code></pre>
+<p>One shared list ranked across both put backup in a position to hold the only row
+going. Backup is far noisier, so a newer backup fault buried the sync fault that
+had actually stopped sync — leaving a red verdict and nothing to act on. Sync is
+matched first when classifying, because the backup root is the whole home
+directory and contains the sync folder inside it.</p>
+<p>A fault carrying neither marker goes under <code>errors  unattributed</code> rather than
+being filed under whichever verdict happened to be nearby. Some continuation lines
+land there, since jottad logs the failure class and the offending path on separate
+lines and only one of them carries the path.</p>
+<p>It adds the two things <code>jotta-cli status</code> will not tell you. The first is a
+different wedge from the one the canary catches: jottad accepts the connection
+and then never answers, so every <code>jotta-cli</code> command dies on its own two second
+deadline with <code>Connected but jottad did not respond to query within deadline</code>.
+The daemon looks healthy to systemd and only a restart clears it. Do not wait for
+it to go quiet first: caught live on 2026-08-18 it was still writing DEBUG lines
+to the journal seconds before the query timed out, so a busy log is no evidence
+that queries are being answered.</p>
+<pre><code class="language-sh">systemctl --user restart jottad
+</code></pre>
+<p>The second is errors, because <code>jotta-cli</code> does not expose them at all. There is
+no error field in <code>status --json</code>, <code>status -v</code> lists file errors only while
+they are current, and <code>list uploaderrors</code> demands an <code>--uploadid</code> you can only
+get from a transfer that is still running. The service log is the only place a
+failure survives, so that is where <code>jotta-buddy</code> reads.</p>
+<p>A worked example, and the reason the <code>errors</code> row leads with the fault that
+started most recently rather than the most frequent one. Two files whose names
+differ only in case sync fine on Linux and collide on the server:</p>
+<pre><code class="language-sh">echo one &gt; ~/me/sync/casetest.txt
+echo two &gt; ~/me/sync/CaseTest.txt
+echo three &gt; ~/me/sync/after-collision.txt   # written afterwards
+</code></pre>
+<p>jottad stops the sync event loop on the collision and retries the same
+full-check every 90 seconds, failing the same way each time. Nothing uploads
+after that point, including files that have nothing to do with the collision:
+<code>after-collision.txt</code> never reaches the server. Throughout, <code>jotta-cli status</code>
+reports <code>Checking for changes...</code> and <code>Mode: listening to events</code>.</p>
+<p><code>jotta-buddy</code> names it, and the path with it:</p>
+<pre><code>  state     Evaluating 0s ago
+  errors    Error syncing /casetest.txt already exists with different case
+            23:14:02 - 23:15:32, seen 2x
+            54 error lines in 4h
+</code></pre>
+<p>The collision logs once and then goes quiet, while routine warnings keep
+accumulating, so ranking errors by frequency hides the one that actually
+stopped sync. Deleting either side of the pair clears it, and the backlog
+drains on the next retry.</p>
+<p>Ranking by the newest <em>line</em> fails the same way, for a subtler reason. A fault
+that retries forever is newest again every time it fires, so it holds the row for
+good and nothing new ever gets in — which makes the row worthless precisely when
+you need it. First-seen fixes that: a chronic fault gives way as soon as anything
+else appears, while a fault that logs once and stops still leads, because it only
+just began.</p>
+<p>That is what the two times under the message are for. <code>at 23:06:39</code> on its own is
+a single event. A range with a count, <code>07:21:19 - 23:05:52, seen 12x</code>, is
+furniture — something that has been failing all day and will keep failing.</p>
+<p>A name the server refuses fails the same way, and this one is quieter because it
+never stops the loop. A directory whose name contains a newline is legal on
+Linux and rejected by the API, so the remote <code>mkdir</code> fails on every backup scan
+and everything under it is skipped:</p>
+<pre><code>  errors    error mkdir /backup/UUID/user/.config/mozilla/firefox/pkQtSp
+            seen 6x
+</code></pre>
+<p>The journal carries the verdict on the following line, <code>INVALID_ARGUMENT code: 12</code>. Sync and the rest of the backup carry on, so nothing looks broken; that
+subtree is just never on the server. Find the offending name, and note that <code>ls</code>
+shows nothing wrong because the newline reads as a line break:</p>
+<pre><code class="language-sh">find ~ -depth -name '*
+*' -print0 | xargs -0 -n1 echo
+</code></pre>
+<p>Rename or delete what it finds, and the next scan picks the subtree up.</p>
+<p>Recent activity is read from the journal too, because the state names (<code>Idle</code>,
+<code>Evaluating</code>, <code>Working</code>) only appear there. <code>SyncState</code> in the JSON is an
+integer with no published mapping, and it disappears from the output entirely
+when sync is idle. The <code>state</code> row shows the age of the last transition, since
+<code>Working</code> for eight seconds and <code>Working</code> for forty minutes mean opposite
+things.</p>
+<p>Exit codes are <code>0</code> healthy, <code>1</code> daemon not running, <code>2</code> wedged and <code>64</code> bad usage,
+so it can gate a script.</p>
+<p>The environment overrides are listed <a href="#jotta-buddy">above</a>.</p>
+<p>It is symlinked rather than copied, so edits in the clone take effect straight
+away. Do not move it into the sync folder: <code>~/bin</code> is a symlink into the synced
+folder on some machines, and a tool that reports on sync should not be one of
+the things sync can break.</p>
+<h2>Uninstall</h2>
+<pre><code class="language-sh">make uninstall
+</code></pre>
+<p>This leaves your topic file and the canary files in the sync folder. Delete
+<code>~/me/sync/.canary-&lt;hostname&gt;</code> by hand if you want them gone.</p>
+<h2>Troubleshooting</h2>
+<p><strong>You get an alert but sync looks fine.</strong> Check the remote revisions directly:</p>
+<pre><code class="language-sh">jotta-cli ls Sync/.canary-$(hostname)
+md5sum ~/me/sync/.canary-$(hostname)
+</code></pre>
+<p>The top row is the newest revision. If its checksum matches the local file, the
+upload did land and the alert was late rather than wrong. Raise
+<code>UPLOAD_GRACE_SECONDS</code>.</p>
+<p><strong>No alerts at all, ever.</strong> Run <code>make test</code>. If nothing arrives, the problem is
+the topic or the phone subscription, not sync.</p>
+<p><strong>The service fails immediately.</strong> It probably can't read
+<code>~/.config/jotta-canary/topic</code>. Check that the file exists and holds one line.</p>
+<p><strong>A machine goes quiet.</strong> The canary only alerts from the machine that is
+stuck, so a powered-off or crashed machine reports nothing. Check the file
+dates in the sync folder to see which hosts are still writing:</p>
+<pre><code class="language-sh">ls -l ~/me/sync/.canary-*
+</code></pre>
+<h2>Licence</h2>
+<p><a href="LICENSE">GPL-3.0</a>. If you distribute a modified version, it stays under the same
+licence.</p>
+
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    Built with <a href="https://tools.vandragt.com/toolhub/">ToolHub</a>
+  </footer>
+</body>
+</html>
