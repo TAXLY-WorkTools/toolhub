@@ -29,6 +29,7 @@ jobs:
           python build.py
         env:
           GH_USERNAME: TAXLY-WorkTools
+          GITHUB_TOKEN: ${{ secrets.TOOLHUB_TOKEN }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
