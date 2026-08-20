@@ -26,6 +26,7 @@ jobs:
       - name: Build site
         run: |
           python bootstrap.py
+          sed -i 's/pinned = fetch_pinned_names(client, USERNAME)/pinned = []/'
           python build.py
         env:
           GH_USERNAME: TAXLY-WorkTools
