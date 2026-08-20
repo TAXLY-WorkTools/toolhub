@@ -26,7 +26,12 @@ jobs:
       - name: Build site
         run: |
           python bootstrap.py
-          sed -i 's/pinned = fetch_pinned_names(client, USERNAME)/pinned = []/'
+          python -c "
+          import re
+          with open('build.py', 'r') as f:
+              content = f.read()
+          content = re.sub(r'pinned\s*=\s*fetch_pinned_names\(.*?\)', 'pinned = []', content, flags=re.DOTALL)
+          with open('build.py', 'w') as f:f.write(content)"
           python build.py
         env:
           GH_USERNAME: TAXLY-WorkTools
