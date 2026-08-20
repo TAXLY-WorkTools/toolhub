@@ -1,11 +1,2 @@
-# portfolio.toml — add this file to any repo or gist to enrich your portfolio page.
-# Only include the fields that apply to your project.
-
-# URL where the project is running (web apps, demos, hosted tools)
-live_url = "https://mytool.example.com"
-
-# URL for documentation (separate docs site, wiki, etc.)
-docs_url = "https://docs.example.com/mytool"
-
-# Tags (gists only — for repos, set these as GitHub Topics instead)
-# tags = ["python", "cli", "automation"]
+title = "TAXLY Work Tools"
+subtitle = "审计工具集合"
