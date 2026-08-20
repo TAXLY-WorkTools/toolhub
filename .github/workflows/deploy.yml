@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt || true
-          pip install pygithub markdown jinja2 requests httpx python-dotenv
+          pip install pygithub markdown jinja2 requests httpx python-dotenv ruamel.yaml beautifulsoup4 lxml
       - name: Build site
         run: |
           python bootstrap.py
