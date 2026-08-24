@@ -1,5 +1,16 @@
 {% extends "base.html" %}
-
+{% set topic_map = {
+    'dept-audit': '审计部',
+    'dept-tax': '税务部',
+    'dept-consulting': '咨询部',
+    'func-data-analysis': '数据分析',
+    'func-letter-gen': '函证生成',
+    'func-workpaper-check': '底稿检查',
+    'func-report-gen': '报告生成',
+    'language-python': 'Python',
+    'repo': '仓库',
+    'gist': '代码片段',
+} %}
 {% block title %}{{ site.description }}{% endblock %}
 
 {% block content %}
@@ -10,20 +21,20 @@
 
 <div class="page-heading">
   <h1>{{ site.description }}</h1>
-  <p>{{ projects | length }} projects</p>
+  <p>{{ projects | length }} 个项目</p>
 </div>
 
 <div class="filter-bar">
-  <span class="filter-bar__label">Show</span>
+  <span class="filter-bar__label">显示</span>
   <div class="filter-group">
-    <label class="filter-chip"><input type="checkbox" name="type" value="repo" checked> Repos</label>
-    <label class="filter-chip"><input type="checkbox" name="type" value="gist" checked> Gists</label>
+    <label class="filter-chip"><input type="checkbox" name="type" value="repo" checked> 仓库</label>
+    <label class="filter-chip"><input type="checkbox" name="type" value="gist" checked> 代码片段</label>
   </div>
   <div class="filter-sep"></div>
   <div class="filter-group">
-    {% if pinned_projects   %}<label class="filter-chip"><input type="checkbox" name="section" value="pinned"   checked> Pinned</label>{% endif %}
-    {% if active_projects   %}<label class="filter-chip"><input type="checkbox" name="section" value="active"   checked> Active</label>{% endif %}
-    {% if archived_projects %}<label class="filter-chip"><input type="checkbox" name="section" value="archived" checked> Archived</label>{% endif %}
+    {% if pinned_projects   %}<label class="filter-chip"><input type="checkbox" name="section" value="pinned"   checked> 置顶</label>{% endif %}
+    {% if active_projects   %}<label class="filter-chip"><input type="checkbox" name="section" value="active"   checked> 活跃</label>{% endif %}
+    {% if archived_projects %}<label class="filter-chip"><input type="checkbox" name="section" value="archived" checked> 归档</label>{% endif %}
   </div>
   <div class="filter-sep filter-sep--tags" style="display:none"></div>
   <div class="filter-group filter-group--tags" style="display:none"></div>
@@ -33,9 +44,9 @@
 
 {% if section_count >= 2 and projects | length > 15 %}
 <nav class="toc">
-  {% if pinned_projects   %}<a class="toc__link" href="#sec-pinned">Pinned</a>{% endif %}
-  {% if active_projects   %}<a class="toc__link" href="#sec-active">{{ sections.active }}</a>{% endif %}
-  {% if archived_projects %}<a class="toc__link" href="#sec-archived">{{ sections.archived }}</a>{% endif %}
+  {% if pinned_projects   %}<a class="toc__link" href="#sec-pinned">置顶</a>{% endif %}
+  {% if active_projects   %}<a class="toc__link" href="#sec-active">活跃</a>{% endif %}
+  {% if archived_projects %}<a class="toc__link" href="#sec-archived">归档</a>{% endif %}
 </nav>
 {% endif %}
 
@@ -43,23 +54,23 @@
 <div class="project-card{% if project.pinned %} project-card--pinned{% endif %}"
      data-type="{{ project.type }}" data-section="{{ section }}" data-tags="{{ project.tags | join(' ') }}" data-license="{{ project.license or '' }}">
   <div class="project-card__name">
-    {% if project.pinned %}<span class="pin-icon" title="Pinned">&#9679;</span>{% endif %}
+    {% if project.pinned %}<span class="pin-icon" title="置顶">&#9679;</span>{% endif %}
     <a href="{{ project.slug }}/index.html">{{ project.name }}</a>
   </div>
   {% if project.description %}
   <div class="project-card__desc">{{ project.description }}</div>
   {% endif %}
   <div class="project-card__meta">
-    <span class="badge badge--type">{{ project.type }}</span>
-    {% for tag in project.tags %}<button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ tag }}</button>{% endfor %}
+    <span class="badge badge--type">{{ topic_map.get(project.type, project.type) }}</span>
+    {% for tag in project.tags %}<button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ topic_map.get(tag, tag) }}</button>{% endfor %}
   </div>
   {% if project.live_url or project.homepage or project.docs_url or project.repo_url or project.gist_url or project.license %}
   <div class="project-card__links">
-    {% if project.live_url %}<a href="{{ project.live_url }}">&#8599; live</a>
-    {% elif project.homepage %}<a href="{{ project.homepage }}">&#8599; website</a>{% endif %}
-    {% if project.docs_url %}<a href="{{ project.docs_url }}">&#8599; docs</a>{% endif %}
-    {% if project.repo_url %}<a href="{{ project.repo_url }}">&#8599; repo</a>
-    {% elif project.gist_url %}<a href="{{ project.gist_url }}">&#8599; gist</a>{% endif %}
+    {% if project.live_url %}<a href="{{ project.live_url }}">&#8599; 在线</a>
+    {% elif project.homepage %}<a href="{{ project.homepage }}">&#8599; 网站</a>{% endif %}
+    {% if project.docs_url %}<a href="{{ project.docs_url }}">&#8599; 文档</a>{% endif %}
+    {% if project.repo_url %}<a href="{{ project.repo_url }}">&#8599; 仓库</a>
+    {% elif project.gist_url %}<a href="{{ project.gist_url }}">&#8599; 代码片段</a>{% endif %}
     {% if project.license %}<button class="project-card__license" data-license="{{ project.license }}" type="button">{{ project.license }}</button>{% endif %}
   </div>
   {% endif %}
@@ -68,7 +79,7 @@
 
 {% if pinned_projects %}
 <section class="project-section" id="sec-pinned" data-section="pinned">
-  <h2 class="section-heading">Pinned</h2>
+  <h2 class="section-heading">置顶</h2>
   <div class="project-grid">
     {% for p in pinned_projects %}{{ project_card(p, "pinned") }}{% endfor %}
   </div>
@@ -77,7 +88,7 @@
 
 {% if active_projects %}
 <section class="project-section" id="sec-active" data-section="active">
-  <h2 class="section-heading">{{ sections.active }}</h2>
+  <h2 class="section-heading">活跃</h2>
   <div class="project-grid">
     {% for p in active_projects %}{{ project_card(p, "active") }}{% endfor %}
   </div>
@@ -86,7 +97,7 @@
 
 {% if archived_projects %}
 <section class="project-section" id="sec-archived" data-section="archived">
-  <h2 class="section-heading">{{ sections.archived }}</h2>
+  <h2 class="section-heading">归档</h2>
   <div class="project-grid">
     {% for p in archived_projects %}{{ project_card(p, "archived") }}{% endfor %}
   </div>
@@ -95,6 +106,9 @@
 
 <script>
 (function () {
+  // 注入中文映射表（从 Jinja2 传递过来）
+  var tagMap = {{ topic_map | tojson }};
+
   var selectedTags = new Set();
   var tagGroup = document.querySelector('.filter-group--tags');
   var tagSep = document.querySelector('.filter-sep--tags');
@@ -105,11 +119,12 @@
       selectedTags.forEach(function(tag) {
         var capsule = document.createElement('span');
         capsule.className = 'tag-capsule';
-        capsule.appendChild(document.createTextNode(tag));
+        var displayTag = tagMap[tag] || tag;
+        capsule.appendChild(document.createTextNode(displayTag));
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'tag-capsule__remove';
-        btn.setAttribute('aria-label', 'Remove ' + tag + ' filter');
+        btn.setAttribute('aria-label', '移除 ' + displayTag + ' 筛选');
         btn.textContent = '\u00d7';
         btn.addEventListener('click', function() {
           selectedTags.delete(tag);
@@ -141,7 +156,7 @@
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'tag-capsule__remove';
-        btn.setAttribute('aria-label', 'Remove ' + lic + ' filter');
+        btn.setAttribute('aria-label', '移除 ' + lic + ' 筛选');
         btn.textContent = '\u00d7';
         btn.addEventListener('click', function() {
           selectedLicenses.delete(lic);
@@ -193,7 +208,6 @@
     });
   }
 
-  // Clicking a tag badge in a card toggles the tag capsule filter
   document.querySelectorAll('.badge--tag').forEach(function(badge) {
     badge.addEventListener('click', function() {
       var tag = this.dataset.tag;
@@ -207,7 +221,6 @@
     });
   });
 
-  // Clicking a license button in a card toggles the license capsule filter
   document.querySelectorAll('.project-card__license').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var lic = this.dataset.license;
