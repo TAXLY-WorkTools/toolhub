@@ -43,40 +43,6 @@
             border-color: #0969da;
             box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.2);
         }
-        .file-zone {
-            border: 2px dashed #d0d7de;
-            border-radius: 8px;
-            padding: 32px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            background: #f9fafb;
-            position: relative;
-        }
-        .file-zone:hover { border-color: #0969da; background: #f0f6ff; }
-        .file-zone.dragover { border-color: #0969da; background: #e8f0fe; }
-        .file-zone input[type="file"] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .file-zone .icon { font-size: 36px; display: block; margin-bottom: 8px; }
-        .file-zone .text { font-size: 14px; color: #24292f; }
-        .file-zone .hint { font-size: 12px; color: #57606a; margin-top: 4px; }
-        .file-list { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
-        .file-tag {
-            background: #e8ecf0;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            color: #1f2328;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .file-tag .remove { cursor: pointer; color: #8b949e; font-weight: 700; }
-        .file-tag .remove:hover { color: #d1242f; }
         .submit-btn {
             width: 100%;
             padding: 12px;
@@ -119,18 +85,29 @@
             font-size: 14px;
         }
         .back-link:hover { text-decoration: underline; }
-        .step-status { margin: 12px 0; padding: 10px 14px; background: #f6f8fa; border-radius: 6px; font-size: 13px; color: #24292f; display: none; }
-        .step-status.show { display: block; }
-        .step-status .ok { color: #1a7f37; }
-        .step-status .fail { color: #d1242f; }
+        .note {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #fff8c5;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #3d3d3d;
+            border-left: 4px solid #f5c542;
+        }
+        .note strong { color: #1f2328; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📤 上传新工具</h1>
-        <p class="subtitle">提交后系统将自动创建仓库、上传代码并更新工具库网站</p>
+        <p class="subtitle">填写信息后跳转 GitHub，在评论区拖拽上传代码压缩包</p>
 
-        <div id="stepStatus" class="step-status"></div>
+        <div class="note">
+            <strong>💡 操作说明：</strong><br>
+            1. 填写以下信息，点击提交<br>
+            2. 跳转 GitHub 后，<strong>在评论区拖拽上传 .zip 压缩包</strong><br>
+            3. 点击 "Submit new issue"，系统自动处理
+        </div>
 
         <form id="uploadForm">
             <div class="form-group">
@@ -161,87 +138,19 @@
                     <option value="报告生成">报告生成</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>上传代码 <span class="required">*</span></label>
-                <div class="file-zone" id="fileZone">
-                    <span class="icon">📁</span>
-                    <div class="text">点击选择文件或拖拽文件夹到此</div>
-                    <div class="hint">支持单个文件、多个文件或整个文件夹</div>
-                    <input type="file" id="fileInput" webkitdirectory multiple />
-                </div>
-                <div class="file-list" id="fileList"></div>
-            </div>
-            <button type="submit" class="submit-btn" id="submitBtn">🚀 提交上传</button>
+            <button type="submit" class="submit-btn" id="submitBtn">🚀 跳转 GitHub 提交</button>
         </form>
+
         <div class="message" id="message"></div>
         <a href="https://taxly-worktools.github.io/toolhub/" class="back-link">← 返回工具库</a>
     </div>
 
     <script>
-        // ===== 配置 =====
-        // ⚠️ 警告：此 Token 会暴露在网页源码中，请确保仅在内部可信环境使用
-        // 建议定期轮换此 Token，或使用权限受限的 Fine-grained token
-        const GITHUB_TOKEN = 'ghp_bdJloqVpkgTNbl4t1cjE5uvVzcv4xP2VTk8O';
-        const ORG = 'TAXLY-WorkTools';
-        const PORTAL_REPO = 'upload-portal';
-
-        // ===== DOM 引用 =====
-        const fileInput = document.getElementById('fileInput');
-        const fileList = document.getElementById('fileList');
-        const fileZone = document.getElementById('fileZone');
         const form = document.getElementById('uploadForm');
         const submitBtn = document.getElementById('submitBtn');
         const messageEl = document.getElementById('message');
-        const stepStatus = document.getElementById('stepStatus');
 
-        let selectedFiles = [];
-
-        // ===== 文件选择 =====
-        fileInput.addEventListener('change', function(e) {
-            selectedFiles = Array.from(e.target.files);
-            renderFileList();
-        });
-
-        fileZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            fileZone.classList.add('dragover');
-        });
-        fileZone.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            fileZone.classList.remove('dragover');
-        });
-        fileZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            fileZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                selectedFiles = Array.from(e.dataTransfer.files);
-                fileInput.files = e.dataTransfer.files;
-                renderFileList();
-            }
-        });
-
-        function renderFileList() {
-            fileList.innerHTML = '';
-            if (selectedFiles.length === 0) {
-                fileList.innerHTML = '<span style="color:#8b949e;font-size:13px;">尚未选择文件</span>';
-                return;
-            }
-            selectedFiles.forEach((file, index) => {
-                const tag = document.createElement('span');
-                tag.className = 'file-tag';
-                tag.innerHTML =
-                    `${file.name} (${(file.size / 1024).toFixed(1)} KB) <span class="remove" data-index="${index}">×</span>`;
-                tag.querySelector('.remove').addEventListener('click', function() {
-                    selectedFiles.splice(index, 1);
-                    renderFileList();
-                });
-                fileList.appendChild(tag);
-            });
-        }
-        renderFileList();
-
-        // ===== 提交 =====
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
 
             const toolName = document.getElementById('toolName').value.trim();
@@ -249,8 +158,8 @@
             const department = document.getElementById('department').value;
             const category = document.getElementById('category').value;
 
-            if (!toolName || !toolDesc || !department || !category || selectedFiles.length === 0) {
-                showMessage('请完整填写所有字段并至少选择一个文件', 'error');
+            if (!toolName || !toolDesc || !department || !category) {
+                showMessage('请完整填写所有字段', 'error');
                 return;
             }
 
@@ -260,104 +169,29 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ 提交中...';
-            showMessage('');
-            stepStatus.classList.remove('show');
-            stepStatus.innerHTML = '';
+            submitBtn.textContent = '⏳ 跳转中...';
 
-            const timestamp = Date.now();
-            const tempPath = `temp/${toolName}_${timestamp}`;
+            // 构造 GitHub New Issue 链接（通过 URL 参数预填表单）
+            const baseUrl = 'https://github.com/TAXLY-WorkTools/upload-portal/issues/new';
+            const template = 'upload.yml';
+            const params = new URLSearchParams({
+                template: template,
+                'tool_name': toolName,
+                'description': toolDesc,
+                'department': department,
+                'category': category
+            });
 
-            try {
-                // ---- 步骤1：上传文件到 upload-portal 仓库的临时目录 ----
-                stepStatus.classList.add('show');
-                stepStatus.innerHTML = '📤 正在上传文件到临时仓库...<br>';
+            const url = `${baseUrl}?${params.toString()}`;
 
-                let uploadSuccess = 0;
-                for (const file of selectedFiles) {
-                    const reader = new FileReader();
-                    const content = await new Promise((resolve, reject) => {
-                        reader.onload = () => resolve(reader.result.split(',')[1]);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
+            // 跳转前提示用户
+            showMessage('✅ 正在跳转 GitHub... 请在评论区拖拽上传 .zip 压缩包', 'success');
 
-                    let filePath = file.name;
-                    if (file.webkitRelativePath) {
-                        filePath = file.webkitRelativePath;
-                    }
-
-                    const uploadUrl =
-                        `https://api.github.com/repos/${ORG}/${PORTAL_REPO}/contents/${tempPath}/${filePath}`;
-
-                    const response = await fetch(uploadUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            message: `Upload ${filePath} for ${toolName}`,
-                            content: content,
-                        }),
-                    });
-
-                    if (!response.ok) {
-                        const err = await response.json();
-                        throw new Error(`上传 ${filePath} 失败: ${err.message || response.statusText}`);
-                    }
-                    uploadSuccess++;
-                    stepStatus.innerHTML += `  ✅ ${filePath}<br>`;
-                }
-
-                stepStatus.innerHTML += `📦 已上传 ${uploadSuccess} 个文件<br>`;
-
-                // ---- 步骤2：触发 GitHub Actions ----
-                stepStatus.innerHTML += '🚀 正在触发 GitHub Actions...<br>';
-
-                const triggerUrl =
-                    `https://api.github.com/repos/${ORG}/${PORTAL_REPO}/actions/workflows/upload.yml/dispatches`;
-
-                const triggerResponse = await fetch(triggerUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        ref: 'main',
-                        inputs: {
-                            tool_name: toolName,
-                            description: toolDesc,
-                            department: department,
-                            category: category,
-                            temp_path: tempPath,
-                        },
-                    }),
-                });
-
-                if (!triggerResponse.ok) {
-                    const err = await triggerResponse.json();
-                    throw new Error(`触发 Actions 失败: ${err.message || triggerResponse.statusText}`);
-                }
-
-                stepStatus.innerHTML += '✅ Actions 已触发！<br>';
-                stepStatus.innerHTML += '⏳ 等待 2-3 分钟后刷新工具库网站查看结果。';
-
-                showMessage(`✅ 工具 "${toolName}" 已上传！正在处理中，2-3 分钟后可在工具库网站查看。`, 'success');
-                form.reset();
-                selectedFiles = [];
-                renderFileList();
-
-            } catch (err) {
-                stepStatus.innerHTML += `❌ 错误：${err.message}`;
-                showMessage(`❌ 上传失败：${err.message}`, 'error');
-            }
-
-            submitBtn.disabled = false;
-            submitBtn.textContent = '🚀 提交上传';
+            setTimeout(() => {
+                window.open(url, '_blank');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 跳转 GitHub 提交';
+            }, 1000);
         });
 
         function showMessage(text, type) {
