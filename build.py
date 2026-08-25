@@ -374,6 +374,7 @@ def build(
 
     if static_dir.exists():
         shutil.copytree(static_dir, OUTPUT_DIR / "static")
+        shutil.copy2("templates/upload.html", "output/upload.html")
 
     env = Environment(
         loader=FileSystemLoader(templates_dir),
