@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>上传工具 - TAXLY WorkTools</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: #f6f8fa;
@@ -27,33 +23,12 @@
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
             padding: 40px 48px;
         }
-        h1 {
-            font-size: 26px;
-            font-weight: 600;
-            color: #1f2328;
-            margin-bottom: 6px;
-        }
-        .subtitle {
-            color: #57606a;
-            font-size: 15px;
-            margin-bottom: 28px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-weight: 500;
-            font-size: 14px;
-            color: #1f2328;
-            margin-bottom: 5px;
-        }
-        label .required {
-            color: #d1242f;
-            margin-left: 2px;
-        }
-        input,
-        select {
+        h1 { font-size: 26px; font-weight: 600; color: #1f2328; margin-bottom: 6px; }
+        .subtitle { color: #57606a; font-size: 15px; margin-bottom: 28px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 500; font-size: 14px; color: #1f2328; margin-bottom: 5px; }
+        label .required { color: #d1242f; margin-left: 2px; }
+        input, select {
             width: 100%;
             padding: 10px 12px;
             font-size: 14px;
@@ -63,8 +38,7 @@
             transition: 0.2s;
             font-family: inherit;
         }
-        input:focus,
-        select:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #0969da;
             box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.2);
@@ -79,40 +53,18 @@
             background: #f9fafb;
             position: relative;
         }
-        .file-zone:hover {
-            border-color: #0969da;
-            background: #f0f6ff;
-        }
-        .file-zone.dragover {
-            border-color: #0969da;
-            background: #e8f0fe;
-        }
+        .file-zone:hover { border-color: #0969da; background: #f0f6ff; }
+        .file-zone.dragover { border-color: #0969da; background: #e8f0fe; }
         .file-zone input[type="file"] {
             position: absolute;
             inset: 0;
             opacity: 0;
             cursor: pointer;
         }
-        .file-zone .icon {
-            font-size: 36px;
-            display: block;
-            margin-bottom: 8px;
-        }
-        .file-zone .text {
-            font-size: 14px;
-            color: #24292f;
-        }
-        .file-zone .hint {
-            font-size: 12px;
-            color: #57606a;
-            margin-top: 4px;
-        }
-        .file-list {
-            margin-top: 12px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
+        .file-zone .icon { font-size: 36px; display: block; margin-bottom: 8px; }
+        .file-zone .text { font-size: 14px; color: #24292f; }
+        .file-zone .hint { font-size: 12px; color: #57606a; margin-top: 4px; }
+        .file-list { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
         .file-tag {
             background: #e8ecf0;
             padding: 4px 12px;
@@ -123,14 +75,8 @@
             align-items: center;
             gap: 6px;
         }
-        .file-tag .remove {
-            cursor: pointer;
-            color: #8b949e;
-            font-weight: 700;
-        }
-        .file-tag .remove:hover {
-            color: #d1242f;
-        }
+        .file-tag .remove { cursor: pointer; color: #8b949e; font-weight: 700; }
+        .file-tag .remove:hover { color: #d1242f; }
         .submit-btn {
             width: 100%;
             padding: 12px;
@@ -144,13 +90,8 @@
             transition: 0.2s;
             margin-top: 8px;
         }
-        .submit-btn:hover {
-            background: #22863a;
-        }
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+        .submit-btn:hover { background: #22863a; }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .message {
             margin-top: 16px;
             padding: 12px 16px;
@@ -177,9 +118,11 @@
             text-decoration: none;
             font-size: 14px;
         }
-        .back-link:hover {
-            text-decoration: underline;
-        }
+        .back-link:hover { text-decoration: underline; }
+        .step-status { margin: 12px 0; padding: 10px 14px; background: #f6f8fa; border-radius: 6px; font-size: 13px; color: #24292f; display: none; }
+        .step-status.show { display: block; }
+        .step-status .ok { color: #1a7f37; }
+        .step-status .fail { color: #d1242f; }
     </style>
 </head>
 <body>
@@ -187,18 +130,18 @@
         <h1>📤 上传新工具</h1>
         <p class="subtitle">提交后系统将自动创建仓库、上传代码并更新工具库网站</p>
 
+        <div id="stepStatus" class="step-status"></div>
+
         <form id="uploadForm">
             <div class="form-group">
                 <label>工具名称 <span class="required">*</span></label>
                 <input type="text" id="toolName" placeholder="例如：letter_generator" required />
                 <div style="font-size:12px;color:#57606a;margin-top:4px;">建议使用英文小写 + 下划线，如 letter_generator</div>
             </div>
-
             <div class="form-group">
                 <label>工具描述 <span class="required">*</span></label>
                 <input type="text" id="toolDesc" placeholder="例如：自动生成银行函证工具" required />
             </div>
-
             <div class="form-group">
                 <label>所属部门 <span class="required">*</span></label>
                 <select id="department" required>
@@ -208,7 +151,6 @@
                     <option value="咨询部">咨询部</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label>功能分类 <span class="required">*</span></label>
                 <select id="category" required>
@@ -219,7 +161,6 @@
                     <option value="报告生成">报告生成</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label>上传代码 <span class="required">*</span></label>
                 <div class="file-zone" id="fileZone">
@@ -230,24 +171,32 @@
                 </div>
                 <div class="file-list" id="fileList"></div>
             </div>
-
             <button type="submit" class="submit-btn" id="submitBtn">🚀 提交上传</button>
         </form>
-
         <div class="message" id="message"></div>
         <a href="https://taxly-worktools.github.io/toolhub/" class="back-link">← 返回工具库</a>
     </div>
 
     <script>
+        // ===== 配置 =====
+        // ⚠️ 警告：此 Token 会暴露在网页源码中，请确保仅在内部可信环境使用
+        // 建议定期轮换此 Token，或使用权限受限的 Fine-grained token
+        const GITHUB_TOKEN = 'ghp_bdJloqVpkgTNbl4t1cjE5uvVzcv4xP2VTk8O';
+        const ORG = 'TAXLY-WorkTools';
+        const PORTAL_REPO = 'upload-portal';
+
+        // ===== DOM 引用 =====
         const fileInput = document.getElementById('fileInput');
         const fileList = document.getElementById('fileList');
         const fileZone = document.getElementById('fileZone');
         const form = document.getElementById('uploadForm');
         const submitBtn = document.getElementById('submitBtn');
         const messageEl = document.getElementById('message');
+        const stepStatus = document.getElementById('stepStatus');
 
         let selectedFiles = [];
 
+        // ===== 文件选择 =====
         fileInput.addEventListener('change', function(e) {
             selectedFiles = Array.from(e.target.files);
             renderFileList();
@@ -291,6 +240,7 @@
         }
         renderFileList();
 
+        // ===== 提交 =====
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -311,39 +261,99 @@
 
             submitBtn.disabled = true;
             submitBtn.textContent = '⏳ 提交中...';
-            showMessage('', '');
+            showMessage('');
+            stepStatus.classList.remove('show');
+            stepStatus.innerHTML = '';
 
-            const formData = new FormData();
-            formData.append('tool_name', toolName);
-            formData.append('description', toolDesc);
-            formData.append('department', department);
-            formData.append('category', category);
-            selectedFiles.forEach(file => {
-                const relativePath = file.webkitRelativePath || file.name;
-                formData.append('files', file, relativePath);
-            });
+            const timestamp = Date.now();
+            const tempPath = `temp/${toolName}_${timestamp}`;
 
             try {
-                const response = await fetch('https://proud-mud-1f6e.aba1330895415.workers.dev/upload', {
+                // ---- 步骤1：上传文件到 upload-portal 仓库的临时目录 ----
+                stepStatus.classList.add('show');
+                stepStatus.innerHTML = '📤 正在上传文件到临时仓库...<br>';
+
+                let uploadSuccess = 0;
+                for (const file of selectedFiles) {
+                    const reader = new FileReader();
+                    const content = await new Promise((resolve, reject) => {
+                        reader.onload = () => resolve(reader.result.split(',')[1]);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+
+                    let filePath = file.name;
+                    if (file.webkitRelativePath) {
+                        filePath = file.webkitRelativePath;
+                    }
+
+                    const uploadUrl =
+                        `https://api.github.com/repos/${ORG}/${PORTAL_REPO}/contents/${tempPath}/${filePath}`;
+
+                    const response = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${GITHUB_TOKEN}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: `Upload ${filePath} for ${toolName}`,
+                            content: content,
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(`上传 ${filePath} 失败: ${err.message || response.statusText}`);
+                    }
+                    uploadSuccess++;
+                    stepStatus.innerHTML += `  ✅ ${filePath}<br>`;
+                }
+
+                stepStatus.innerHTML += `📦 已上传 ${uploadSuccess} 个文件<br>`;
+
+                // ---- 步骤2：触发 GitHub Actions ----
+                stepStatus.innerHTML += '🚀 正在触发 GitHub Actions...<br>';
+
+                const triggerUrl =
+                    `https://api.github.com/repos/${ORG}/${PORTAL_REPO}/actions/workflows/upload.yml/dispatches`;
+
+                const triggerResponse = await fetch(triggerUrl, {
                     method: 'POST',
                     headers: {
-                        'Authorization': 'Bearer taxly2026'
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json',
                     },
-                    body: formData
+                    body: JSON.stringify({
+                        ref: 'main',
+                        inputs: {
+                            tool_name: toolName,
+                            description: toolDesc,
+                            department: department,
+                            category: category,
+                            temp_path: tempPath,
+                        },
+                    }),
                 });
 
-                const result = await response.json();
-
-                if (response.ok) {
-                    showMessage(`✅ ${result.message || '上传成功！正在处理中，稍后可在工具库网站查看。'}`, 'success');
-                    form.reset();
-                    selectedFiles = [];
-                    renderFileList();
-                } else {
-                    showMessage(`❌ 上传失败：${result.error || '未知错误'}`, 'error');
+                if (!triggerResponse.ok) {
+                    const err = await triggerResponse.json();
+                    throw new Error(`触发 Actions 失败: ${err.message || triggerResponse.statusText}`);
                 }
+
+                stepStatus.innerHTML += '✅ Actions 已触发！<br>';
+                stepStatus.innerHTML += '⏳ 等待 2-3 分钟后刷新工具库网站查看结果。';
+
+                showMessage(`✅ 工具 "${toolName}" 已上传！正在处理中，2-3 分钟后可在工具库网站查看。`, 'success');
+                form.reset();
+                selectedFiles = [];
+                renderFileList();
+
             } catch (err) {
-                showMessage(`❌ 网络错误：${err.message}`, 'error');
+                stepStatus.innerHTML += `❌ 错误：${err.message}`;
+                showMessage(`❌ 上传失败：${err.message}`, 'error');
             }
 
             submitBtn.disabled = false;
