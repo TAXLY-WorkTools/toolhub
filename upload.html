@@ -195,4 +195,10 @@
         function showMessage(text, type) {
             messageEl.textContent = text;
             messageEl.className = 'message';
-            if
+            if (text) {
+                messageEl.classList.add(type === 'success' ? 'success' : 'error');
+            }
+        }
+    </script>
+</body>
+</html>
