@@ -1,204 +1,61 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>上传工具 - TAXLY WorkTools</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #f6f8fa;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 40px 20px;
-        }
-        .container {
-            max-width: 720px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            padding: 40px 48px;
-        }
-        h1 { font-size: 26px; font-weight: 600; color: #1f2328; margin-bottom: 6px; }
-        .subtitle { color: #57606a; font-size: 15px; margin-bottom: 28px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 500; font-size: 14px; color: #1f2328; margin-bottom: 5px; }
-        label .required { color: #d1242f; margin-left: 2px; }
-        input, select {
-            width: 100%;
-            padding: 10px 12px;
-            font-size: 14px;
-            border: 1px solid #d0d7de;
-            border-radius: 6px;
-            background: #ffffff;
-            transition: 0.2s;
-            font-family: inherit;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #0969da;
-            box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.2);
-        }
-        .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background: #2da44e;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 8px;
-        }
-        .submit-btn:hover { background: #22863a; }
-        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .message {
-            margin-top: 16px;
-            padding: 12px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            display: none;
-        }
-        .message.success {
-            display: block;
-            background: #dafbe1;
-            color: #116329;
-            border: 1px solid #a7e6b8;
-        }
-        .message.error {
-            display: block;
-            background: #ffe3e6;
-            color: #a0111f;
-            border: 1px solid #f5c2c7;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #0969da;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .back-link:hover { text-decoration: underline; }
-        .note {
-            margin-top: 16px;
-            padding: 12px 16px;
-            background: #fff8c5;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #3d3d3d;
-            border-left: 4px solid #f5c542;
-        }
-        .note strong { color: #1f2328; }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📤 上传新工具</h1>
-        <p class="subtitle">填写信息后跳转 GitHub，在评论区拖拽上传代码压缩包</p>
+    <h1>📤 上传新工具</h1>
+    <p>填写信息后点击提交，跳转到 GitHub 评论区上传压缩包</p>
 
-        <div class="note">
-            <strong>💡 操作说明：</strong><br>
-            1. 填写以下信息，点击提交<br>
-            2. 跳转 GitHub 后，<strong>在评论区拖拽上传 .zip 压缩包</strong><br>
-            3. 点击 "Submit new issue"，系统自动处理
-        </div>
+    <form id="uploadForm">
+        <label>工具名称：<input type="text" id="toolName" placeholder="letter_generator" required></label><br>
+        <label>工具描述：<input type="text" id="toolDesc" placeholder="自动生成银行函证工具" required></label><br>
+        <label>所属部门：
+            <select id="department" required>
+                <option value="">请选择</option>
+                <option value="审计部">审计部</option>
+                <option value="税务部">税务部</option>
+                <option value="咨询部">咨询部</option>
+            </select>
+        </label><br>
+        <label>功能分类：
+            <select id="category" required>
+                <option value="">请选择</option>
+                <option value="数据分析">数据分析</option>
+                <option value="函证生成">函证生成</option>
+                <option value="底稿检查">底稿检查</option>
+                <option value="报告生成">报告生成</option>
+            </select>
+        </label><br>
+        <button type="submit">🚀 跳转 GitHub</button>
+    </form>
 
-        <form id="uploadForm">
-            <div class="form-group">
-                <label>工具名称 <span class="required">*</span></label>
-                <input type="text" id="toolName" placeholder="例如：letter_generator" required />
-                <div style="font-size:12px;color:#57606a;margin-top:4px;">建议使用英文小写 + 下划线，如 letter_generator</div>
-            </div>
-            <div class="form-group">
-                <label>工具描述 <span class="required">*</span></label>
-                <input type="text" id="toolDesc" placeholder="例如：自动生成银行函证工具" required />
-            </div>
-            <div class="form-group">
-                <label>所属部门 <span class="required">*</span></label>
-                <select id="department" required>
-                    <option value="">请选择</option>
-                    <option value="审计部">审计部</option>
-                    <option value="税务部">税务部</option>
-                    <option value="咨询部">咨询部</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>功能分类 <span class="required">*</span></label>
-                <select id="category" required>
-                    <option value="">请选择</option>
-                    <option value="数据分析">数据分析</option>
-                    <option value="函证生成">函证生成</option>
-                    <option value="底稿检查">底稿检查</option>
-                    <option value="报告生成">报告生成</option>
-                </select>
-            </div>
-            <button type="submit" class="submit-btn" id="submitBtn">🚀 跳转 GitHub 提交</button>
-        </form>
-
-        <div class="message" id="message"></div>
-        <a href="https://taxly-worktools.github.io/toolhub/" class="back-link">← 返回工具库</a>
-    </div>
+    <p id="message"></p>
+    <a href="https://taxly-worktools.github.io/toolhub/">← 返回工具库</a>
 
     <script>
-        const form = document.getElementById('uploadForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const messageEl = document.getElementById('message');
-
-        form.addEventListener('submit', function(e) {
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
             const toolName = document.getElementById('toolName').value.trim();
             const toolDesc = document.getElementById('toolDesc').value.trim();
             const department = document.getElementById('department').value;
             const category = document.getElementById('category').value;
 
             if (!toolName || !toolDesc || !department || !category) {
-                showMessage('请完整填写所有字段', 'error');
+                document.getElementById('message').textContent = '❌ 请完整填写所有字段';
                 return;
             }
-
             if (/[\u4e00-\u9fa5]/.test(toolName)) {
-                showMessage('工具名称请不要使用中文，请用英文小写 + 下划线', 'error');
+                document.getElementById('message').textContent = '❌ 工具名称请用英文小写 + 下划线';
                 return;
             }
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ 跳转中...';
-
-            const baseUrl = 'https://github.com/TAXLY-WorkTools/upload-portal/issues/new';
-            const template = 'upload.yml';
-            const params = new URLSearchParams({
-                template: template,
-                'tool_name': toolName,
-                'description': toolDesc,
-                'department': department,
-                'category': category
-            });
-
-            const url = `${baseUrl}?${params.toString()}`;
-
-            showMessage('✅ 正在跳转 GitHub... 请在评论区拖拽上传 .zip 压缩包', 'success');
-
-            setTimeout(() => {
-                window.open(url, '_blank');
-                submitBtn.disabled = false;
-                submitBtn.textContent = '🚀 跳转 GitHub 提交';
-            }, 1000);
+            const url = 'https://github.com/TAXLY-WorkTools/upload-portal/issues/new?template=upload.yml&tool_name=' + encodeURIComponent(toolName) + '&description=' + encodeURIComponent(toolDesc) + '&department=' + encodeURIComponent(department) + '&category=' + encodeURIComponent(category);
+            window.open(url, '_blank');
+            document.getElementById('message').textContent = '✅ 已跳转 GitHub，请在评论区拖拽上传 .zip 压缩包';
         });
-
-        function showMessage(text, type) {
-            messageEl.textContent = text;
-            messageEl.className = 'message';
-            if (text) {
-                messageEl.classList.add(type === 'success' ? 'success' : 'error');
-            }
-        }
     </script>
 </body>
 </html>
