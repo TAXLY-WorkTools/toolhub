@@ -6,7 +6,6 @@
 <title>工具上传打包器 · TAXLY WorkTools</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.19.6/dist/index.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -357,13 +356,13 @@
       <div class="section__title"><span class="num">1</span>基本信息</div>
       <div class="field">
         <label class="field__label">中文显示名 <span class="hint">（展示页大标题，可填中文）</span></label>
-        <input type="text" id="displayName" placeholder="如：函证批量生成器" oninput="suggestEnglishName()">
+        <input type="text" id="displayName" placeholder="如：函证批量生成器">
       </div>
       <div class="field">
         <label class="field__label">工具名称 <span class="required">*</span> <span class="hint">（GitHub 仓库名，仅限英文/拼音）</span></label>
-        <input type="text" id="toolName" placeholder="如：letter_generator（小写英文，用下划线或连字符）" oninput="hideSuggestion()">
-        <div id="nameSuggestion" style="display:none; margin-top:6px; font-size:12px; color:#0969da;">
-          💡 推荐英文名：<span id="suggestedName" style="cursor:pointer; text-decoration:underline; font-weight:500;"></span>（点击填入）
+        <input type="text" id="toolName" placeholder="如：letter_generator（小写英文，用下划线或连字符）">
+        <div style="margin-top:4px; font-size:12px; color:#8b949e; font-style:italic;">
+          建议使用英文小写+下划线，如 letter_generator；也可使用中文拼音全拼。此名称为 GitHub 仓库名，创建后不可修改。
         </div>
       </div>
       <div class="field">
@@ -457,6 +456,36 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function sanitizeFilename(filename) {
+  const lastDot = filename.lastIndexOf('.');
+  let name = lastDot > 0 ? filename.substring(0, lastDot) : filename;
+  const ext = lastDot > 0 ? filename.substring(lastDot) : '';
+  name = name.replace(/\s+/g, '_');
+  name = name.replace(/[^\u4e00-\u9fa5a-zA-Z0-9_-]/g, '');
+  name = name.replace(/_+/g, '_');
+  name = name.replace(/^_|_$/g, '');
+  if (!name) {
+    name = 'file_' + Date.now();
+  }
+  return name + ext;
+}
+
+function ensureUniqueFilename(filename, existingNames) {
+  if (!existingNames.includes(filename)) {
+    return filename;
+  }
+  const lastDot = filename.lastIndexOf('.');
+  const name = lastDot > 0 ? filename.substring(0, lastDot) : filename;
+  const ext = lastDot > 0 ? filename.substring(lastDot) : '';
+  let counter = 2;
+  let newName = name + '_' + counter + ext;
+  while (existingNames.includes(newName)) {
+    counter++;
+    newName = name + '_' + counter + ext;
+  }
+  return newName;
 }
 
 function addFeature(value = '') {
@@ -557,6 +586,7 @@ function renderSteps() {
           ${s.screenshots.map((sc, i) => `
             <div class="step-screenshot-item">
               🖼️ ${sc.name}
+              ${sc.originalName && sc.originalName !== sc.name ? '<span style="font-size:10px;color:#8b949e;">（原：' + escapeHtml(sc.originalName) + '）</span>' : ''}
               <span class="remove" onclick="removeStepScreenshot('${s.id}', ${i})">×</span>
             </div>
           `).join('')}
@@ -586,10 +616,19 @@ function addStepScreenshot(stepId) {
 function handleStepScreenshot(stepId, files) {
   const s = steps.find(x => x.id === stepId);
   if (!s) return;
+  const existingNames = uploadedFiles.map(f => f.name);
+  steps.forEach(st => st.screenshots.forEach(sc => existingNames.push(sc.name)));
   Array.from(files).forEach(file => {
+    const cleanName = sanitizeFilename(file.name);
+    const finalName = ensureUniqueFilename(cleanName, existingNames);
+    existingNames.push(finalName);
     const reader = new FileReader();
     reader.onload = (e) => {
-      s.screenshots.push({ name: file.name, data: e.target.result });
+      s.screenshots.push({
+        name: finalName,
+        originalName: file.name,
+        data: e.target.result
+      });
       renderSteps();
       updatePreview();
     };
@@ -675,24 +714,33 @@ fileInput.addEventListener('change', (e) => {
 });
 
 function handleFiles(files) {
+  const existingNames = uploadedFiles.map(f => f.name);
   Array.from(files).forEach(file => {
-    if (uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
-      showToast('文件 ' + file.name + ' 已存在', 'error');
+    const cleanName = sanitizeFilename(file.name);
+    const finalName = ensureUniqueFilename(cleanName, existingNames);
+    existingNames.push(finalName);
+    if (uploadedFiles.some(f => f.name === finalName && f.size === file.size)) {
+      showToast('文件 ' + finalName + ' 已存在', 'error');
       return;
     }
     const reader = new FileReader();
     reader.onload = (e) => {
-      const category = getFileCategory(file.name);
+      const category = getFileCategory(finalName);
       uploadedFiles.push({
-        name: file.name,
-        path: category + '/' + file.name,
+        name: finalName,
+        originalName: file.name,
+        path: category + '/' + finalName,
         category: category,
         data: e.target.result,
         size: file.size
       });
       renderFileList();
       updatePreview();
-      showToast('已添加: ' + file.name + ' → ' + category + '/', 'success');
+      if (finalName !== file.name) {
+        showToast('已添加: ' + file.name + ' → 重命名为 ' + finalName, 'success');
+      } else {
+        showToast('已添加: ' + finalName + ' → ' + category + '/', 'success');
+      }
     };
     reader.readAsArrayBuffer(file);
   });
@@ -717,6 +765,7 @@ function renderFileList() {
       <div class="file-item__name">
         ${f.category === 'images' ? '🖼️' : '📄'}
         <span>${escapeHtml(f.name)}</span>
+        ${f.originalName && f.originalName !== f.name ? '<span style="font-size:11px;color:#8b949e;">（原：' + escapeHtml(f.originalName) + '）</span>' : ''}
         <span class="path">${f.path}</span>
       </div>
       <span class="file-item__remove" onclick="removeFile(${i})" title="移除">×</span>
@@ -760,7 +809,8 @@ function generateReadme() {
         md += contentWithBreaks + '\n\n';
       }
       s.screenshots.forEach(sc => {
-        md += '![' + sc.name + '](images/' + sc.name + ')\n\n';
+        const altText = sc.originalName || sc.name;
+        md += '![' + altText + '](images/' + sc.name + ')\n\n';
       });
     });
   }
@@ -769,7 +819,8 @@ function generateReadme() {
   if (uploadedImages.length > 0 && validSteps.length === 0) {
     md += '## 运行截图\n\n';
     uploadedImages.forEach(img => {
-      md += '![' + img.name + '](images/' + img.name + ')\n\n';
+      const altText = img.originalName || img.name;
+      md += '![' + altText + '](images/' + img.name + ')\n\n';
     });
   }
 
@@ -797,45 +848,6 @@ function updatePreview() {
   } catch (e) {
     body.innerHTML = '<pre>' + escapeHtml(md) + '</pre>';
   }
-}
-
-function suggestEnglishName() {
-  const displayName = document.getElementById('displayName').value.trim();
-  const toolNameInput = document.getElementById('toolName');
-  const suggestionDiv = document.getElementById('nameSuggestion');
-  const suggestedSpan = document.getElementById('suggestedName');
-
-  if (!displayName || toolNameInput.value) {
-    suggestionDiv.style.display = 'none';
-    return;
-  }
-
-  try {
-    if (typeof pinyinPro === 'undefined') {
-      suggestionDiv.style.display = 'none';
-      return;
-    }
-    const pinyinArr = pinyinPro.pinyin(displayName, { toneType: 'none', type: 'array' });
-    let suggested = pinyinArr.join('_').toLowerCase();
-    suggested = suggested.replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-    if (suggested && suggested.length >= 2) {
-      suggestedSpan.textContent = suggested;
-      suggestionDiv.style.display = 'block';
-      suggestedSpan.onclick = function() {
-        toolNameInput.value = suggested;
-        suggestionDiv.style.display = 'none';
-        updatePreview();
-      };
-    } else {
-      suggestionDiv.style.display = 'none';
-    }
-  } catch(e) {
-    suggestionDiv.style.display = 'none';
-  }
-}
-
-function hideSuggestion() {
-  document.getElementById('nameSuggestion').style.display = 'none';
 }
 
 ['displayName', 'toolName', 'description'].forEach(id => {
