@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工具上传打包器 · TAXLY WorkTools</title>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f6f8;
+    color: #24292f;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* 顶部导航 */
+  .topbar {
+    background: #fff;
+    border-bottom: 1px solid #d0d7de;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar__title { font-size: 18px; font-weight: 600; }
+  .topbar__title span { color: #0969da; }
+  .topbar__actions { display: flex; gap: 12px; }
+  .topbar__btn {
+    padding: 6px 14px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    background: #f6f8fa;
+    cursor: pointer;
+    font-size: 13px;
+    text-decoration: none;
+    color: #24292f;
+    transition: background 0.15s;
+  }
+  .topbar__btn:hover { background: #eaeef2; }
+
+  /* 主布局 */
+  .main {
+    display: flex;
+    gap: 20px;
+    padding: 20px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: flex-start;
+  }
+
+  /* 左侧填写区 */
+  .left-panel {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .section {
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .section__title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1f2328;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section__title .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: #0969da;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 12px;
+  }
+
+  /* 表单元素 */
+  .field { margin-bottom: 12px; }
+  .field:last-child { margin-bottom: 0; }
+  .field__label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #424a53;
+  }
+  .field__label .hint {
+    font-weight: 400;
+    font-style: italic;
+    color: #8b949e;
+    font-size: 12px;
+  }
+  .field__label .required { color: #cf222e; margin-left: 2px; }
+
+  input[type="text"], textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    background: #fff;
+  }
+  input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: #0969da;
+    box-shadow: 0 0 0 3px rgba(9,105,218,0.15);
+  }
+  input::placeholder, textarea::placeholder { color: #8b949e; font-style: italic; }
+  textarea { resize: vertical; min-height: 60px; }
+
+  /* 可增删列表项 */
+  .list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .list-item input { flex: 1; }
+  .btn-remove {
+    padding: 8px 10px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    background: #fff;
+    color: #cf222e;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-remove:hover { background: #ffebe9; }
+
+  .btn-add {
+    padding: 6px 14px;
+    border: 1px dashed #d0d7de;
+    border-radius: 6px;
+    background: #f6f8fa;
+    color: #0969da;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.15s;
+    margin-top: 4px;
+  }
+  .btn-add:hover { background: #ddf4ff; }
+
+  /* 步骤卡片 */
+  .step-card {
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    background: #fafbfc;
+  }
+  .step-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .step-card__title { font-weight: 600; font-size: 13px; color: #424a53; }
+  .step-screenshots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .step-screenshot-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  .step-screenshot-item .remove {
+    color: #cf222e;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  /* 右侧面板 */
+  .right-panel {
+    width: 480px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 72px;
+  }
+
+  /* 预览区 */
+  .preview-box {
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .preview-box__header {
+    padding: 10px 16px;
+    background: #f6f8fa;
+    border-bottom: 1px solid #d0d7de;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .preview-box__body {
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .preview-box__body h1 { font-size: 22px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #d0d7de; }
+  .preview-box__body h2 { font-size: 17px; margin: 20px 0 10px; }
+  .preview-box__body h3 { font-size: 15px; margin: 16px 0 8px; }
+  .preview-box__body p { margin-bottom: 10px; }
+  .preview-box__body ul, .preview-box__body ol { margin: 0 0 10px 24px; }
+  .preview-box__body li { margin-bottom: 4px; }
+  .preview-box__body code {
+    background: rgba(175,184,193,0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: monospace;
+  }
+  .preview-box__body pre {
+    background: #f6f8fa;
+    padding: 12px 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-bottom: 10px;
+  }
+  .preview-box__body pre code { background: none; padding: 0; }
+  .preview-box__body img { max-width: 100%; border-radius: 4px; margin: 8px 0; }
+  .preview-box__body table { border-collapse: collapse; margin-bottom: 10px; width: 100%; }
+  .preview-box__body th, .preview-box__body td { border: 1px solid #d0d7de; padding: 6px 12px; text-align: left; }
+  .preview-box__body th { background: #f6f8fa; }
+  .preview-box__body blockquote {
+    border-left: 4px solid #d0d7de;
+    padding-left: 16px;
+    color: #57606a;
+    margin-bottom: 10px;
+  }
+  .preview-empty { color: #8b949e; font-style: italic; text-align: center; padding: 40px 0; }
+
+  /* 文件拖拽区 */
+  .drop-zone {
+    border: 2px dashed #d0d7de;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    background: #fff;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: #0969da;
+    background: #ddf4ff;
+  }
+  .drop-zone__icon { font-size: 32px; margin-bottom: 8px; }
+  .drop-zone__text { font-size: 14px; color: #424a53; }
+  .drop-zone__hint { font-size: 12px; color: #8b949e; margin-top: 4px; }
+
+  /* 文件列表 */
+  .file-list {
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .file-list__header {
+    padding: 10px 16px;
+    background: #f6f8fa;
+    border-bottom: 1px solid #d0d7de;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .file-list__body { max-height: 200px; overflow-y: auto; }
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid #f0f1f3;
+    font-size: 13px;
+  }
+  .file-item:last-child { border-bottom: none; }
+  .file-item__name { display: flex; align-items: center; gap: 6px; overflow: hidden; }
+  .file-item__name .path { color: #8b949e; font-size: 11px; }
+  .file-item__remove {
+    color: #cf222e;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .file-item__remove:hover { background: #ffebe9; }
+  .file-list__empty { padding: 16px; text-align: center; color: #8b949e; font-style: italic; font-size: 13px; }
+
+  /* 生成按钮 */
+  .btn-generate {
+    width: 100%;
+    padding: 14px;
+    background: #1a7f37;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-generate:hover { background: #156e2e; }
+  .btn-generate:disabled { background: #81c784; cursor: not-allowed; }
+  .btn-generate__hint { text-align: center; font-size: 12px; color: #8b949e; margin-top: 6px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 70px;
+    right: 24px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { background: #1a7f37; }
+  .toast.error { background: #cf222e; }
+  .toast.info { background: #0969da; }
+
+  /* 响应式 */
+  @media (max-width: 1024px) {
+    .main { flex-direction: column; }
+    .right-panel { width: 100%; position: static; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<div class="topbar">
+  <div class="topbar__title">📦 <span>TAXLY WorkTools</span> · 工具上传打包器</div>
+  <div class="topbar__actions">
+    <a class="topbar__btn" href="upload.html">→ 去上传页面</a>
+  </div>
+</div>
+
+<div class="main">
+  <!-- 左侧填写区 -->
+  <div class="left-panel">
+
+    <!-- ① 基本信息 -->
+    <div class="section">
+      <div class="section__title"><span class="num">1</span>基本信息</div>
+      <div class="field">
+        <label class="field__label">中文显示名 <span class="hint">（展示页大标题，可填中文）</span></label>
+        <input type="text" id="displayName" placeholder="如：函证批量生成器">
+      </div>
+      <div class="field">
+        <label class="field__label">工具名称 <span class="required">*</span> <span class="hint">（GitHub 仓库名，仅限英文/拼音）</span></label>
+        <input type="text" id="toolName" placeholder="如：letter_generator（小写英文，用下划线或连字符）">
+      </div>
+      <div class="field">
+        <label class="field__label">工具描述 <span class="required">*</span></label>
+        <textarea id="description" rows="2" placeholder="一句话说明这个工具解决什么问题，如：自动从 Excel 读取客户信息并生成审计函证"></textarea>
+      </div>
+    </div>
+
+    <!-- ② 主要功能 -->
+    <div class="section">
+      <div class="section__title"><span class="num">2</span>主要功能</div>
+      <div id="featuresList"></div>
+      <button class="btn-add" onclick="addFeature()">+ 添加一条功能</button>
+    </div>
+
+    <!-- ③ 环境要求 -->
+    <div class="section">
+      <div class="section__title"><span class="num">3</span>环境要求</div>
+      <div id="envList"></div>
+      <button class="btn-add" onclick="addEnv()">+ 添加一条要求</button>
+    </div>
+
+    <!-- ④ 使用步骤 -->
+    <div class="section">
+      <div class="section__title"><span class="num">4</span>使用步骤</div>
+      <div id="stepsList"></div>
+      <button class="btn-add" onclick="addStep()">+ 添加步骤</button>
+    </div>
+
+    <!-- ⑤ 常见问题 -->
+    <div class="section">
+      <div class="section__title"><span class="num">5</span>常见问题 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选）</span></div>
+      <div id="faqList"></div>
+      <button class="btn-add" onclick="addFaq()">+ 添加问题</button>
+    </div>
+
+  </div>
+
+  <!-- 右侧面板 -->
+  <div class="right-panel">
+
+    <!-- README 实时预览 -->
+    <div class="preview-box">
+      <div class="preview-box__header">📖 README 实时预览</div>
+      <div class="preview-box__body" id="previewBody">
+        <div class="preview-empty">填写左侧信息后，这里会实时显示 README 效果</div>
+      </div>
+    </div>
+
+    <!-- 文件拖拽区 -->
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <div class="drop-zone__icon">📂</div>
+      <div class="drop-zone__text">拖拽文件到此处，或点击选择文件</div>
+      <div class="drop-zone__hint">代码文件自动归 src/，截图自动归 images/</div>
+      <input type="file" id="fileInput" multiple style="display:none">
+    </div>
+
+    <!-- 已添加文件列表 -->
+    <div class="file-list">
+      <div class="file-list__header">
+        <span>📁 已添加文件</span>
+        <span id="fileCount">0</span>
+      </div>
+      <div class="file-list__body" id="fileListBody">
+        <div class="file-list__empty">暂无文件</div>
+      </div>
+    </div>
+
+    <!-- 生成按钮 -->
+    <button class="btn-generate" id="generateBtn" onclick="generatePackage()">📦 生成上传包并下载</button>
+    <div class="btn-generate__hint">生成后自动下载 zip，并跳转上传页面（信息已预填）</div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== 数据存储 ====================
+let features = [];
+let envs = [];
+let steps = [];
+let faqs = [];
+let uploadedFiles = []; // {name, path, type, data, size}
+
+const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.bmp'];
+
+// ==================== 工具函数 ====================
+function showToast(msg, type = 'info') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type + ' show';
+  setTimeout(() => { toast.className = 'toast ' + type; }, 2500);
+}
+
+function isImage(filename) {
+  const ext = filename.toLowerCase().substring(filename.lastIndexOf('.'));
+  return IMAGE_EXTENSIONS.includes(ext);
+}
+
+function getFileCategory(filename) {
+  return isImage(filename) ? 'images' : 'src';
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ==================== 动态增删字段 ====================
+function addFeature(value = '') {
+  const id = 'feat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+  features.push({ id, value });
+  renderFeatures();
+}
+
+function removeFeature(id) {
+  features = features.filter(f => f.id !== id);
+  renderFeatures();
+}
+
+function renderFeatures() {
+  const container = document.getElementById('featuresList');
+  if (features.length === 0) {
+    container.innerHTML = '<div style="color:#8b949e;font-size:13px;font-style:italic;margin-bottom:8px;">暂无功能，点击下方按钮添加</div>';
+    return;
+  }
+  container.innerHTML = features.map(f => `
+    <div class="list-item">
+      <input type="text" value="${escapeHtml(f.value)}" placeholder="如：支持批量生成函证"
+        oninput="updateFeature('${f.id}', this.value)">
+      <button class="btn-remove" onclick="removeFeature('${f.id}')" title="删除">×</button>
+    </div>
+  `).join('');
+}
+
+function updateFeature(id, value) {
+  const f = features.find(x => x.id === id);
+  if (f) { f.value = value; updatePreview(); }
+}
+
+function addEnv(value = '') {
+  const id = 'env_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+  envs.push({ id, value });
+  renderEnvs();
+}
+
+function removeEnv(id) {
+  envs = envs.filter(e => e.id !== id);
+  renderEnvs();
+}
+
+function renderEnvs() {
+  const container = document.getElementById('envList');
+  if (envs.length === 0) {
+    container.innerHTML = '<div style="color:#8b949e;font-size:13px;font-style:italic;margin-bottom:8px;">暂无要求，简单工具可跳过</div>';
+    return;
+  }
+  container.innerHTML = envs.map(e => `
+    <div class="list-item">
+      <input type="text" value="${escapeHtml(e.value)}" placeholder="如：Python 3.8+、pip install pandas"
+        oninput="updateEnv('${e.id}', this.value)">
+      <button class="btn-remove" onclick="removeEnv('${e.id}')" title="删除">×</button>
+    </div>
+  `).join('');
+}
+
+function updateEnv(id, value) {
+  const e = envs.find(x => x.id === id);
+  if (e) { e.value = value; updatePreview(); }
+}
+
+// ==================== 使用步骤 ====================
+function addStep() {
+  const id = 'step_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+  steps.push({ id, title: '', content: '', screenshots: [] });
+  renderSteps();
+}
+
+function removeStep(id) {
+  steps = steps.filter(s => s.id !== id);
+  renderSteps();
+}
+
+function renderSteps() {
+  const container = document.getElementById('stepsList');
+  if (steps.length === 0) {
+    container.innerHTML = '<div style="color:#8b949e;font-size:13px;font-style:italic;margin-bottom:8px;">暂无步骤，建议至少添加使用步骤</div>';
+    return;
+  }
+  container.innerHTML = steps.map((s, idx) => `
+    <div class="step-card">
+      <div class="step-card__header">
+        <span class="step-card__title">步骤 ${idx + 1}</span>
+        <button class="btn-remove" onclick="removeStep('${s.id}')" title="删除步骤">×</button>
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <input type="text" value="${escapeHtml(s.title)}" placeholder="步骤标题，如：准备工作"
+          oninput="updateStepTitle('${s.id}', this.value)">
+      </div>
+      <div class="field">
+        <textarea rows="2" placeholder="详细操作说明，可写多行"
+          oninput="updateStepContent('${s.id}', this.value)">${escapeHtml(s.content)}</textarea>
+      </div>
+      ${s.screenshots.length > 0 ? `
+        <div class="step-screenshots">
+          ${s.screenshots.map((sc, i) => `
+            <div class="step-screenshot-item">
+              🖼️ ${sc.name}
+              <span class="remove" onclick="removeStepScreenshot('${s.id}', ${i})">×</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+      <button class="btn-add" style="margin-top:8px;" onclick="addStepScreenshot('${s.id}')">+ 添加步骤截图</button>
+      <input type="file" id="stepImg_${s.id}" accept="image/*" multiple style="display:none"
+        onchange="handleStepScreenshot('${s.id}', this.files)">
+    </div>
+  `).join('');
+}
+
+function updateStepTitle(id, value) {
+  const s = steps.find(x => x.id === id);
+  if (s) { s.title = value; updatePreview(); }
+}
+
+function updateStepContent(id, value) {
+  const s = steps.find(x => x.id === id);
+  if (s) { s.content = value; updatePreview(); }
+}
+
+function addStepScreenshot(stepId) {
+  document.getElementById('stepImg_' + stepId).click();
+}
+
+function handleStepScreenshot(stepId, files) {
+  const s = steps.find(x => x.id === stepId);
+  if (!s) return;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      s.screenshots.push({ name: file.name, data: e.target.result });
+      renderSteps();
+      updatePreview();
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function removeStepScreenshot(stepId, idx) {
+  const s = steps.find(x => x.id === stepId);
+  if (s) {
+    s.screenshots.splice(idx, 1);
+    renderSteps();
+    updatePreview();
+  }
+}
+
+// ==================== 常见问题 ====================
+function addFaq() {
+  const id = 'faq_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+  faqs.push({ id, q: '', a: '' });
+  renderFaqs();
+}
+
+function removeFaq(id) {
+  faqs = faqs.filter(f => f.id !== id);
+  renderFaqs();
+}
+
+function renderFaqs() {
+  const container = document.getElementById('faqList');
+  if (faqs.length === 0) {
+    container.innerHTML = '<div style="color:#8b949e;font-size:13px;font-style:italic;margin-bottom:8px;">暂无问题，可跳过</div>';
+    return;
+  }
+  container.innerHTML = faqs.map(f => `
+    <div class="step-card">
+      <div class="step-card__header">
+        <span class="step-card__title">Q&A</span>
+        <button class="btn-remove" onclick="removeFaq('${f.id}')" title="删除">×</button>
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <input type="text" value="${escapeHtml(f.q)}" placeholder="问题，如：运行报错怎么办？"
+          oninput="updateFaqQ('${f.id}', this.value)">
+      </div>
+      <div class="field">
+        <textarea rows="2" placeholder="回答，如：检查依赖是否安装"
+          oninput="updateFaqA('${f.id}', this.value)">${escapeHtml(f.a)}</textarea>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateFaqQ(id, value) {
+  const f = faqs.find(x => x.id === id);
+  if (f) { f.q = value; updatePreview(); }
+}
+
+function updateFaqA(id, value) {
+  const f = faqs.find(x => x.id === id);
+  if (f) { f.a = value; updatePreview(); }
+}
+
+// ==================== 文件拖拽 ====================
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.classList.add('dragover');
+});
+
+dropZone.addEventListener('dragleave', () => {
+  dropZone.classList.remove('dragover');
+});
+
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+
+fileInput.addEventListener('change', (e) => {
+  handleFiles(e.target.files);
+  e.target.value = '';
+});
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    if (uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
+      showToast('文件 ' + file.name + ' 已存在', 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const category = getFileCategory(file.name);
+      uploadedFiles.push({
+        name: file.name,
+        path: category + '/' + file.name,
+        category: category,
+        data: e.target.result,
+        size: file.size
+      });
+      renderFileList();
+      updatePreview();
+      showToast('已添加: ' + file.name + ' → ' + category + '/', 'success');
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function removeFile(index) {
+  uploadedFiles.splice(index, 1);
+  renderFileList();
+  updatePreview();
+}
+
+function renderFileList() {
+  const body = document.getElementById('fileListBody');
+  const count = document.getElementById('fileCount');
+  count.textContent = uploadedFiles.length;
+  if (uploadedFiles.length === 0) {
+    body.innerHTML = '<div class="file-list__empty">暂无文件</div>';
+    return;
+  }
+  body.innerHTML = uploadedFiles.map((f, i) => `
+    <div class="file-item">
+      <div class="file-item__name">
+        ${f.category === 'images' ? '🖼️' : '📄'}
+        <span>${escapeHtml(f.name)}</span>
+        <span class="path">${f.path}</span>
+      </div>
+      <span class="file-item__remove" onclick="removeFile(${i})" title="移除">×</span>
+    </div>
+  `).join('');
+}
+
+// ==================== README 生成 ====================
+function generateReadme() {
+  const displayName = document.getElementById('displayName').value.trim();
+  const toolName = document.getElementById('toolName').value.trim();
+  const description = document.getElementById('description').value.trim();
+
+  const title = displayName || toolName || '未命名工具';
+  let md = '# ' + title + '\n\n';
+
+  if (description) {
+    md += description + '\n\n';
+  }
+
+  const featValues = features.map(f => f.value).filter(v => v.trim());
+  if (featValues.length > 0) {
+    md += '## 主要功能\n\n';
+    featValues.forEach(v => { md += '- ' + v + '\n'; });
+    md += '\n';
+  }
+
+  const envValues = envs.map(e => e.value).filter(v => v.trim());
+  if (envValues.length > 0) {
+    md += '## 环境要求\n\n';
+    envValues.forEach(v => { md += '- ' + v + '\n'; });
+    md += '\n';
+  }
+
+  const validSteps = steps.filter(s => s.title.trim() || s.content.trim());
+  if (validSteps.length > 0) {
+    md += '## 使用步骤\n\n';
+    validSteps.forEach((s, idx) => {
+      md += '### ' + (idx + 1) + '. ' + (s.title.trim() || '步骤 ' + (idx + 1)) + '\n\n';
+      if (s.content.trim()) {
+        md += s.content.trim() + '\n\n';
+      }
+      s.screenshots.forEach(sc => {
+        md += '![' + sc.name + '](images/' + sc.name + ')\n\n';
+      });
+    });
+  }
+
+  const uploadedImages = uploadedFiles.filter(f => f.category === 'images');
+  if (uploadedImages.length > 0 && validSteps.length === 0) {
+    md += '## 运行截图\n\n';
+    uploadedImages.forEach(img => {
+      md += '![' + img.name + '](images/' + img.name + ')\n\n';
+    });
+  }
+
+  const validFaqs = faqs.filter(f => f.q.trim() || f.a.trim());
+  if (validFaqs.length > 0) {
+    md += '## 常见问题\n\n';
+    validFaqs.forEach(f => {
+      md += '**Q: ' + (f.q.trim() || '问题') + '**\n\n';
+      md += 'A: ' + (f.a.trim() || '暂无回答') + '\n\n';
+    });
+  }
+
+  return md;
+}
+
+function updatePreview() {
+  const md = generateReadme();
+  const body = document.getElementById('previewBody');
+  if (!md.trim() || md === '# 未命名工具\n\n') {
+    body.innerHTML = '<div class="preview-empty">填写左侧信息后，这里会实时显示 README 效果</div>';
+    return;
+  }
+  try {
+    body.innerHTML = marked.parse(md);
+  } catch (e) {
+    body.innerHTML = '<pre>' + escapeHtml(md) + '</pre>';
+  }
+}
+
+['displayName', 'toolName', 'description'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updatePreview);
+});
+
+// ==================== 生成打包 ====================
+async function generatePackage() {
+  const toolName = document.getElementById('toolName').value.trim();
+  const description = document.getElementById('description').value.trim();
+  const displayName = document.getElementById('displayName').value.trim();
+
+  if (!toolName) {
+    showToast('请填写工具名称', 'error');
+    return;
+  }
+  if (!description) {
+    showToast('请填写工具描述', 'error');
+    return;
+  }
+  if (!/^[a-z0-9][a-z0-9._-]*$/.test(toolName)) {
+    showToast('工具名称只能用小写英文、数字、下划线、连字符、点', 'error');
+    return;
+  }
+  if (uploadedFiles.length === 0) {
+    showToast('请至少添加一个代码文件', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 正在生成...';
+
+  try {
+    const zip = new JSZip();
+
+    const readmeMd = generateReadme();
+    zip.file('README.md', readmeMd);
+
+    const codeFiles = uploadedFiles.filter(f => f.category === 'src');
+    const imageFiles = uploadedFiles.filter(f => f.category === 'images');
+    const isSingleFile = codeFiles.length === 1 && imageFiles.length === 0;
+
+    let portfolio = '# 工具下载配置（由上传打包器自动生成，请勿手动修改）\n';
+    if (displayName) {
+      portfolio += 'display_name = "' + displayName.replace(/"/g, '\\"') + '"\n';
+    }
+    if (isSingleFile) {
+      const f = codeFiles[0];
+      portfolio += 'download_type = "single"\n';
+      portfolio += 'download_url = "https://raw.githubusercontent.com/TAXLY-WorkTools/' + toolName + '/main/src/' + f.name + '"\n';
+    } else {
+      portfolio += 'download_type = "release"\n';
+      portfolio += 'download_url = "https://github.com/TAXLY-WorkTools/' + toolName + '/releases/download/v1.0.0/' + toolName + '.zip"\n';
+    }
+    uploadedFiles.forEach(f => {
+      portfolio += '\n[[files]]\n';
+      portfolio += 'name = "' + f.name.replace(/"/g, '\\"') + '"\n';
+      portfolio += 'raw_url = "https://raw.githubusercontent.com/TAXLY-WorkTools/' + toolName + '/main/' + f.path + '"\n';
+    });
+    zip.file('portfolio.toml', portfolio);
+
+    uploadedFiles.forEach(f => {
+      zip.file(f.path, f.data);
+    });
+
+    steps.forEach(s => {
+      s.screenshots.forEach(sc => {
+        const exists = uploadedFiles.some(f => f.name === sc.name && f.category === 'images');
+        if (!exists) {
+          zip.file('images/' + sc.name, sc.data);
+        }
+      });
+    });
+
+    const content = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = toolName + '.zip';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast('打包成功！正在跳转上传页面...', 'success');
+
+    setTimeout(() => {
+      const params = new URLSearchParams();
+      params.set('tool_name', toolName);
+      params.set('description', description);
+      if (displayName) {
+        params.set('display_name', displayName);
+      }
+      window.location.href = 'upload.html?' + params.toString();
+    }, 1500);
+
+  } catch (e) {
+    console.error(e);
+    showToast('生成失败: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '📦 生成上传包并下载';
+  }
+}
+
+// ==================== 初始化 ====================
+addFeature();
+addEnv();
+addStep();
+
+updatePreview();
+</script>
+
+</body>
+</html>
