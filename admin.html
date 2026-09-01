@@ -8,41 +8,22 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: #f6f8fa;
-    color: #24292f;
-    font-size: 14px;
-    line-height: 1.6;
+    background: #f6f8fa; color: #24292f; font-size: 14px; line-height: 1.6;
   }
   .topbar {
-    background: #24292f;
-    color: #fff;
-    padding: 12px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    background: #24292f; color: #fff; padding: 12px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    position: sticky; top: 0; z-index: 100;
   }
   .topbar__title { font-size: 16px; font-weight: 600; }
   .topbar__title span { color: #58a6ff; }
   .topbar__right { display: flex; align-items: center; gap: 12px; }
-  .token-status {
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.1);
-  }
+  .token-status { font-size: 12px; padding: 4px 10px; border-radius: 12px; background: rgba(255,255,255,0.1); }
   .token-status.ok { background: #238636; }
   .token-status.no { background: #6e7681; }
   .btn {
-    padding: 6px 14px;
-    border: 1px solid #d0d7de;
-    border-radius: 6px;
-    background: #f6f8fa;
-    cursor: pointer;
-    font-size: 13px;
-    transition: background 0.15s;
+    padding: 6px 14px; border: 1px solid #d0d7de; border-radius: 6px;
+    background: #f6f8fa; cursor: pointer; font-size: 13px; transition: background 0.15s;
   }
   .btn:hover { background: #eaeef2; }
   .btn--primary { background: #2da44e; color: #fff; border-color: #2da44e; }
@@ -53,46 +34,21 @@
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .main { display: flex; min-height: calc(100vh - 52px); }
   .sidebar {
-    width: 200px;
-    background: #fff;
-    border-right: 1px solid #d0d7de;
-    padding: 16px 0;
-    flex-shrink: 0;
+    width: 200px; background: #fff; border-right: 1px solid #d0d7de;
+    padding: 16px 0; flex-shrink: 0;
   }
   .menu-item {
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #24292f;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.15s;
+    padding: 10px 20px; cursor: pointer; font-size: 14px; color: #24292f;
+    display: flex; align-items: center; gap: 8px; transition: background 0.15s;
     border-left: 3px solid transparent;
   }
   .menu-item:hover { background: #f6f8fa; }
-  .menu-item.active {
-    background: #ddf4ff;
-    color: #0969da;
-    border-left-color: #0969da;
-    font-weight: 500;
-  }
+  .menu-item.active { background: #ddf4ff; color: #0969da; border-left-color: #0969da; font-weight: 500; }
   .content { flex: 1; padding: 24px; min-width: 0; }
-  .content__title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #d0d7de;
-  }
-  .card {
-    background: #fff;
-    border: 1px solid #d0d7de;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 16px;
-  }
+  .content__title { font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #d0d7de; }
+  .card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; }
   .card__title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #1f2328; }
+  .card__desc { font-size: 12px; color: #57606a; margin-bottom: 12px; }
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; font-weight: 500; font-size: 13px; margin-bottom: 4px; color: #424a53; }
   .form-group input, .form-group select, .form-group textarea {
@@ -101,10 +57,9 @@
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     outline: none; border-color: #0969da; box-shadow: 0 0 0 3px rgba(9,105,218,0.15);
   }
-  .form-row { display: flex; gap: 12px; }
-  .form-row .form-group { flex: 1; }
   .table {
-    width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #d0d7de; border-radius: 8px; overflow: hidden;
+    width: 100%; border-collapse: collapse; background: #fff;
+    border: 1px solid #d0d7de; border-radius: 8px; overflow: hidden;
   }
   .table th, .table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #f0f1f3; font-size: 13px; }
   .table th { background: #f6f8fa; font-weight: 600; color: #424a53; }
@@ -113,6 +68,7 @@
   .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; margin-right: 4px; }
   .tag--dept { background: #ddf4ff; color: #0969da; }
   .tag--func { background: #dafbe1; color: #116329; }
+  .tag--custom { background: #fff8c5; color: #9a6700; }
   .tag--offline { background: #eaeef2; color: #57606a; }
   .search-box { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
   .search-box input { flex: 1; padding: 8px 12px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 13px; }
@@ -139,12 +95,19 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   .empty { text-align: center; padding: 40px; color: #8b949e; font-style: italic; }
-  .file-tree { font-family: monospace; font-size: 13px; }
-  .file-tree-item { padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; }
-  .file-tree-item:hover { background: #f6f8fa; }
-  .file-tree-item .name { display: flex; align-items: center; gap: 6px; }
-  .file-tree-item .actions { display: flex; gap: 6px; opacity: 0; transition: opacity 0.15s; }
-  .file-tree-item:hover .actions { opacity: 1; }
+  .section-divider {
+    margin: 24px 0 16px; padding: 8px 12px; background: #f6f8fa; border-radius: 6px;
+    font-weight: 600; font-size: 14px; color: #424a53;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .checkbox-item {
+    display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+    border: 1px solid #d0d7de; border-radius: 6px; cursor: pointer; transition: all 0.15s;
+  }
+  .checkbox-item:hover { background: #f6f8fa; }
+  .checkbox-item.checked { background: #ddf4ff; border-color: #0969da; }
+  .checkbox-item input { cursor: pointer; }
   @media (max-width: 768px) {
     .main { flex-direction: column; }
     .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 8px; }
@@ -154,7 +117,6 @@
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <div class="topbar__title">🔧 <span>TAXLY WorkTools</span> · 工具管理后台</div>
   <div class="topbar__right">
@@ -162,23 +124,14 @@
     <button class="btn btn--sm" onclick="showTokenModal()">设置 Token</button>
   </div>
 </div>
-
 <div class="main">
   <div class="sidebar">
     <div class="menu-item active" data-module="labels" onclick="switchModule('labels')">📑 标签管理</div>
-    <div class="menu-item" data-module="tools" onclick="switchModule('tools')">📦 工具列表</div>
-    <div class="menu-item" data-module="edit" onclick="switchModule('edit')">✏️ 工具编辑</div>
-    <div class="menu-item" data-module="files" onclick="switchModule('files')">📁 文件管理</div>
-    <div class="menu-item" data-module="delete" onclick="switchModule('delete')">🗑️ 工具删除</div>
     <div class="menu-item" data-module="issues" onclick="switchModule('issues')">📋 上传记录</div>
   </div>
-  <div class="content" id="content">
-    <div class="loading">请先设置 GitHub Token</div>
-  </div>
+  <div class="content" id="content"><div class="loading">请先设置 GitHub Token</div></div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <div class="modal-overlay" id="tokenModal">
   <div class="modal">
     <div class="modal__title">🔑 设置 GitHub Token</div>
@@ -186,32 +139,23 @@
       需要具有 <strong>repo</strong> 权限的 Personal Access Token (PAT)。<br>
       Token 仅保存在您的浏览器 localStorage 中，不会上传到任何服务器。
     </p>
-    <div class="form-group">
-      <label>Token</label>
-      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-    </div>
+    <div class="form-group"><label>Token</label><input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"></div>
     <div class="modal__actions">
       <button class="btn" onclick="closeTokenModal()">取消</button>
       <button class="btn btn--primary" onclick="saveToken()">保存并验证</button>
     </div>
   </div>
 </div>
-
 <div class="modal-overlay" id="confirmModal">
   <div class="modal">
     <div class="modal__title" id="confirmTitle">确认操作</div>
     <div id="confirmBody" style="margin-bottom:12px;"></div>
-    <div class="form-group" id="confirmInputGroup" style="display:none;">
-      <label id="confirmInputLabel">请输入确认内容</label>
-      <input type="text" id="confirmInput">
-    </div>
     <div class="modal__actions">
       <button class="btn" onclick="closeConfirmModal()">取消</button>
       <button class="btn btn--danger" id="confirmBtn" onclick="executeConfirm()">确认</button>
     </div>
   </div>
 </div>
-
 <script>
 const ORG = 'TAXLY-WorkTools';
 const TOOLHUB_REPO = 'toolhub';
@@ -220,6 +164,8 @@ let currentToken = localStorage.getItem('admin_token') || '';
 let currentUser = null;
 let currentModule = 'labels';
 let confirmCallback = null;
+let labelsData = null;
+let labelsSha = null;
 
 function showToast(msg, type = 'info') {
   const toast = document.getElementById('toast');
@@ -227,30 +173,16 @@ function showToast(msg, type = 'info') {
   toast.className = 'toast ' + type + ' show';
   setTimeout(() => { toast.className = 'toast ' + type; }, 3000);
 }
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
+function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 function formatDate(isoStr) {
   if (!isoStr) return '-';
   return new Date(isoStr).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
-
 async function ghApi(path, options = {}) {
   if (!currentToken) throw new Error('请先设置 GitHub Token');
   const url = path.startsWith('http') ? path : `https://api.github.com${path}`;
-  const headers = {
-    'Authorization': `token ${currentToken}`,
-    'Accept': 'application/vnd.github.v3+json',
-    ...options.headers
-  };
-  if (options.body && typeof options.body === 'object') {
-    headers['Content-Type'] = 'application/json';
-    options.body = JSON.stringify(options.body);
-  }
+  const headers = { 'Authorization': `token ${currentToken}`, 'Accept': 'application/vnd.github.v3+json', ...options.headers };
+  if (options.body && typeof options.body === 'object') { headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(options.body); }
   const resp = await fetch(url, { ...options, headers });
   if (!resp.ok) {
     let errMsg = `HTTP ${resp.status}`;
@@ -260,37 +192,14 @@ async function ghApi(path, options = {}) {
   if (resp.status === 204) return null;
   return resp.json();
 }
-
 async function ghGet(path) { return ghApi(path); }
 async function ghPut(path, body) { return ghApi(path, { method: 'PUT', body }); }
 async function ghPost(path, body) { return ghApi(path, { method: 'POST', body }); }
 async function ghDelete(path) { return ghApi(path, { method: 'DELETE' }); }
 async function ghPatch(path, body) { return ghApi(path, { method: 'PATCH', body }); }
 
-async function getFileContent(repo, path) {
-  try {
-    const data = await ghGet(`/repos/${ORG}/${repo}/contents/${path}`);
-    if (Array.isArray(data)) return null;
-    return { content: atob(data.content.replace(/\n/g, '')), sha: data.sha, name: data.name, path: data.path };
-  } catch(e) {
-    if (e.message.includes('404')) return null;
-    throw e;
-  }
-}
-
-async function updateFileContent(repo, path, content, message, sha = null) {
-  const body = { message: message, content: btoa(unescape(encodeURIComponent(content))), branch: 'main' };
-  if (sha) body.sha = sha;
-  return ghPut(`/repos/${ORG}/${repo}/contents/${path}`, body);
-}
-
-function showTokenModal() {
-  document.getElementById('tokenInput').value = currentToken;
-  document.getElementById('tokenModal').classList.add('show');
-}
-
+function showTokenModal() { document.getElementById('tokenInput').value = currentToken; document.getElementById('tokenModal').classList.add('show'); }
 function closeTokenModal() { document.getElementById('tokenModal').classList.remove('show'); }
-
 async function saveToken() {
   const token = document.getElementById('tokenInput').value.trim();
   if (!token) { showToast('请输入 Token', 'error'); return; }
@@ -303,23 +212,13 @@ async function saveToken() {
     closeTokenModal();
     showToast(`认证成功：${user.login}`, 'success');
     switchModule(currentModule);
-  } catch(e) {
-    showToast('Token 验证失败：' + e.message, 'error');
-    currentToken = '';
-  }
+  } catch(e) { showToast('Token 验证失败：' + e.message, 'error'); currentToken = ''; }
 }
-
 function updateTokenStatus() {
   const el = document.getElementById('tokenStatus');
-  if (currentToken && currentUser) {
-    el.textContent = `✅ ${currentUser.login}`;
-    el.className = 'token-status ok';
-  } else {
-    el.textContent = '未认证';
-    el.className = 'token-status no';
-  }
+  if (currentToken && currentUser) { el.textContent = `✅ ${currentUser.login}`; el.className = 'token-status ok'; }
+  else { el.textContent = '未认证'; el.className = 'token-status no'; }
 }
-
 async function initToken() {
   if (currentToken) {
     try {
@@ -328,603 +227,275 @@ async function initToken() {
       updateTokenStatus();
       switchModule(currentModule);
       return;
-    } catch(e) {
-      currentToken = '';
-      localStorage.removeItem('admin_token');
-    }
+    } catch(e) { currentToken = ''; localStorage.removeItem('admin_token'); }
   }
   document.getElementById('content').innerHTML = '<div class="empty">请先点击右上角"设置 Token"进行认证</div>';
 }
-
 function showConfirm(title, body, callback, options = {}) {
   document.getElementById('confirmTitle').textContent = title;
   document.getElementById('confirmBody').innerHTML = body;
   confirmCallback = callback;
-  const inputGroup = document.getElementById('confirmInputGroup');
-  if (options.confirmText) {
-    inputGroup.style.display = 'block';
-    document.getElementById('confirmInputLabel').textContent = `请输入 "${options.confirmText}" 确认`;
-    document.getElementById('confirmInput').value = '';
-    document.getElementById('confirmInput').dataset.expected = options.confirmText;
-  } else {
-    inputGroup.style.display = 'none';
-  }
   const confirmBtn = document.getElementById('confirmBtn');
   confirmBtn.className = 'btn ' + (options.danger ? 'btn--danger' : 'btn--primary');
   confirmBtn.textContent = options.confirmBtnText || '确认';
   document.getElementById('confirmModal').classList.add('show');
 }
-
-function closeConfirmModal() {
-  document.getElementById('confirmModal').classList.remove('show');
-  confirmCallback = null;
-}
-
-function executeConfirm() {
-  const inputGroup = document.getElementById('confirmInputGroup');
-  if (inputGroup.style.display !== 'none') {
-    const input = document.getElementById('confirmInput');
-    const expected = input.dataset.expected;
-    if (input.value.trim() !== expected) { showToast('确认内容不匹配', 'error'); return; }
-  }
-  closeConfirmModal();
-  if (confirmCallback) confirmCallback();
-}
-
+function closeConfirmModal() { document.getElementById('confirmModal').classList.remove('show'); confirmCallback = null; }
+function executeConfirm() { closeConfirmModal(); if (confirmCallback) confirmCallback(); }
 function switchModule(module) {
   currentModule = module;
-  document.querySelectorAll('.menu-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.module === module);
-  });
-  if (!currentToken) {
-    document.getElementById('content').innerHTML = '<div class="empty">请先设置 GitHub Token</div>';
-    return;
-  }
-  const renderers = {
-    labels: renderLabels, tools: renderTools, edit: renderEditSelect,
-    files: renderFilesSelect, delete: renderDelete, issues: renderIssues
-  };
-  if (renderers[module]) renderers[module]();
+  document.querySelectorAll('.menu-item').forEach(el => { el.classList.toggle('active', el.dataset.module === module); });
+  if (!currentToken) { document.getElementById('content').innerHTML = '<div class="empty">请先设置 GitHub Token</div>'; return; }
+  if (module === 'labels') renderLabels();
+  else if (module === 'issues') renderIssues();
 }
 
+// 模块1：标签管理
 async function renderLabels() {
-  const content = document.getElementById('content');
-  content.innerHTML = `
+  document.getElementById('content').innerHTML = `
     <div class="content__title">📑 标签管理</div>
     <div class="card">
-      <div class="card__title">添加标签</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>类型</label>
-          <select id="labelType">
-            <option value="dept">部门标签 (dept-xxx)</option>
-            <option value="func">功能标签 (func-xxx)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>中文名称</label>
-          <input type="text" id="labelName" placeholder="如：审计部 / 数据分析">
-        </div>
-        <div class="form-group" style="display:flex; align-items:flex-end;">
-          <button class="btn btn--primary" onclick="addLabel()">添加</button>
-        </div>
-      </div>
+      <div class="card__title">A. 标签定义管理</div>
+      <div class="card__desc">管理 labels.json 中的标签定义（部门、功能、自定义类型）。修改后保存到 toolhub 仓库，上传脚本会自动读取。</div>
+      <div id="labelsDefList" class="loading">加载中...</div>
     </div>
     <div class="card">
-      <div class="card__title">当前标签列表</div>
-      <div id="labelsList" class="loading">加载中...</div>
-    </div>
-  `;
-  await loadLabels();
+      <div class="card__title">B. 工具标签分配</div>
+      <div class="card__desc">选择工具仓库，查看并修改其 GitHub Topics 标签。修改后立即生效，展示页下次构建后同步。</div>
+      <div class="form-group"><label>选择工具仓库</label>
+        <select id="toolRepoSelect" onchange="loadToolTopics()"><option value="">请选择工具...</option></select>
+      </div>
+      <div id="toolTopicsArea" style="display:none;">
+        <div class="form-group"><label>当前标签（勾选/取消后保存）</label>
+          <div class="checkbox-group" id="topicsCheckboxGroup"></div>
+        </div>
+        <div style="display:flex; gap:10px;"><button class="btn btn--primary" onclick="saveToolTopics()">💾 保存标签</button></div>
+      </div>
+    </div>`;
+  await loadLabelsDef();
+  await loadToolReposForSelect();
 }
-
-async function loadLabels() {
+async function loadLabelsDef() {
   try {
-    const file = await getFileContent(TOOLHUB_REPO, 'labels.json');
-    const labels = file ? JSON.parse(file.content) : { departments: [], functions: [] };
-    const list = document.getElementById('labelsList');
-    let html = '<table class="table"><thead><tr><th>类型</th><th>标签名</th><th>中文名</th><th>操作</th></tr></thead><tbody>';
-    (labels.departments || []).forEach(l => {
-      html += `<tr><td><span class="tag tag--dept">部门</span></td><td><code>${escapeHtml(l.name)}</code></td><td>${escapeHtml(l.display_name || '')}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabel('dept','${escapeHtml(l.name)}')">删除</button></td></tr>`;
-    });
-    (labels.functions || []).forEach(l => {
-      html += `<tr><td><span class="tag tag--func">功能</span></td><td><code>${escapeHtml(l.name)}</code></td><td>${escapeHtml(l.display_name || '')}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabel('func','${escapeHtml(l.name)}')">删除</button></td></tr>`;
-    });
-    html += '</tbody></table>';
-    list.innerHTML = html;
-  } catch(e) {
-    document.getElementById('labelsList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`;
-  }
+    const data = await ghGet(`/repos/${ORG}/${TOOLHUB_REPO}/contents/labels.json`);
+    labelsSha = data.sha;
+    labelsData = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+    renderLabelsDefList();
+  } catch(e) { document.getElementById('labelsDefList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; }
 }
-
-async function addLabel() {
-  const type = document.getElementById('labelType').value;
-  const name = document.getElementById('labelName').value.trim();
-  if (!name) { showToast('请输入标签名称', 'error'); return; }
-  const prefix = type === 'dept' ? 'dept-' : 'func-';
-  const labelName = prefix + name.toLowerCase().replace(/\s+/g, '-');
-  try {
-    const file = await getFileContent(TOOLHUB_REPO, 'labels.json');
-    const labels = file ? JSON.parse(file.content) : { departments: [], functions: [] };
-    const arr = type === 'dept' ? labels.departments : labels.functions;
-    if (arr.some(l => l.name === labelName)) { showToast('标签已存在', 'error'); return; }
-    arr.push({ name: labelName, display_name: name });
-    await updateFileContent(TOOLHUB_REPO, 'labels.json', JSON.stringify(labels, null, 2), `feat(labels): 添加标签 ${labelName}`, file?.sha);
-    showToast(`标签 ${labelName} 添加成功`, 'success');
-    document.getElementById('labelName').value = '';
-    await loadLabels();
-  } catch(e) {
-    showToast('添加失败：' + e.message, 'error');
-  }
-}
-
-async function deleteLabel(type, name) {
-  showConfirm('删除标签', `确定要删除标签 <code>${escapeHtml(name)}</code> 吗？`, async () => {
-    try {
-      const file = await getFileContent(TOOLHUB_REPO, 'labels.json');
-      const labels = JSON.parse(file.content);
-      const arr = type === 'dept' ? labels.departments : labels.functions;
-      const idx = arr.findIndex(l => l.name === name);
-      if (idx >= 0) arr.splice(idx, 1);
-      await updateFileContent(TOOLHUB_REPO, 'labels.json', JSON.stringify(labels, null, 2), `feat(labels): 删除标签 ${name}`, file.sha);
-      showToast('标签已删除', 'success');
-      await loadLabels();
-    } catch(e) {
-      showToast('删除失败：' + e.message, 'error');
-    }
-  }, { danger: true });
-}
-
-async function renderTools() {
-  const content = document.getElementById('content');
-  content.innerHTML = `
-    <div class="content__title">📦 工具列表</div>
-    <div class="search-box">
-      <input type="text" id="toolSearch" placeholder="搜索工具名称或描述..." oninput="filterTools()">
-      <select id="toolFilterDept" onchange="filterTools()"><option value="">全部部门</option></select>
-      <select id="toolFilterFunc" onchange="filterTools()"><option value="">全部功能</option></select>
-    </div>
-    <div id="toolsList" class="loading">加载中...</div>
-  `;
-  await loadTools();
-}
-
-let allTools = [];
-
-async function loadTools() {
-  try {
-    const repos = await ghGet(`/orgs/${ORG}/repos?per_page=100&sort=updated`);
-    allTools = repos.filter(r => !['toolhub', 'upload-portal', 'tool-template'].includes(r.name));
-    const labelsFile = await getFileContent(TOOLHUB_REPO, 'labels.json');
-    const labels = labelsFile ? JSON.parse(labelsFile.content) : { departments: [], functions: [] };
-    const deptSelect = document.getElementById('toolFilterDept');
-    const funcSelect = document.getElementById('toolFilterFunc');
-    labels.departments.forEach(l => { deptSelect.innerHTML += `<option value="${escapeHtml(l.name)}">${escapeHtml(l.display_name)}</option>`; });
-    labels.functions.forEach(l => { funcSelect.innerHTML += `<option value="${escapeHtml(l.name)}">${escapeHtml(l.display_name)}</option>`; });
-    renderToolsList(allTools);
-  } catch(e) {
-    document.getElementById('toolsList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`;
-  }
-}
-
-function renderToolsList(tools) {
-  const list = document.getElementById('toolsList');
-  if (tools.length === 0) { list.innerHTML = '<div class="empty">没有找到工具</div>'; return; }
-  let html = '<table class="table"><thead><tr><th>工具名称</th><th>描述</th><th>标签</th><th>大小</th><th>更新时间</th><th>操作</th></tr></thead><tbody>';
-  tools.forEach(r => {
-    const topics = r.topics || [];
-    const tags = topics.map(t => {
-      const cls = t.startsWith('dept-') ? 'tag--dept' : 'tag--func';
-      return `<span class="tag ${cls}">${escapeHtml(t)}</span>`;
-    }).join('');
-    html += `<tr><td><strong>${escapeHtml(r.name)}</strong></td><td>${escapeHtml(r.description || '-')}</td><td>${tags || '-'}</td><td>${r.size} KB</td><td>${formatDate(r.updated_at)}</td><td><button class="btn btn--sm" onclick="viewToolReadme('${escapeHtml(r.name)}')">查看</button> <a class="btn btn--sm" href="${r.html_url}" target="_blank">GitHub</a></td></tr>`;
+function renderLabelsDefList() {
+  const container = document.getElementById('labelsDefList');
+  if (!labelsData) { container.innerHTML = '<div class="empty">无数据</div>'; return; }
+  let html = '';
+  html += `<div class="section-divider"><span>🏢 部门标签 (departments)</span><button class="btn btn--sm" onclick="showAddLabelModal('dept')">+ 添加部门</button></div>`;
+  html += '<table class="table"><thead><tr><th>标签 ID</th><th>中文名称</th><th>操作</th></tr></thead><tbody>';
+  (labelsData.departments || []).forEach(l => {
+    html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabel('dept','${escapeHtml(l.id)}')">删除</button></td></tr>`;
   });
   html += '</tbody></table>';
-  list.innerHTML = html;
-}
-
-function filterTools() {
-  const keyword = document.getElementById('toolSearch').value.toLowerCase();
-  const dept = document.getElementById('toolFilterDept').value;
-  const func = document.getElementById('toolFilterFunc').value;
-  let filtered = allTools;
-  if (keyword) filtered = filtered.filter(r => r.name.toLowerCase().includes(keyword) || (r.description || '').toLowerCase().includes(keyword));
-  if (dept) filtered = filtered.filter(r => (r.topics || []).includes(dept));
-  if (func) filtered = filtered.filter(r => (r.topics || []).includes(func));
-  renderToolsList(filtered);
-}
-
-async function viewToolReadme(repo) {
-  try {
-    const file = await getFileContent(repo, 'README.md');
-    if (!file) { showToast('该工具没有 README.md', 'info'); return; }
-    showConfirm('README 内容', `<pre style="white-space:pre-wrap;max-height:400px;overflow:auto;background:#f6f8fa;padding:12px;border-radius:6px;font-size:12px;">${escapeHtml(file.content)}</pre>`, null, { confirmBtnText: '关闭' });
-    document.getElementById('confirmBtn').onclick = closeConfirmModal;
-  } catch(e) {
-    showToast('读取失败：' + e.message, 'error');
+  html += `<div class="section-divider" style="margin-top:20px;"><span>⚙️ 功能标签 (categories)</span><button class="btn btn--sm" onclick="showAddLabelModal('func')">+ 添加功能</button></div>`;
+  html += '<table class="table"><thead><tr><th>标签 ID</th><th>中文名称</th><th>操作</th></tr></thead><tbody>';
+  (labelsData.categories || []).forEach(l => {
+    html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabel('func','${escapeHtml(l.id)}')">删除</button></td></tr>`;
+  });
+  html += '</tbody></table>';
+  const customTypes = labelsData.custom_types || [];
+  html += `<div class="section-divider" style="margin-top:20px;"><span>🏷️ 自定义类型 (custom_types)</span><button class="btn btn--sm" onclick="showAddCustomTypeModal()">+ 添加类型</button></div>`;
+  if (customTypes.length === 0) {
+    html += '<div class="empty">暂无自定义类型，点击上方"添加类型"创建</div>';
+  } else {
+    customTypes.forEach((ct, idx) => {
+      html += `<div style="margin-bottom:16px; border:1px solid #d0d7de; border-radius:8px; padding:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <strong>${escapeHtml(ct.name)} <code style="font-size:11px; color:#57606a;">(${escapeHtml(ct.key)})</code></strong>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn--sm" onclick="showAddLabelToCustomType(${idx})">+ 标签</button>
+            <button class="btn btn--sm btn--danger" onclick="deleteCustomType(${idx})">删除类型</button>
+          </div>
+        </div>`;
+      if (ct.labels && ct.labels.length > 0) {
+        html += '<table class="table"><thead><tr><th>标签 ID</th><th>中文名称</th><th>操作</th></tr></thead><tbody>';
+        ct.labels.forEach(l => {
+          html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabelFromCustomType(${idx},'${escapeHtml(l.id)}')">删除</button></td></tr>`;
+        });
+        html += '</tbody></table>';
+      } else { html += '<div style="padding:8px; color:#8b949e; font-size:12px;">暂无标签</div>'; }
+      html += '</div>';
+    });
   }
+  container.innerHTML = html;
+}
+function showAddLabelModal(type) {
+  const typeName = type === 'dept' ? '部门' : '功能';
+  const prefix = type === 'dept' ? 'dept-' : 'func-';
+  showConfirm(`添加${typeName}标签`,
+    `<div class="form-group"><label>中文名称</label><input type="text" id="addLabelName" placeholder="如：审计部 / 数据分析"></div>
+     <div class="form-group"><label>标签 ID（自动生成，可修改）</label><input type="text" id="addLabelId" placeholder="${prefix}xxx"></div>`,
+    async () => {
+      const name = document.getElementById('addLabelName').value.trim();
+      let id = document.getElementById('addLabelId').value.trim();
+      if (!name) { showToast('请输入中文名称', 'error'); return; }
+      if (!id) id = prefix + name.toLowerCase().replace(/\s+/g, '-');
+      const arr = type === 'dept' ? labelsData.departments : labelsData.categories;
+      if (arr.some(l => l.id === id)) { showToast('标签 ID 已存在', 'error'); return; }
+      arr.push({ id, name });
+      await saveLabelsJson(`添加${typeName}标签: ${id}`);
+    }, { confirmBtnText: '添加' });
+  setTimeout(() => {
+    const nameInput = document.getElementById('addLabelName');
+    const idInput = document.getElementById('addLabelId');
+    if (nameInput) {
+      nameInput.oninput = () => {
+        if (!idInput.value || idInput.value.startsWith(prefix)) {
+          idInput.value = prefix + nameInput.value.toLowerCase().replace(/\s+/g, '-');
+        }
+      };
+    }
+  }, 100);
+}
+function showAddCustomTypeModal() {
+  showConfirm('添加自定义标签类型',
+    `<div class="form-group"><label>类型名称（中文）</label><input type="text" id="addTypeName" placeholder="如：难度、状态、优先级"></div>
+     <div class="form-group"><label>类型 Key（英文前缀）</label><input type="text" id="addTypeKey" placeholder="如：level、status、priority"></div>`,
+    async () => {
+      const name = document.getElementById('addTypeName').value.trim();
+      const key = document.getElementById('addTypeKey').value.trim();
+      if (!name || !key) { showToast('请填写类型名称和 Key', 'error'); return; }
+      if (!labelsData.custom_types) labelsData.custom_types = [];
+      if (labelsData.custom_types.some(ct => ct.key === key)) { showToast('类型 Key 已存在', 'error'); return; }
+      labelsData.custom_types.push({ key, name, labels: [] });
+      await saveLabelsJson(`添加自定义标签类型: ${key}`);
+    }, { confirmBtnText: '添加' });
+}
+function showAddLabelToCustomType(typeIdx) {
+  const ct = labelsData.custom_types[typeIdx];
+  showConfirm(`添加标签到「${ct.name}」`,
+    `<div class="form-group"><label>中文名称</label><input type="text" id="addCustomLabelName" placeholder="如：简单 / 进行中"></div>
+     <div class="form-group"><label>标签 ID</label><input type="text" id="addCustomLabelId" placeholder="${ct.key}-xxx"></div>`,
+    async () => {
+      const name = document.getElementById('addCustomLabelName').value.trim();
+      let id = document.getElementById('addCustomLabelId').value.trim();
+      if (!name) { showToast('请输入中文名称', 'error'); return; }
+      if (!id) id = `${ct.key}-` + name.toLowerCase().replace(/\s+/g, '-');
+      if (ct.labels.some(l => l.id === id)) { showToast('标签 ID 已存在', 'error'); return; }
+      ct.labels.push({ id, name });
+      await saveLabelsJson(`添加标签到 ${ct.key}: ${id}`);
+    }, { confirmBtnText: '添加' });
+}
+function deleteLabel(type, id) {
+  const typeName = type === 'dept' ? '部门' : '功能';
+  showConfirm(`删除${typeName}标签`, `确定要删除标签 <code>${escapeHtml(id)}</code> 吗？`, async () => {
+    const arr = type === 'dept' ? labelsData.departments : labelsData.categories;
+    const idx = arr.findIndex(l => l.id === id);
+    if (idx >= 0) arr.splice(idx, 1);
+    await saveLabelsJson(`删除${typeName}标签: ${id}`);
+  }, { danger: true });
+}
+function deleteCustomType(idx) {
+  const ct = labelsData.custom_types[idx];
+  showConfirm('删除自定义类型', `确定要删除类型「${escapeHtml(ct.name)}」及其所有标签吗？`, async () => {
+    labelsData.custom_types.splice(idx, 1);
+    await saveLabelsJson(`删除自定义类型: ${ct.key}`);
+  }, { danger: true });
+}
+function deleteLabelFromCustomType(typeIdx, id) {
+  showConfirm('删除标签', `确定要删除标签 <code>${escapeHtml(id)}</code> 吗？`, async () => {
+    const ct = labelsData.custom_types[typeIdx];
+    const idx = ct.labels.findIndex(l => l.id === id);
+    if (idx >= 0) ct.labels.splice(idx, 1);
+    await saveLabelsJson(`删除标签: ${id}`);
+  }, { danger: true });
+}
+async function saveLabelsJson(commitMsg) {
+  try {
+    const content = JSON.stringify(labelsData, null, 2) + '\n';
+    await ghPut(`/repos/${ORG}/${TOOLHUB_REPO}/contents/labels.json`, {
+      message: commitMsg,
+      content: btoa(unescape(encodeURIComponent(content))),
+      sha: labelsSha, branch: 'main'
+    });
+    showToast('labels.json 已保存', 'success');
+    await loadLabelsDef();
+  } catch(e) { showToast('保存失败：' + e.message, 'error'); }
 }
 
-async function renderEditSelect() {
-  const content = document.getElementById('content');
-  content.innerHTML = `
-    <div class="content__title">✏️ 工具信息编辑</div>
-    <div class="card">
-      <div class="card__title">选择要编辑的工具</div>
-      <div class="form-group"><select id="editToolSelect" onchange="loadToolForEdit()"><option value="">请选择工具...</option></select></div>
-    </div>
-    <div id="editForm" style="display:none;"></div>
-  `;
+// B. 工具标签分配
+let allToolRepos = [];
+let currentToolRepo = null;
+let currentToolTopics = [];
+async function loadToolReposForSelect() {
   try {
     const repos = await ghGet(`/orgs/${ORG}/repos?per_page=100&sort=updated`);
-    const tools = repos.filter(r => !['toolhub', 'upload-portal', 'tool-template'].includes(r.name));
-    const select = document.getElementById('editToolSelect');
-    tools.forEach(r => { select.innerHTML += `<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)} - ${escapeHtml(r.description || '')}</option>`; });
+    allToolRepos = repos.filter(r => !['toolhub', 'upload-portal', 'tool-template'].includes(r.name));
+    const select = document.getElementById('toolRepoSelect');
+    select.innerHTML = '<option value="">请选择工具...</option>';
+    allToolRepos.forEach(r => {
+      select.innerHTML += `<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)} — ${escapeHtml(r.description || '')}</option>`;
+    });
   } catch(e) { showToast('加载工具列表失败：' + e.message, 'error'); }
 }
-
-let editingTool = null;
-let editingReadmeSha = null;
-
-async function loadToolForEdit() {
-  const repo = document.getElementById('editToolSelect').value;
-  if (!repo) return;
-  editingTool = repo;
-  const form = document.getElementById('editForm');
-  form.style.display = 'block';
-  form.innerHTML = '<div class="loading">加载 README 中...</div>';
+async function loadToolTopics() {
+  const repoName = document.getElementById('toolRepoSelect').value;
+  if (!repoName) { document.getElementById('toolTopicsArea').style.display = 'none'; return; }
+  currentToolRepo = repoName;
   try {
-    const file = await getFileContent(repo, 'README.md');
-    editingReadmeSha = file?.sha || null;
-    const readme = file?.content || '';
-    const parsed = parseReadme(readme);
-    form.innerHTML = `
-      <div class="card">
-        <div class="card__title">编辑 ${escapeHtml(repo)} 的 README</div>
-        <div class="form-group"><label>标题（中文显示名）</label><input type="text" id="editTitle" value="${escapeHtml(parsed.title)}"></div>
-        <div class="form-group"><label>描述</label><textarea id="editDesc" rows="2">${escapeHtml(parsed.description)}</textarea></div>
-        <div class="form-group"><label>主要功能（每行一条）</label><textarea id="editFeatures" rows="4">${escapeHtml(parsed.features.join('\n'))}</textarea></div>
-        <div class="form-group"><label>环境要求（每行一条）</label><textarea id="editEnv" rows="3">${escapeHtml(parsed.env.join('\n'))}</textarea></div>
-        <div class="form-group"><label>使用步骤（Markdown 格式）</label><textarea id="editSteps" rows="6">${escapeHtml(parsed.steps)}</textarea></div>
-        <div class="form-group"><label>常见问题（Markdown 格式）</label><textarea id="editFaq" rows="4">${escapeHtml(parsed.faq)}</textarea></div>
-        <div style="display:flex; gap:10px; margin-top:16px;">
-          <button class="btn btn--primary" onclick="saveToolEdit()">💾 保存修改</button>
-          <button class="btn" onclick="previewEdit()">👁️ 预览</button>
-        </div>
-      </div>
-      <div class="card" id="editPreview" style="display:none;"><div class="card__title">预览（Markdown 源码）</div><div id="editPreviewContent"></div></div>
-    `;
-  } catch(e) {
-    form.innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`;
-  }
+    const repo = await ghGet(`/repos/${ORG}/${repoName}`);
+    currentToolTopics = repo.topics || [];
+    renderTopicsCheckboxes();
+    document.getElementById('toolTopicsArea').style.display = 'block';
+  } catch(e) { showToast('加载工具标签失败：' + e.message, 'error'); }
 }
-
-function parseReadme(md) {
-  const result = { title: '', description: '', features: [], env: [], steps: '', faq: '' };
-  const lines = md.split('\n');
-  let section = '';
-  let stepContent = [];
-  let faqContent = [];
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (line.startsWith('# ')) { result.title = line.substring(2).trim(); continue; }
-    if (line.startsWith('## ')) {
-      const heading = line.substring(3).trim();
-      if (heading.includes('功能')) section = 'features';
-      else if (heading.includes('环境')) section = 'env';
-      else if (heading.includes('步骤')) section = 'steps';
-      else if (heading.includes('问题') || heading.includes('FAQ')) section = 'faq';
-      else section = '';
-      continue;
-    }
-    if (section === 'features' && line.startsWith('- ')) result.features.push(line.substring(2).trim());
-    else if (section === 'env' && line.startsWith('- ')) result.env.push(line.substring(2).trim());
-    else if (section === 'steps') stepContent.push(line);
-    else if (section === 'faq') faqContent.push(line);
-    else if (!section && line.trim() && !result.description) result.description = line.trim();
-  }
-  result.steps = stepContent.join('\n').trim();
-  result.faq = faqContent.join('\n').trim();
-  return result;
-}
-
-function buildReadmeFromForm() {
-  const title = document.getElementById('editTitle').value.trim() || editingTool;
-  const desc = document.getElementById('editDesc').value.trim();
-  const features = document.getElementById('editFeatures').value.split('\n').map(s => s.trim()).filter(Boolean);
-  const env = document.getElementById('editEnv').value.split('\n').map(s => s.trim()).filter(Boolean);
-  const steps = document.getElementById('editSteps').value.trim();
-  const faq = document.getElementById('editFaq').value.trim();
-  let md = `# ${title}\n\n`;
-  if (desc) md += `${desc}\n\n`;
-  if (features.length) { md += `## 主要功能\n\n`; features.forEach(f => md += `- ${f}\n`); md += '\n'; }
-  if (env.length) { md += `## 环境要求\n\n`; env.forEach(e => md += `- ${e}\n`); md += '\n'; }
-  if (steps) md += `## 使用步骤\n\n${steps}\n\n`;
-  if (faq) md += `## 常见问题\n\n${faq}\n\n`;
-  return md;
-}
-
-function previewEdit() {
-  const md = buildReadmeFromForm();
-  const preview = document.getElementById('editPreview');
-  const content = document.getElementById('editPreviewContent');
-  preview.style.display = 'block';
-  content.innerHTML = `<pre style="white-space:pre-wrap;background:#f6f8fa;padding:16px;border-radius:6px;font-size:13px;">${escapeHtml(md)}</pre>`;
-}
-
-async function saveToolEdit() {
-  const md = buildReadmeFromForm();
-  try {
-    await updateFileContent(editingTool, 'README.md', md, `docs: 更新 README（通过管理后台）`, editingReadmeSha);
-    showToast('README 更新成功！展示页将在几分钟后刷新', 'success');
-    try {
-      await ghPost(`/repos/${ORG}/${TOOLHUB_REPO}/actions/workflows/deploy.yml/dispatches`, { ref: 'main' });
-      showToast('已触发展示页重新构建', 'info');
-    } catch(e) {}
-  } catch(e) {
-    showToast('保存失败：' + e.message, 'error');
-  }
-}
-
-async function renderFilesSelect() {
-  const content = document.getElementById('content');
-  content.innerHTML = `
-    <div class="content__title">📁 文件管理</div>
-    <div class="card">
-      <div class="card__title">选择工具</div>
-      <div class="form-group"><select id="fileToolSelect" onchange="loadToolFiles()"><option value="">请选择工具...</option></select></div>
-    </div>
-    <div id="fileManager" style="display:none;"></div>
-  `;
-  try {
-    const repos = await ghGet(`/orgs/${ORG}/repos?per_page=100&sort=updated`);
-    const tools = repos.filter(r => !['toolhub', 'upload-portal', 'tool-template'].includes(r.name));
-    const select = document.getElementById('fileToolSelect');
-    tools.forEach(r => { select.innerHTML += `<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)}</option>`; });
-  } catch(e) { showToast('加载失败：' + e.message, 'error'); }
-}
-
-let fileTool = null;
-
-async function loadToolFiles() {
-  fileTool = document.getElementById('fileToolSelect').value;
-  if (!fileTool) return;
-  const manager = document.getElementById('fileManager');
-  manager.style.display = 'block';
-  manager.innerHTML = '<div class="loading">加载文件列表中...</div>';
-  try {
-    const items = await ghGet(`/repos/${ORG}/${fileTool}/contents/`);
-    manager.innerHTML = `
-      <div class="card">
-        <div class="card__title">${escapeHtml(fileTool)} - 文件列表</div>
-        <div style="margin-bottom:12px;"><button class="btn btn--primary btn--sm" onclick="showUploadFile()">📤 上传新文件</button></div>
-        <div class="file-tree" id="fileTree"></div>
-      </div>
-      <div id="uploadFileForm" style="display:none;" class="card">
-        <div class="card__title">上传文件</div>
-        <div class="form-group"><label>目标目录</label><select id="uploadTargetDir"><option value="src/">src/（代码文件）</option><option value="images/">images/（图片）</option><option value="">根目录</option></select></div>
-        <div class="form-group"><label>选择文件</label><input type="file" id="uploadFileInput"></div>
-        <div style="display:flex; gap:10px;"><button class="btn btn--primary" onclick="uploadFile()">上传</button><button class="btn" onclick="document.getElementById('uploadFileForm').style.display='none'">取消</button></div>
-      </div>
-    `;
-    const tree = document.getElementById('fileTree');
-    if (Array.isArray(items) && items.length > 0) {
-      items.forEach(item => {
-        const icon = item.type === 'dir' ? '📁' : '📄';
-        tree.innerHTML += `
-          <div class="file-tree-item">
-            <div class="name">${icon} ${escapeHtml(item.name)} <span style="color:#8b949e;font-size:11px;">(${(item.size / 1024).toFixed(1)} KB)</span></div>
-            <div class="actions">
-              ${item.type === 'file' ? `<button class="btn btn--sm" onclick="replaceFile('${escapeHtml(item.path)}')">替换</button>` : ''}
-              ${item.type === 'file' ? `<button class="btn btn--sm btn--danger" onclick="deleteFile('${escapeHtml(item.path)}')">删除</button>` : ''}
-              <a class="btn btn--sm" href="${item.html_url}" target="_blank">查看</a>
-            </div>
-          </div>
-        `;
-      });
-      const srcDir = items.find(i => i.name === 'src');
-      const imgDir = items.find(i => i.name === 'images');
-      if (srcDir) await loadSubDir('src/', tree);
-      if (imgDir) await loadSubDir('images/', tree);
-    } else {
-      tree.innerHTML = '<div class="empty">仓库为空</div>';
-    }
-  } catch(e) {
-    manager.innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`;
-  }
-}
-
-async function loadSubDir(path, container) {
-  try {
-    const items = await ghGet(`/repos/${ORG}/${fileTool}/contents/${path}`);
-    if (Array.isArray(items)) {
-      items.forEach(item => {
-        const icon = item.type === 'dir' ? '📁' : '📄';
-        container.innerHTML += `
-          <div class="file-tree-item" style="padding-left:24px;">
-            <div class="name">${icon} ${escapeHtml(item.name)} <span style="color:#8b949e;font-size:11px;">(${(item.size / 1024).toFixed(1)} KB)</span></div>
-            <div class="actions">
-              ${item.type === 'file' ? `<button class="btn btn--sm" onclick="replaceFile('${escapeHtml(item.path)}')">替换</button>` : ''}
-              ${item.type === 'file' ? `<button class="btn btn--sm btn--danger" onclick="deleteFile('${escapeHtml(item.path)}')">删除</button>` : ''}
-            </div>
-          </div>
-        `;
-      });
-    }
-  } catch(e) {}
-}
-
-function showUploadFile() { document.getElementById('uploadFileForm').style.display = 'block'; }
-
-async function uploadFile() {
-  const input = document.getElementById('uploadFileInput');
-  const targetDir = document.getElementById('uploadTargetDir').value;
-  if (!input.files || input.files.length === 0) { showToast('请选择文件', 'error'); return; }
-  const file = input.files[0];
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    try {
-      const path = targetDir + file.name;
-      await ghPut(`/repos/${ORG}/${fileTool}/contents/${path}`, {
-        message: `feat: 上传文件 ${file.name}（通过管理后台）`,
-        content: btoa(unescape(encodeURIComponent(e.target.result))),
-        branch: 'main'
-      });
-      showToast('文件上传成功', 'success');
-      document.getElementById('uploadFileForm').style.display = 'none';
-      await loadToolFiles();
-    } catch(err) { showToast('上传失败：' + err.message, 'error'); }
-  };
-  reader.readAsBinaryString(file);
-}
-
-async function replaceFile(path) {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.onchange = async () => {
-    if (!input.files[0]) return;
-    const file = input.files[0];
-    showConfirm('替换文件', `确定要用 <strong>${escapeHtml(file.name)}</strong> 替换 <code>${escapeHtml(path)}</code> 吗？`, async () => {
-      try {
-        const existing = await ghGet(`/repos/${ORG}/${fileTool}/contents/${path}`);
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          try {
-            await ghPut(`/repos/${ORG}/${fileTool}/contents/${path}`, {
-              message: `feat: 替换文件 ${path}（通过管理后台）`,
-              content: btoa(unescape(encodeURIComponent(e.target.result))),
-              sha: existing.sha,
-              branch: 'main'
-            });
-            showToast('文件替换成功', 'success');
-            await loadToolFiles();
-          } catch(err) { showToast('替换失败：' + err.message, 'error'); }
-        };
-        reader.readAsBinaryString(file);
-      } catch(err) { showToast('读取失败：' + err.message, 'error'); }
-    }, { danger: true });
-  };
-  input.click();
-}
-
-async function deleteFile(path) {
-  showConfirm('删除文件', `确定要删除 <code>${escapeHtml(path)}</code> 吗？此操作不可恢复。`, async () => {
-    try {
-      const existing = await ghGet(`/repos/${ORG}/${fileTool}/contents/${path}`);
-      await ghDelete(`/repos/${ORG}/${fileTool}/contents/${path}?sha=${existing.sha}&message=delete: ${path}`);
-      showToast('文件已删除', 'success');
-      await loadToolFiles();
-    } catch(e) { showToast('删除失败：' + e.message, 'error'); }
-  }, { danger: true });
-}
-
-async function renderDelete() {
-  const content = document.getElementById('content');
-  content.innerHTML = `
-    <div class="content__title">🗑️ 工具删除</div>
-    <div class="card" style="border-left:4px solid #cf222e;">
-      <div class="card__title" style="color:#cf222e;">⚠️ 危险操作</div>
-      <p style="font-size:13px; color:#57606a; margin-bottom:8px;">
-        删除工具仓库后：<br>
-        1. 工具仓库将被永久删除，无法恢复<br>
-        2. 对应的上传 Issue 将被自动添加"已下线"标签并关闭（保留审计记录）<br>
-        3. 展示页将在下次构建后移除该工具
-      </p>
-    </div>
-    <div class="search-box"><input type="text" id="deleteSearch" placeholder="搜索工具名称..." oninput="filterDeleteTools()"></div>
-    <div id="deleteToolsList" class="loading">加载中...</div>
-  `;
-  await loadDeleteTools();
-}
-
-let allDeleteTools = [];
-
-async function loadDeleteTools() {
-  try {
-    const repos = await ghGet(`/orgs/${ORG}/repos?per_page=100&sort=updated`);
-    allDeleteTools = repos.filter(r => !['toolhub', 'upload-portal', 'tool-template'].includes(r.name));
-    renderDeleteToolsList(allDeleteTools);
-  } catch(e) {
-    document.getElementById('deleteToolsList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`;
-  }
-}
-
-function renderDeleteToolsList(tools) {
-  const list = document.getElementById('deleteToolsList');
-  if (tools.length === 0) { list.innerHTML = '<div class="empty">没有找到工具</div>'; return; }
-  let html = '<table class="table"><thead><tr><th>工具名称</th><th>描述</th><th>创建时间</th><th>操作</th></tr></thead><tbody>';
-  tools.forEach(r => {
-    html += `<tr><td><strong>${escapeHtml(r.name)}</strong></td><td>${escapeHtml(r.description || '-')}</td><td>${formatDate(r.created_at)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteTool('${escapeHtml(r.name)}')">删除</button></td></tr>`;
+function renderTopicsCheckboxes() {
+  const container = document.getElementById('topicsCheckboxGroup');
+  const allLabels = [];
+  (labelsData?.departments || []).forEach(l => allLabels.push({ ...l, type: 'dept' }));
+  (labelsData?.categories || []).forEach(l => allLabels.push({ ...l, type: 'func' }));
+  (labelsData?.custom_types || []).forEach(ct => { (ct.labels || []).forEach(l => allLabels.push({ ...l, type: 'custom', typeName: ct.name })); });
+  currentToolTopics.forEach(t => {
+    if (!allLabels.some(l => l.id === t)) { allLabels.push({ id: t, name: t + ' (未定义)', type: 'unknown' }); }
   });
-  html += '</tbody></table>';
-  list.innerHTML = html;
+  let html = '';
+  allLabels.forEach(l => {
+    const checked = currentToolTopics.includes(l.id);
+    const cls = l.type === 'dept' ? 'tag--dept' : l.type === 'func' ? 'tag--func' : l.type === 'custom' ? 'tag--custom' : 'tag--offline';
+    html += `<label class="checkbox-item ${checked ? 'checked' : ''}">
+      <input type="checkbox" value="${escapeHtml(l.id)}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('checked', this.checked)">
+      <span class="tag ${cls}">${escapeHtml(l.name)}</span>
+      <code style="font-size:11px; color:#57606a;">${escapeHtml(l.id)}</code>
+    </label>`;
+  });
+  container.innerHTML = html;
+}
+async function saveToolTopics() {
+  const checkboxes = document.querySelectorAll('#topicsCheckboxGroup input[type="checkbox"]');
+  const newTopics = [];
+  checkboxes.forEach(cb => { if (cb.checked) newTopics.push(cb.value); });
+  try {
+    await ghPut(`/repos/${ORG}/${currentToolRepo}/topics`, { names: newTopics });
+    showToast(`工具 ${currentToolRepo} 的标签已更新`, 'success');
+    currentToolTopics = newTopics;
+  } catch(e) { showToast('保存失败：' + e.message, 'error'); }
 }
 
-function filterDeleteTools() {
-  const keyword = document.getElementById('deleteSearch').value.toLowerCase();
-  const filtered = allDeleteTools.filter(r => r.name.toLowerCase().includes(keyword));
-  renderDeleteToolsList(filtered);
-}
-
-async function deleteTool(repo) {
-  showConfirm('删除工具仓库',
-    `确定要删除 <strong>${escapeHtml(repo)}</strong> 吗？<br><br>此操作不可恢复！删除后：<br>• 工具仓库永久删除<br>• 对应 Issue 自动标记"已下线"并关闭<br><br>请在下方输入 <code>${escapeHtml(repo)}</code> 确认。`,
-    async () => {
-      try {
-        let issueNumber = null;
-        try {
-          const issues = await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/issues?state=all&per_page=100`);
-          const matched = issues.find(i => i.title && i.title.includes(repo));
-          if (matched) issueNumber = matched.number;
-        } catch(e) {}
-        await ghDelete(`/repos/${ORG}/${repo}`);
-        showToast(`仓库 ${repo} 已删除`, 'success');
-        if (issueNumber) {
-          try {
-            try { await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/labels/已下线`); }
-            catch(e) {
-              await ghPost(`/repos/${ORG}/${UPLOAD_REPO}/labels`, { name: '已下线', color: '6e7781', description: '该工具已被管理员删除' });
-            }
-            await ghPost(`/repos/${ORG}/${UPLOAD_REPO}/issues/${issueNumber}/labels`, { labels: ['已下线'] });
-            await ghPost(`/repos/${ORG}/${UPLOAD_REPO}/issues/${issueNumber}/comments`, {
-              body: `该工具已于 ${new Date().toLocaleString('zh-CN')} 由管理员 @${currentUser.login} 删除。`
-            });
-            await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${issueNumber}`, { state: 'closed' });
-            showToast(`对应 Issue #${issueNumber} 已标记为"已下线"并关闭`, 'info');
-          } catch(e) { showToast('Issue 标记失败：' + e.message, 'error'); }
-        }
-        await loadDeleteTools();
-      } catch(e) { showToast('删除失败：' + e.message, 'error'); }
-    },
-    { danger: true, confirmText: repo, confirmBtnText: '确认删除' }
-  );
-}
-
+// 模块2：上传记录
 async function renderIssues() {
-  const content = document.getElementById('content');
-  content.innerHTML = `
+  document.getElementById('content').innerHTML = `
     <div class="content__title">📋 上传记录</div>
     <div class="search-box">
       <input type="text" id="issueSearch" placeholder="搜索工具名称..." oninput="filterIssues()">
       <select id="issueStateFilter" onchange="filterIssues()"><option value="all">全部状态</option><option value="open">进行中</option><option value="closed">已关闭</option></select>
     </div>
-    <div id="issuesList" class="loading">加载中...</div>
-  `;
+    <div id="issuesList" class="loading">加载中...</div>`;
   await loadIssues();
 }
-
 let allIssues = [];
-
 async function loadIssues() {
   try {
     const issues = await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/issues?state=all&per_page=100&sort=created&direction=desc`);
     allIssues = issues.filter(i => !i.pull_request);
     renderIssuesList(allIssues);
-  } catch(e) {
-    document.getElementById('issuesList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`;
-  }
+  } catch(e) { document.getElementById('issuesList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; }
 }
-
 function renderIssuesList(issues) {
   const list = document.getElementById('issuesList');
   if (issues.length === 0) { list.innerHTML = '<div class="empty">没有上传记录</div>'; return; }
@@ -938,7 +509,6 @@ function renderIssuesList(issues) {
   html += '</tbody></table>';
   list.innerHTML = html;
 }
-
 function filterIssues() {
   const keyword = document.getElementById('issueSearch').value.toLowerCase();
   const state = document.getElementById('issueStateFilter').value;
@@ -947,25 +517,16 @@ function filterIssues() {
   if (state !== 'all') filtered = filtered.filter(i => i.state === state);
   renderIssuesList(filtered);
 }
-
 async function closeIssue(num) {
   showConfirm('关闭 Issue', `确定要关闭 Issue #${num} 吗？`, async () => {
-    try {
-      await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'closed' });
-      showToast(`Issue #${num} 已关闭`, 'success');
-      await loadIssues();
-    } catch(e) { showToast('关闭失败：' + e.message, 'error'); }
+    try { await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'closed' }); showToast(`Issue #${num} 已关闭`, 'success'); await loadIssues(); }
+    catch(e) { showToast('关闭失败：' + e.message, 'error'); }
   });
 }
-
 async function reopenIssue(num) {
-  try {
-    await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'open' });
-    showToast(`Issue #${num} 已重新打开`, 'success');
-    await loadIssues();
-  } catch(e) { showToast('重开失败：' + e.message, 'error'); }
+  try { await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'open' }); showToast(`Issue #${num} 已重新打开`, 'success'); await loadIssues(); }
+  catch(e) { showToast('重开失败：' + e.message, 'error'); }
 }
-
 initToken();
 </script>
 </body>
