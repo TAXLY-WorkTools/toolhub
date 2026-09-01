@@ -1,6 +1,16 @@
 {
-  "version": 2,
+  "version": 3,
   "description": "TAXLY WorkTools 标签集中配置。修改此文件后，上传脚本和展示站会自动读取最新标签。",
+  "type_config": {
+    "dept": {
+      "display_name": "使用部门",
+      "description": "工具所属的使用部门"
+    },
+    "func": {
+      "display_name": "功能分类",
+      "description": "工具的功能分类"
+    }
+  },
   "departments": [
     {
       "id": "dept-audit",
