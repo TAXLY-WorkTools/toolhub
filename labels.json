@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "description": "TAXLY WorkTools 标签集中配置。修改此文件后，上传脚本和展示站会自动读取最新标签。",
+  "departments": [
+    {"id": "dept-audit", "name": "审计部"},
+    {"id": "dept-tax", "name": "税务部"},
+    {"id": "dept-consulting", "name": "咨询部"}
+  ],
+  "categories": [
+    {"id": "func-data-analysis", "name": "数据分析"},
+    {"id": "func-letter-gen", "name": "函证生成"},
+    {"id": "func-workpaper-check", "name": "底稿检查"},
+    {"id": "func-report-gen", "name": "报告生成"}
+  ]
+}
