@@ -264,7 +264,7 @@ def _to_atom_date(iso: str) -> str:
     """
     Normalise a GitHub ISO-8601 timestamp to an RFC 3339 date-time with a Z
     suffix, as required by Atom. GitHub always returns UTC strings ending in Z
-    so this is mostly a pass-through with a safety normalisation.
+    so this is mostly a pass-through with safety normalisation.
     """
     if not iso:
         return ""
@@ -287,10 +287,39 @@ def _feed_updated_for(project: dict) -> str:
 # Markdown rendering
 # --------------------------------------------------------------------------- #
 
-def render_markdown(md_text: str) -> str:
-    """Convert markdown to HTML using CommonMark spec."""
-    md = MarkdownIt("commonmark")
-    return md.render(md_text)
+def render_markdown(md_text: str, raw_base: str = "") -> str:
+    """
+    Convert markdown to HTML.
+
+    - 启用 GFM 表格支持（.enable("table")）
+    - 若提供 raw_base，将 README 中的相对路径图片替换为 raw.githubusercontent.com 绝对路径
+      （解决在 toolhub 静态站上相对路径图片裂图的问题）
+
+    Args:
+        md_text: Markdown 文本
+        raw_base: 仓库 raw 内容基础 URL，例如
+                  https://raw.githubusercontent.com/TAXLY-WorkTools/demo/main/
+    """
+    md = MarkdownIt("commonmark").enable("table")
+    html = md.render(md_text)
+
+    if raw_base:
+        # 在渲染后的 HTML 中替换 <img src="相对路径"> 为绝对路径
+        # （在 HTML 层面替换比在 Markdown 文本层面替换更可靠，
+        #  能正确处理文件名含括号/中文等特殊字符的情况）
+        def _replace_img_src(match):
+            src = match.group(1)
+            # 已经是绝对路径（http/https/data:/协议相对）则不处理
+            if src.startswith(("http://", "https://", "data:", "//")):
+                return match.group(0)
+            # 去掉开头的 ./
+            if src.startswith("./"):
+                src = src[2:]
+            return f'<img src="{raw_base}{src}"'
+
+        html = re.sub(r'<img src="([^"]+)"', _replace_img_src, html)
+
+    return html
 
 
 # --------------------------------------------------------------------------- #
@@ -402,11 +431,13 @@ def build(
             for url_field in ("live_url", "homepage"):
                 url_val = enriched.get(url_field, "")
                 if url_val and url_val.rstrip("/").startswith(site_url):
-                    enriched[url_field] = None
+                    enriched[url_val] = None
         enriched_projects.append(enriched)
 
         readme_md = get_readme(client, project)
-        readme_html = render_markdown(readme_md)
+        # 构造仓库 raw 基础 URL，用于把 README 中的相对路径图片转为绝对路径
+        raw_base = f"https://raw.githubusercontent.com/{USERNAME}/{project['name']}/main/"
+        readme_html = render_markdown(readme_md, raw_base)
 
         page_dir = OUTPUT_DIR / slug
         page_dir.mkdir(parents=True, exist_ok=True)
