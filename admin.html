@@ -535,7 +535,7 @@ async function saveLabelsJson(commitMsg, syncUploadTemplate = false) {
 }
 async function syncUploadTemplate() {
   const data = await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/contents/.github/ISSUE_TEMPLATE/upload.yml`);
-  const uploadYml = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+  const uploadYml = decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
   const uploadSha = data.sha;
   const deptNames = (labelsData.departments || []).map(l => l.name);
   const funcNames = (labelsData.categories || []).map(l => l.name);
@@ -633,9 +633,15 @@ async function saveToolTopics() {
   checkboxes.forEach(cb => { if (cb.checked) newTopics.push(cb.value); });
   try {
     await ghPut(`/repos/${ORG}/${currentToolRepo}/topics`, { names: newTopics });
-    showToast(`工具 ${currentToolRepo} 的标签已更新`, 'success');
     currentToolTopics = newTopics;
     allReposCache = null;
+    showToast('标签已保存，正在触发展示页面重建...', 'info');
+    try {
+      await ghPost(`/repos/${ORG}/${TOOLHUB_REPO}/actions/workflows/deploy.yml/dispatches`, { ref: 'main' });
+      showToast('标签已保存，展示页面将在 1-2 分钟后自动更新', 'success');
+    } catch(e) {
+      showToast(`标签已保存，但触发构建失败：${e.message}（请手动在 Actions 页面触发构建）`, 'error');
+    }
   } catch(e) { showToast('保存失败：' + e.message, 'error'); }
 }
 async function renderIssues() {
