@@ -404,6 +404,10 @@ def build(
     if static_dir.exists():
         shutil.copytree(static_dir, OUTPUT_DIR / "static")
         shutil.copy2("templates/upload.html", "output/upload.html")
+        # 复制工具上传打包器（单文件HTML，零依赖）
+        if Path("pack.html").exists():
+            shutil.copy2("pack.html", "output/pack.html")
+            print("  [copy]  pack.html -> output/pack.html")
 
     env = Environment(
         loader=FileSystemLoader(templates_dir),
