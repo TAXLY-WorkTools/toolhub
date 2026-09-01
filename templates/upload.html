@@ -28,7 +28,7 @@
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: 500; font-size: 14px; color: #1f2328; margin-bottom: 5px; }
         label .required { color: #d1242f; margin-left: 2px; }
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 10px 12px;
             font-size: 14px;
@@ -38,10 +38,15 @@
             transition: 0.2s;
             font-family: inherit;
         }
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #0969da;
             box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.2);
+        }
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
         }
         .submit-btn {
             width: 100%;
@@ -93,50 +98,39 @@
             font-size: 13px;
             color: #3d3d3d;
             border-left: 4px solid #f5c542;
+            margin-bottom: 24px;
         }
         .note strong { color: #1f2328; }
+        .hint { font-size: 12px; color: #57606a; margin-top: 4px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📤 上传新工具</h1>
-        <p class="subtitle">填写信息后跳转 GitHub，在评论区拖拽上传代码压缩包</p>
+        <p class="subtitle">填写信息后跳转 GitHub，选择分类并在评论区上传文件</p>
 
         <div class="note">
             <strong>💡 操作说明：</strong><br>
             1. 填写以下信息，点击提交<br>
-            2. 跳转 GitHub 后，<strong>在评论区拖拽上传 .zip 压缩包</strong><br>
-            3. 点击 "Submit new issue"，系统自动处理
+            2. 跳转 GitHub 后，<strong>选择所属部门和功能分类</strong>（下拉框手动选）<br>
+            3. <strong>在评论区拖拽上传 .zip 压缩包或单个工具文件</strong>（.py / .exe / .html 等）<br>
+            4. 点击 "Submit new issue"，系统自动处理
         </div>
 
         <form id="uploadForm">
             <div class="form-group">
                 <label>工具名称 <span class="required">*</span></label>
                 <input type="text" id="toolName" placeholder="例如：letter_generator" required />
-                <div style="font-size:12px;color:#57606a;margin-top:4px;">建议使用英文小写 + 下划线，如 letter_generator</div>
+                <div class="hint">建议使用英文小写 + 下划线，如 letter_generator</div>
             </div>
             <div class="form-group">
                 <label>工具描述 <span class="required">*</span></label>
                 <input type="text" id="toolDesc" placeholder="例如：自动生成银行函证工具" required />
             </div>
             <div class="form-group">
-                <label>所属部门 <span class="required">*</span></label>
-                <select id="department" required>
-                    <option value="">请选择</option>
-                    <option value="审计部">审计部</option>
-                    <option value="税务部">税务部</option>
-                    <option value="咨询部">咨询部</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>功能分类 <span class="required">*</span></label>
-                <select id="category" required>
-                    <option value="">请选择</option>
-                    <option value="数据分析">数据分析</option>
-                    <option value="函证生成">函证生成</option>
-                    <option value="底稿检查">底稿检查</option>
-                    <option value="报告生成">报告生成</option>
-                </select>
+                <label>使用说明（可选）</label>
+                <textarea id="usage" placeholder="支持 Markdown 格式。可填写功能介绍、环境依赖、操作步骤、注意事项等。填写后将自动写入工具 README，在详情页展示。也可留空，上传后在 GitHub 编辑 README。"></textarea>
+                <div class="hint">填写后将自动写入工具 README，在详情页展示</div>
             </div>
             <button type="submit" class="submit-btn" id="submitBtn">🚀 跳转 GitHub 提交</button>
         </form>
@@ -155,11 +149,10 @@
 
             const toolName = document.getElementById('toolName').value.trim();
             const toolDesc = document.getElementById('toolDesc').value.trim();
-            const department = document.getElementById('department').value;
-            const category = document.getElementById('category').value;
+            const usage = document.getElementById('usage').value.trim();
 
-            if (!toolName || !toolDesc || !department || !category) {
-                showMessage('请完整填写所有字段', 'error');
+            if (!toolName || !toolDesc) {
+                showMessage('请填写工具名称和描述', 'error');
                 return;
             }
 
@@ -171,21 +164,20 @@
             submitBtn.disabled = true;
             submitBtn.textContent = '⏳ 跳转中...';
 
-            // 构造 GitHub New Issue 链接（通过 URL 参数预填表单）
+            // 构造 GitHub New Issue 链接（通过 URL 参数预填表单，部门/分类在 GitHub 侧手动选）
             const baseUrl = 'https://github.com/TAXLY-WorkTools/upload-portal/issues/new';
-            const template = 'upload.yml';
             const params = new URLSearchParams({
-                template: template,
+                template: 'upload.yml',
                 'tool_name': toolName,
                 'description': toolDesc,
-                'department': department,
-                'category': category
             });
+            if (usage) {
+                params.set('usage', usage);
+            }
 
             const url = `${baseUrl}?${params.toString()}`;
 
-            // 跳转前提示用户
-            showMessage('✅ 正在跳转 GitHub... 请在评论区拖拽上传 .zip 压缩包', 'success');
+            showMessage('✅ 正在跳转 GitHub... 请选择部门和分类，并在评论区上传文件', 'success');
 
             setTimeout(() => {
                 window.open(url, '_blank');
