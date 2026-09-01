@@ -1,40 +1,37 @@
 {
-  "version": 1,
-  "description": "TAXLY WorkTools æ ç­¾éä¸­éç½®ãä¿®æ¹æ­¤æä»¶åï¼ä¸ä¼ èæ¬åå±ç¤ºç«ä¼èªå¨è¯»åææ°æ ç­¾ã",
+  "version": 2,
+  "description": "TAXLY WorkTools 标签集中配置。修改此文件后，上传脚本和展示站会自动读取最新标签。",
   "departments": [
     {
       "id": "dept-audit",
-      "name": "å®¡è®¡é¨"
+      "name": "审计部"
     },
     {
       "id": "dept-tax",
-      "name": "ç¨å¡é¨"
+      "name": "税务部"
     },
     {
       "id": "dept-consulting",
-      "name": "å¨è¯¢é¨"
-    },
-    {
-      "name": "dept-后勤部",
-      "display_name": "后勤部"
+      "name": "咨询部"
     }
   ],
   "categories": [
     {
       "id": "func-data-analysis",
-      "name": "æ°æ®åæ"
+      "name": "数据分析"
     },
     {
       "id": "func-letter-gen",
-      "name": "å½è¯çæ"
+      "name": "函证生成"
     },
     {
       "id": "func-workpaper-check",
-      "name": "åºç¨¿æ£æ¥"
+      "name": "底稿检查"
     },
     {
       "id": "func-report-gen",
-      "name": "æ¥åçæ"
+      "name": "报告生成"
     }
-  ]
+  ],
+  "custom_types": []
 }
