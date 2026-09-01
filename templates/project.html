@@ -42,6 +42,28 @@
   </div>
 </div>
 
+{% if project.download_url %}
+<div class="download-section">
+  <h2 class="download-section__title">📥 下载</h2>
+  {% if project.download_type == "release" %}
+  <a class="btn btn--primary btn--large" href="{{ project.download_url }}">⬇ 下载整包 (v1.0.0)</a>
+  {% if project.files %}
+  <div class="file-list">
+    <p class="file-list__hint">或单独下载：</p>
+    {% for file in project.files %}
+    <div class="file-item">
+      <span class="file-item__name">{{ file.name }}</span>
+      <a class="btn btn--small" href="{{ file.raw_url }}">下载</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% else %}
+  <a class="btn btn--primary btn--large" href="{{ project.download_url }}">⬇ 下载该文件</a>
+  {% endif %}
+</div>
+{% endif %}
+
 <div class="readme">
   {{ readme_html | safe }}
 </div>
