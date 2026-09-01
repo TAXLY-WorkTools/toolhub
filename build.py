@@ -408,6 +408,10 @@ def build(
         if Path("pack.html").exists():
             shutil.copy2("pack.html", "output/pack.html")
             print("  [copy]  pack.html -> output/pack.html")
+        # 复制工具管理后台（单文件HTML，零依赖）
+        if Path("admin.html").exists():
+            shutil.copy2("admin.html", "output/admin.html")
+            print("  [copy]  admin.html -> output/admin.html")
 
     env = Environment(
         loader=FileSystemLoader(templates_dir),
