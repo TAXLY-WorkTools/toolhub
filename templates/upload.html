@@ -82,14 +82,33 @@
             color: #a0111f;
             border: 1px solid #f5c2c7;
         }
+        .back-links {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
         .back-link {
             display: inline-block;
-            margin-top: 20px;
             color: #0969da;
             text-decoration: none;
             font-size: 14px;
         }
         .back-link:hover { text-decoration: underline; }
+        .back-link--pack {
+            color: #2da44e;
+            font-weight: 500;
+        }
+        .prefilled-badge {
+            display: inline-block;
+            background: #ddf4ff;
+            color: #0969da;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
         .note {
             margin-top: 16px;
             padding: 12px 16px;
@@ -119,12 +138,12 @@
 
         <form id="uploadForm">
             <div class="form-group">
-                <label>工具名称 <span class="required">*</span></label>
+                <label>工具名称 <span class="required">*</span><span id="nameBadge" class="prefilled-badge" style="display:none">已从打包器带入</span></label>
                 <input type="text" id="toolName" placeholder="例如：letter_generator" required />
                 <div class="hint">建议使用英文小写 + 下划线，如 letter_generator</div>
             </div>
             <div class="form-group">
-                <label>工具描述 <span class="required">*</span></label>
+                <label>工具描述 <span class="required">*</span><span id="descBadge" class="prefilled-badge" style="display:none">已从打包器带入</span></label>
                 <input type="text" id="toolDesc" placeholder="例如：自动生成银行函证工具" required />
             </div>
             <div class="form-group">
@@ -136,13 +155,36 @@
         </form>
 
         <div class="message" id="message"></div>
-        <a href="https://taxly-worktools.github.io/toolhub/" class="back-link">← 返回工具库</a>
+        <div class="back-links">
+            <a href="pack.html" class="back-link back-link--pack">📦 返回打包器（修改工具信息）</a>
+            <a href="https://taxly-worktools.github.io/toolhub/" class="back-link">← 返回工具库</a>
+        </div>
     </div>
 
     <script>
         const form = document.getElementById('uploadForm');
         const submitBtn = document.getElementById('submitBtn');
         const messageEl = document.getElementById('message');
+
+        // 页面加载时读取 URL 参数，预填从打包器带入的信息
+        (function prefillFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const toolName = params.get('tool_name');
+            const description = params.get('description');
+            const usage = params.get('usage');
+
+            if (toolName) {
+                document.getElementById('toolName').value = toolName;
+                document.getElementById('nameBadge').style.display = 'inline-block';
+            }
+            if (description) {
+                document.getElementById('toolDesc').value = description;
+                document.getElementById('descBadge').style.display = 'inline-block';
+            }
+            if (usage) {
+                document.getElementById('usage').value = usage;
+            }
+        })();
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
