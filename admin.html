@@ -100,6 +100,7 @@
     font-weight: 600; font-size: 14px; color: #424a53;
     display: flex; justify-content: space-between; align-items: center;
   }
+  .section-divider .type-actions { display: flex; gap: 6px; align-items: center; }
   .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
   .checkbox-item {
     display: flex; align-items: center; gap: 6px; padding: 6px 12px;
@@ -108,6 +109,10 @@
   .checkbox-item:hover { background: #f6f8fa; }
   .checkbox-item.checked { background: #ddf4ff; border-color: #0969da; }
   .checkbox-item input { cursor: pointer; }
+  .warn-box {
+    background: #fff8c5; border: 1px solid #d4a72c; border-radius: 6px;
+    padding: 10px 14px; margin-bottom: 12px; font-size: 13px; color: #9a6700;
+  }
   @media (max-width: 768px) {
     .main { flex-direction: column; }
     .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 8px; }
@@ -166,7 +171,7 @@ let currentModule = 'labels';
 let confirmCallback = null;
 let labelsData = null;
 let labelsSha = null;
-
+let allReposCache = null;
 function showToast(msg, type = 'info') {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -197,7 +202,6 @@ async function ghPut(path, body) { return ghApi(path, { method: 'PUT', body }); 
 async function ghPost(path, body) { return ghApi(path, { method: 'POST', body }); }
 async function ghDelete(path) { return ghApi(path, { method: 'DELETE' }); }
 async function ghPatch(path, body) { return ghApi(path, { method: 'PATCH', body }); }
-
 function showTokenModal() { document.getElementById('tokenInput').value = currentToken; document.getElementById('tokenModal').classList.add('show'); }
 function closeTokenModal() { document.getElementById('tokenModal').classList.remove('show'); }
 async function saveToken() {
@@ -249,19 +253,35 @@ function switchModule(module) {
   if (module === 'labels') renderLabels();
   else if (module === 'issues') renderIssues();
 }
-
-// 模块1：标签管理
+async function getAllToolRepos(forceRefresh = false) {
+  if (allReposCache && !forceRefresh) return allReposCache;
+  const repos = await ghGet(`/orgs/${ORG}/repos?per_page=100&sort=updated`);
+  allReposCache = repos.filter(r => !['toolhub', 'upload-portal', 'tool-template'].includes(r.name));
+  return allReposCache;
+}
+async function countLabelUsage(labelId) {
+  const repos = await getAllToolRepos();
+  let count = 0;
+  const usedBy = [];
+  for (const repo of repos) {
+    if (repo.topics && repo.topics.includes(labelId)) {
+      count++;
+      usedBy.push(repo.name);
+    }
+  }
+  return { count, usedBy };
+}
 async function renderLabels() {
   document.getElementById('content').innerHTML = `
     <div class="content__title">📑 标签管理</div>
     <div class="card">
       <div class="card__title">A. 标签定义管理</div>
-      <div class="card__desc">管理 labels.json 中的标签定义（部门、功能、自定义类型）。修改后保存到 toolhub 仓库，上传脚本会自动读取。</div>
+      <div class="card__desc">管理标签类型和标签定义。修改部门/功能标签后会自动同步到上传页面的下拉选项。</div>
       <div id="labelsDefList" class="loading">加载中...</div>
     </div>
     <div class="card">
       <div class="card__title">B. 工具标签分配</div>
-      <div class="card__desc">选择工具仓库，查看并修改其 GitHub Topics 标签。修改后立即生效，展示页下次构建后同步。</div>
+      <div class="card__desc">选择工具仓库，查看并修改其 GitHub Topics 标签。修改后立即生效。</div>
       <div class="form-group"><label>选择工具仓库</label>
         <select id="toolRepoSelect" onchange="loadToolTopics()"><option value="">请选择工具...</option></select>
       </div>
@@ -283,40 +303,64 @@ async function loadLabelsDef() {
     renderLabelsDefList();
   } catch(e) { document.getElementById('labelsDefList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; }
 }
+function getTypeDisplayName(typeKey) {
+  if (labelsData && labelsData.type_config && labelsData.type_config[typeKey]) {
+    return labelsData.type_config[typeKey].display_name;
+  }
+  return typeKey === 'dept' ? '使用部门' : '功能分类';
+}
 function renderLabelsDefList() {
   const container = document.getElementById('labelsDefList');
   if (!labelsData) { container.innerHTML = '<div class="empty">无数据</div>'; return; }
   let html = '';
-  html += `<div class="section-divider"><span>🏢 部门标签 (departments)</span><button class="btn btn--sm" onclick="showAddLabelModal('dept')">+ 添加部门</button></div>`;
+  const deptName = getTypeDisplayName('dept');
+  html += `<div class="section-divider">
+    <span>🏢 ${escapeHtml(deptName)} <code style="font-size:11px; color:#8b949e;">(departments)</code></span>
+    <div class="type-actions">
+      <button class="btn btn--sm" onclick="editTypeName('dept')">✏️ 改名称</button>
+      <button class="btn btn--sm btn--primary" onclick="showAddLabelModal('dept')">+ 添加标签</button>
+    </div>
+  </div>`;
   html += '<table class="table"><thead><tr><th>标签 ID</th><th>中文名称</th><th>操作</th></tr></thead><tbody>';
   (labelsData.departments || []).forEach(l => {
-    html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabel('dept','${escapeHtml(l.id)}')">删除</button></td></tr>`;
+    html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabelWithCheck('dept','${escapeHtml(l.id)}','${escapeHtml(l.name)}')">删除</button></td></tr>`;
   });
   html += '</tbody></table>';
-  html += `<div class="section-divider" style="margin-top:20px;"><span>⚙️ 功能标签 (categories)</span><button class="btn btn--sm" onclick="showAddLabelModal('func')">+ 添加功能</button></div>`;
+  const funcName = getTypeDisplayName('func');
+  html += `<div class="section-divider" style="margin-top:20px;">
+    <span>⚙️ ${escapeHtml(funcName)} <code style="font-size:11px; color:#8b949e;">(categories)</code></span>
+    <div class="type-actions">
+      <button class="btn btn--sm" onclick="editTypeName('func')">✏️ 改名称</button>
+      <button class="btn btn--sm btn--primary" onclick="showAddLabelModal('func')">+ 添加标签</button>
+    </div>
+  </div>`;
   html += '<table class="table"><thead><tr><th>标签 ID</th><th>中文名称</th><th>操作</th></tr></thead><tbody>';
   (labelsData.categories || []).forEach(l => {
-    html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabel('func','${escapeHtml(l.id)}')">删除</button></td></tr>`;
+    html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabelWithCheck('func','${escapeHtml(l.id)}','${escapeHtml(l.name)}')">删除</button></td></tr>`;
   });
   html += '</tbody></table>';
   const customTypes = labelsData.custom_types || [];
-  html += `<div class="section-divider" style="margin-top:20px;"><span>🏷️ 自定义类型 (custom_types)</span><button class="btn btn--sm" onclick="showAddCustomTypeModal()">+ 添加类型</button></div>`;
+  html += `<div class="section-divider" style="margin-top:20px;">
+    <span>🏷️ 自定义类型 <code style="font-size:11px; color:#8b949e;">(custom_types)</code></span>
+    <button class="btn btn--sm btn--primary" onclick="showAddCustomTypeModal()">+ 添加类型</button>
+  </div>`;
   if (customTypes.length === 0) {
-    html += '<div class="empty">暂无自定义类型，点击上方"添加类型"创建</div>';
+    html += '<div class="empty">暂无自定义类型，点击上方"添加类型"创建。自定义类型不会同步到上传页面，由管理员在工具标签分配中手动添加。</div>';
   } else {
     customTypes.forEach((ct, idx) => {
       html += `<div style="margin-bottom:16px; border:1px solid #d0d7de; border-radius:8px; padding:12px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
           <strong>${escapeHtml(ct.name)} <code style="font-size:11px; color:#57606a;">(${escapeHtml(ct.key)})</code></strong>
           <div style="display:flex; gap:6px;">
+            <button class="btn btn--sm" onclick="editCustomTypeName(${idx})">✏️ 改名称</button>
             <button class="btn btn--sm" onclick="showAddLabelToCustomType(${idx})">+ 标签</button>
-            <button class="btn btn--sm btn--danger" onclick="deleteCustomType(${idx})">删除类型</button>
+            <button class="btn btn--sm btn--danger" onclick="deleteCustomTypeWithCheck(${idx})">删除类型</button>
           </div>
         </div>`;
       if (ct.labels && ct.labels.length > 0) {
         html += '<table class="table"><thead><tr><th>标签 ID</th><th>中文名称</th><th>操作</th></tr></thead><tbody>';
         ct.labels.forEach(l => {
-          html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabelFromCustomType(${idx},'${escapeHtml(l.id)}')">删除</button></td></tr>`;
+          html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabelFromCustomTypeWithCheck(${idx},'${escapeHtml(l.id)}','${escapeHtml(l.name)}')">删除</button></td></tr>`;
         });
         html += '</tbody></table>';
       } else { html += '<div style="padding:8px; color:#8b949e; font-size:12px;">暂无标签</div>'; }
@@ -325,12 +369,39 @@ function renderLabelsDefList() {
   }
   container.innerHTML = html;
 }
+function editTypeName(typeKey) {
+  const currentName = getTypeDisplayName(typeKey);
+  showConfirm(`修改类型名称`,
+    `<div class="form-group"><label>类型显示名称</label><input type="text" id="editTypeNameInput" value="${escapeHtml(currentName)}"></div>
+     <div style="font-size:12px; color:#57606a;">这只是界面显示名称，不影响 labels.json 中的字段名和上传脚本逻辑。</div>`,
+    async () => {
+      const newName = document.getElementById('editTypeNameInput').value.trim();
+      if (!newName) { showToast('请输入名称', 'error'); return; }
+      if (!labelsData.type_config) labelsData.type_config = {};
+      if (!labelsData.type_config[typeKey]) labelsData.type_config[typeKey] = {};
+      labelsData.type_config[typeKey].display_name = newName;
+      await saveLabelsJson(`修改类型显示名称: ${typeKey} -> ${newName}`, false);
+    }, { confirmBtnText: '保存' });
+}
+function editCustomTypeName(idx) {
+  const ct = labelsData.custom_types[idx];
+  showConfirm(`修改自定义类型名称`,
+    `<div class="form-group"><label>类型名称（中文）</label><input type="text" id="editCustomTypeNameInput" value="${escapeHtml(ct.name)}"></div>
+     <div class="form-group"><label>类型 Key（英文前缀，不可修改）</label><input type="text" value="${escapeHtml(ct.key)}" disabled></div>`,
+    async () => {
+      const newName = document.getElementById('editCustomTypeNameInput').value.trim();
+      if (!newName) { showToast('请输入名称', 'error'); return; }
+      ct.name = newName;
+      await saveLabelsJson(`修改自定义类型名称: ${ct.key} -> ${newName}`, false);
+    }, { confirmBtnText: '保存' });
+}
 function showAddLabelModal(type) {
-  const typeName = type === 'dept' ? '部门' : '功能';
+  const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func');
   const prefix = type === 'dept' ? 'dept-' : 'func-';
   showConfirm(`添加${typeName}标签`,
-    `<div class="form-group"><label>中文名称</label><input type="text" id="addLabelName" placeholder="如：审计部 / 数据分析"></div>
-     <div class="form-group"><label>标签 ID（自动生成，可修改）</label><input type="text" id="addLabelId" placeholder="${prefix}xxx"></div>`,
+    `<div class="form-group"><label>中文名称</label><input type="text" id="addLabelName" placeholder="如：IT部 / 数据可视化"></div>
+     <div class="form-group"><label>标签 ID（自动生成，可修改）</label><input type="text" id="addLabelId" placeholder="${prefix}xxx"></div>
+     <div style="font-size:12px; color:#57606a;">添加后会自动同步到上传页面的下拉选项。</div>`,
     async () => {
       const name = document.getElementById('addLabelName').value.trim();
       let id = document.getElementById('addLabelId').value.trim();
@@ -339,7 +410,7 @@ function showAddLabelModal(type) {
       const arr = type === 'dept' ? labelsData.departments : labelsData.categories;
       if (arr.some(l => l.id === id)) { showToast('标签 ID 已存在', 'error'); return; }
       arr.push({ id, name });
-      await saveLabelsJson(`添加${typeName}标签: ${id}`);
+      await saveLabelsJson(`添加${typeName}标签: ${id}`, true);
     }, { confirmBtnText: '添加' });
   setTimeout(() => {
     const nameInput = document.getElementById('addLabelName');
@@ -356,7 +427,8 @@ function showAddLabelModal(type) {
 function showAddCustomTypeModal() {
   showConfirm('添加自定义标签类型',
     `<div class="form-group"><label>类型名称（中文）</label><input type="text" id="addTypeName" placeholder="如：难度、状态、优先级"></div>
-     <div class="form-group"><label>类型 Key（英文前缀）</label><input type="text" id="addTypeKey" placeholder="如：level、status、priority"></div>`,
+     <div class="form-group"><label>类型 Key（英文前缀）</label><input type="text" id="addTypeKey" placeholder="如：level、status、priority"></div>
+     <div style="font-size:12px; color:#57606a;">自定义类型不会同步到上传页面，由管理员在工具标签分配中手动添加。</div>`,
     async () => {
       const name = document.getElementById('addTypeName').value.trim();
       const key = document.getElementById('addTypeKey').value.trim();
@@ -364,7 +436,7 @@ function showAddCustomTypeModal() {
       if (!labelsData.custom_types) labelsData.custom_types = [];
       if (labelsData.custom_types.some(ct => ct.key === key)) { showToast('类型 Key 已存在', 'error'); return; }
       labelsData.custom_types.push({ key, name, labels: [] });
-      await saveLabelsJson(`添加自定义标签类型: ${key}`);
+      await saveLabelsJson(`添加自定义标签类型: ${key}`, false);
     }, { confirmBtnText: '添加' });
 }
 function showAddLabelToCustomType(typeIdx) {
@@ -379,34 +451,67 @@ function showAddLabelToCustomType(typeIdx) {
       if (!id) id = `${ct.key}-` + name.toLowerCase().replace(/\s+/g, '-');
       if (ct.labels.some(l => l.id === id)) { showToast('标签 ID 已存在', 'error'); return; }
       ct.labels.push({ id, name });
-      await saveLabelsJson(`添加标签到 ${ct.key}: ${id}`);
+      await saveLabelsJson(`添加标签到 ${ct.key}: ${id}`, false);
     }, { confirmBtnText: '添加' });
 }
-function deleteLabel(type, id) {
-  const typeName = type === 'dept' ? '部门' : '功能';
-  showConfirm(`删除${typeName}标签`, `确定要删除标签 <code>${escapeHtml(id)}</code> 吗？`, async () => {
-    const arr = type === 'dept' ? labelsData.departments : labelsData.categories;
-    const idx = arr.findIndex(l => l.id === id);
-    if (idx >= 0) arr.splice(idx, 1);
-    await saveLabelsJson(`删除${typeName}标签: ${id}`);
-  }, { danger: true });
+async function deleteLabelWithCheck(type, id, name) {
+  const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func');
+  showToast('正在检查标签使用情况...', 'info');
+  try {
+    const { count, usedBy } = await countLabelUsage(id);
+    let body = `确定要删除${typeName}标签 <strong>${escapeHtml(name)}</strong> (<code>${escapeHtml(id)}</code>) 吗？`;
+    if (count > 0) {
+      body += `<div class="warn-box" style="margin-top:10px;">⚠️ 有 <strong>${count}</strong> 个工具正在使用此标签：${usedBy.map(n => `<code>${escapeHtml(n)}</code>`).join(', ')}<br>删除后这些工具的标签将变为"未定义"状态，不会自动移除。</div>`;
+    }
+    showConfirm(`删除${typeName}标签`, body, async () => {
+      const arr = type === 'dept' ? labelsData.departments : labelsData.categories;
+      const idx = arr.findIndex(l => l.id === id);
+      if (idx >= 0) arr.splice(idx, 1);
+      await saveLabelsJson(`删除${typeName}标签: ${id}`, true);
+    }, { danger: true });
+  } catch(e) {
+    showToast('检查使用情况失败：' + e.message, 'error');
+  }
 }
-function deleteCustomType(idx) {
+async function deleteCustomTypeWithCheck(idx) {
   const ct = labelsData.custom_types[idx];
-  showConfirm('删除自定义类型', `确定要删除类型「${escapeHtml(ct.name)}」及其所有标签吗？`, async () => {
+  let totalUsage = 0;
+  const usageDetails = [];
+  for (const label of (ct.labels || [])) {
+    const { count, usedBy } = await countLabelUsage(label.id);
+    if (count > 0) {
+      totalUsage += count;
+      usageDetails.push(`${label.name}: ${count}个工具`);
+    }
+  }
+  let body = `确定要删除自定义类型「<strong>${escapeHtml(ct.name)}</strong>」及其 <strong>${(ct.labels||[]).length}</strong> 个标签吗？`;
+  if (totalUsage > 0) {
+    body += `<div class="warn-box" style="margin-top:10px;">⚠️ 该类型下有 <strong>${totalUsage}</strong> 个标签正在被工具使用：${usageDetails.join('；')}<br>删除后这些工具的标签将变为"未定义"状态。</div>`;
+  }
+  showConfirm('删除自定义类型', body, async () => {
     labelsData.custom_types.splice(idx, 1);
-    await saveLabelsJson(`删除自定义类型: ${ct.key}`);
+    await saveLabelsJson(`删除自定义类型: ${ct.key}`, false);
   }, { danger: true });
 }
-function deleteLabelFromCustomType(typeIdx, id) {
-  showConfirm('删除标签', `确定要删除标签 <code>${escapeHtml(id)}</code> 吗？`, async () => {
-    const ct = labelsData.custom_types[typeIdx];
-    const idx = ct.labels.findIndex(l => l.id === id);
-    if (idx >= 0) ct.labels.splice(idx, 1);
-    await saveLabelsJson(`删除标签: ${id}`);
-  }, { danger: true });
+async function deleteLabelFromCustomTypeWithCheck(typeIdx, id, name) {
+  const ct = labelsData.custom_types[typeIdx];
+  showToast('正在检查标签使用情况...', 'info');
+  try {
+    const { count, usedBy } = await countLabelUsage(id);
+    let body = `确定要删除标签 <strong>${escapeHtml(name)}</strong> (<code>${escapeHtml(id)}</code>) 吗？`;
+    if (count > 0) {
+      body += `<div class="warn-box" style="margin-top:10px;">⚠️ 有 <strong>${count}</strong> 个工具正在使用此标签：${usedBy.map(n => `<code>${escapeHtml(n)}</code>`).join(', ')}<br>删除后这些工具的标签将变为"未定义"状态。</div>`;
+    }
+    showConfirm('删除标签', body, async () => {
+      const idx = ct.labels.findIndex(l => l.id === id);
+      if (idx >= 0) ct.labels.splice(idx, 1);
+      await saveLabelsJson(`删除标签: ${id}`, false);
+    }, { danger: true });
+  } catch(e) {
+    showToast('检查使用情况失败：' + e.message, 'error');
+  }
 }
-async function saveLabelsJson(commitMsg) {
+async function saveLabelsJson(commitMsg, syncUploadTemplate = false) {
   try {
     const content = JSON.stringify(labelsData, null, 2) + '\n';
     await ghPut(`/repos/${ORG}/${TOOLHUB_REPO}/contents/labels.json`, {
@@ -415,21 +520,77 @@ async function saveLabelsJson(commitMsg) {
       sha: labelsSha, branch: 'main'
     });
     showToast('labels.json 已保存', 'success');
+    allReposCache = null;
     await loadLabelsDef();
+    if (syncUploadTemplate) {
+      try {
+        showToast('正在同步上传页面下拉选项...', 'info');
+        await syncUploadTemplate();
+        showToast('上传页面下拉选项已同步', 'success');
+      } catch(e) {
+        showToast('同步上传模板失败：' + e.message, 'error');
+      }
+    }
   } catch(e) { showToast('保存失败：' + e.message, 'error'); }
 }
-
-// B. 工具标签分配
-let allToolRepos = [];
+async function syncUploadTemplate() {
+  const data = await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/contents/.github/ISSUE_TEMPLATE/upload.yml`);
+  const uploadYml = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+  const uploadSha = data.sha;
+  const deptNames = (labelsData.departments || []).map(l => l.name);
+  const funcNames = (labelsData.categories || []).map(l => l.name);
+  let updated = replaceDropdownOptions(uploadYml, 'department', deptNames);
+  updated = replaceDropdownOptions(updated, 'category', funcNames);
+  if (updated === uploadYml) {
+    console.log('upload.yml 无需更新');
+    return;
+  }
+  await ghPut(`/repos/${ORG}/${UPLOAD_REPO}/contents/.github/ISSUE_TEMPLATE/upload.yml`, {
+    message: `chore: 同步标签下拉选项（${deptNames.length}部门, ${funcNames.length}功能）`,
+    content: btoa(unescape(encodeURIComponent(updated))),
+    sha: uploadSha, branch: 'main'
+  });
+}
+function replaceDropdownOptions(yamlContent, fieldId, options) {
+  const lines = yamlContent.split('\n');
+  let result = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const idMatch = line.match(/^\s+id:\s*(\S+)/);
+    if (idMatch && idMatch[1] === fieldId) {
+      result.push(line);
+      i++;
+      while (i < lines.length && !lines[i].match(/^\s+options:/)) {
+        result.push(lines[i]);
+        i++;
+      }
+      if (i < lines.length) {
+        result.push(lines[i]);
+        i++;
+        while (i < lines.length && lines[i].match(/^\s+-\s+/)) {
+          i++;
+        }
+        const indent = '        ';
+        for (const opt of options) {
+          result.push(`${indent}- ${opt}`);
+        }
+      }
+    } else {
+      result.push(line);
+      i++;
+    }
+  }
+  return result.join('\n');
+}
 let currentToolRepo = null;
 let currentToolTopics = [];
 async function loadToolReposForSelect() {
   try {
-    const repos = await ghGet(`/orgs/${ORG}/repos?per_page=100&sort=updated`);
-    allToolRepos = repos.filter(r => !['toolhub', 'upload-portal', 'tool-template'].includes(r.name));
+    const repos = await getAllToolRepos();
     const select = document.getElementById('toolRepoSelect');
     select.innerHTML = '<option value="">请选择工具...</option>';
-    allToolRepos.forEach(r => {
+    repos.forEach(r => {
       select.innerHTML += `<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)} — ${escapeHtml(r.description || '')}</option>`;
     });
   } catch(e) { showToast('加载工具列表失败：' + e.message, 'error'); }
@@ -474,10 +635,9 @@ async function saveToolTopics() {
     await ghPut(`/repos/${ORG}/${currentToolRepo}/topics`, { names: newTopics });
     showToast(`工具 ${currentToolRepo} 的标签已更新`, 'success');
     currentToolTopics = newTopics;
+    allReposCache = null;
   } catch(e) { showToast('保存失败：' + e.message, 'error'); }
 }
-
-// 模块2：上传记录
 async function renderIssues() {
   document.getElementById('content').innerHTML = `
     <div class="content__title">📋 上传记录</div>
