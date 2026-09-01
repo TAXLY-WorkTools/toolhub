@@ -6,6 +6,7 @@
 <title>工具上传打包器 · TAXLY WorkTools</title>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.19.6/dist/index.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -15,8 +16,6 @@
     font-size: 14px;
     line-height: 1.6;
   }
-
-  /* 顶部导航 */
   .topbar {
     background: #fff;
     border-bottom: 1px solid #d0d7de;
@@ -43,8 +42,13 @@
     transition: background 0.15s;
   }
   .topbar__btn:hover { background: #eaeef2; }
-
-  /* 主布局 */
+  .topbar__btn--primary {
+    background: #2da44e;
+    color: #fff;
+    border-color: #2da44e;
+    font-weight: 500;
+  }
+  .topbar__btn--primary:hover { background: #22863a; }
   .main {
     display: flex;
     gap: 20px;
@@ -53,8 +57,6 @@
     margin: 0 auto;
     align-items: flex-start;
   }
-
-  /* 左侧填写区 */
   .left-panel {
     flex: 1;
     min-width: 0;
@@ -62,7 +64,6 @@
     flex-direction: column;
     gap: 16px;
   }
-
   .section {
     background: #fff;
     border: 1px solid #d0d7de;
@@ -89,8 +90,6 @@
     border-radius: 50%;
     font-size: 12px;
   }
-
-  /* 表单元素 */
   .field { margin-bottom: 12px; }
   .field:last-child { margin-bottom: 0; }
   .field__label {
@@ -107,7 +106,6 @@
     font-size: 12px;
   }
   .field__label .required { color: #cf222e; margin-left: 2px; }
-
   input[type="text"], textarea {
     width: 100%;
     padding: 8px 12px;
@@ -125,8 +123,6 @@
   }
   input::placeholder, textarea::placeholder { color: #8b949e; font-style: italic; }
   textarea { resize: vertical; min-height: 60px; }
-
-  /* 可增删列表项 */
   .list-item {
     display: flex;
     align-items: flex-start;
@@ -147,7 +143,6 @@
     flex-shrink: 0;
   }
   .btn-remove:hover { background: #ffebe9; }
-
   .btn-add {
     padding: 6px 14px;
     border: 1px dashed #d0d7de;
@@ -160,8 +155,6 @@
     margin-top: 4px;
   }
   .btn-add:hover { background: #ddf4ff; }
-
-  /* 步骤卡片 */
   .step-card {
     border: 1px solid #d0d7de;
     border-radius: 8px;
@@ -197,8 +190,6 @@
     cursor: pointer;
     font-weight: bold;
   }
-
-  /* 右侧面板 */
   .right-panel {
     width: 480px;
     flex-shrink: 0;
@@ -208,8 +199,6 @@
     position: sticky;
     top: 72px;
   }
-
-  /* 预览区 */
   .preview-box {
     background: #fff;
     border: 1px solid #d0d7de;
@@ -263,8 +252,6 @@
     margin-bottom: 10px;
   }
   .preview-empty { color: #8b949e; font-style: italic; text-align: center; padding: 40px 0; }
-
-  /* 文件拖拽区 */
   .drop-zone {
     border: 2px dashed #d0d7de;
     border-radius: 8px;
@@ -281,8 +268,6 @@
   .drop-zone__icon { font-size: 32px; margin-bottom: 8px; }
   .drop-zone__text { font-size: 14px; color: #424a53; }
   .drop-zone__hint { font-size: 12px; color: #8b949e; margin-top: 4px; }
-
-  /* 文件列表 */
   .file-list {
     background: #fff;
     border: 1px solid #d0d7de;
@@ -320,8 +305,6 @@
   }
   .file-item__remove:hover { background: #ffebe9; }
   .file-list__empty { padding: 16px; text-align: center; color: #8b949e; font-style: italic; font-size: 13px; }
-
-  /* 生成按钮 */
   .btn-generate {
     width: 100%;
     padding: 14px;
@@ -337,8 +320,6 @@
   .btn-generate:hover { background: #156e2e; }
   .btn-generate:disabled { background: #81c784; cursor: not-allowed; }
   .btn-generate__hint { text-align: center; font-size: 12px; color: #8b949e; margin-top: 6px; }
-
-  /* Toast */
   .toast {
     position: fixed;
     top: 70px;
@@ -356,8 +337,6 @@
   .toast.success { background: #1a7f37; }
   .toast.error { background: #cf222e; }
   .toast.info { background: #0969da; }
-
-  /* 响应式 */
   @media (max-width: 1024px) {
     .main { flex-direction: column; }
     .right-panel { width: 100%; position: static; }
@@ -365,29 +344,27 @@
 </style>
 </head>
 <body>
-
-<!-- 顶部导航 -->
 <div class="topbar">
   <div class="topbar__title">📦 <span>TAXLY WorkTools</span> · 工具上传打包器</div>
   <div class="topbar__actions">
-    <a class="topbar__btn" href="upload.html">→ 去上传页面</a>
+    <a class="topbar__btn topbar__btn--primary" href="upload.html">→ 去上传页面</a>
   </div>
 </div>
 
 <div class="main">
-  <!-- 左侧填写区 -->
   <div class="left-panel">
-
-    <!-- ① 基本信息 -->
     <div class="section">
       <div class="section__title"><span class="num">1</span>基本信息</div>
       <div class="field">
         <label class="field__label">中文显示名 <span class="hint">（展示页大标题，可填中文）</span></label>
-        <input type="text" id="displayName" placeholder="如：函证批量生成器">
+        <input type="text" id="displayName" placeholder="如：函证批量生成器" oninput="suggestEnglishName()">
       </div>
       <div class="field">
         <label class="field__label">工具名称 <span class="required">*</span> <span class="hint">（GitHub 仓库名，仅限英文/拼音）</span></label>
-        <input type="text" id="toolName" placeholder="如：letter_generator（小写英文，用下划线或连字符）">
+        <input type="text" id="toolName" placeholder="如：letter_generator（小写英文，用下划线或连字符）" oninput="hideSuggestion()">
+        <div id="nameSuggestion" style="display:none; margin-top:6px; font-size:12px; color:#0969da;">
+          💡 推荐英文名：<span id="suggestedName" style="cursor:pointer; text-decoration:underline; font-weight:500;"></span>（点击填入）
+        </div>
       </div>
       <div class="field">
         <label class="field__label">工具描述 <span class="required">*</span></label>
@@ -395,40 +372,32 @@
       </div>
     </div>
 
-    <!-- ② 主要功能 -->
     <div class="section">
       <div class="section__title"><span class="num">2</span>主要功能</div>
       <div id="featuresList"></div>
       <button class="btn-add" onclick="addFeature()">+ 添加一条功能</button>
     </div>
 
-    <!-- ③ 环境要求 -->
     <div class="section">
       <div class="section__title"><span class="num">3</span>环境要求</div>
       <div id="envList"></div>
       <button class="btn-add" onclick="addEnv()">+ 添加一条要求</button>
     </div>
 
-    <!-- ④ 使用步骤 -->
     <div class="section">
       <div class="section__title"><span class="num">4</span>使用步骤</div>
       <div id="stepsList"></div>
       <button class="btn-add" onclick="addStep()">+ 添加步骤</button>
     </div>
 
-    <!-- ⑤ 常见问题 -->
     <div class="section">
       <div class="section__title"><span class="num">5</span>常见问题 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选）</span></div>
       <div id="faqList"></div>
       <button class="btn-add" onclick="addFaq()">+ 添加问题</button>
     </div>
-
   </div>
 
-  <!-- 右侧面板 -->
   <div class="right-panel">
-
-    <!-- README 实时预览 -->
     <div class="preview-box">
       <div class="preview-box__header">📖 README 实时预览</div>
       <div class="preview-box__body" id="previewBody">
@@ -436,7 +405,6 @@
       </div>
     </div>
 
-    <!-- 文件拖拽区 -->
     <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
       <div class="drop-zone__icon">📂</div>
       <div class="drop-zone__text">拖拽文件到此处，或点击选择文件</div>
@@ -444,7 +412,6 @@
       <input type="file" id="fileInput" multiple style="display:none">
     </div>
 
-    <!-- 已添加文件列表 -->
     <div class="file-list">
       <div class="file-list__header">
         <span>📁 已添加文件</span>
@@ -455,27 +422,21 @@
       </div>
     </div>
 
-    <!-- 生成按钮 -->
     <button class="btn-generate" id="generateBtn" onclick="generatePackage()">📦 生成上传包并下载</button>
     <div class="btn-generate__hint">生成后自动下载 zip，并跳转上传页面（信息已预填）</div>
-
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ==================== 数据存储 ====================
 let features = [];
 let envs = [];
 let steps = [];
 let faqs = [];
-let uploadedFiles = []; // {name, path, type, data, size}
-
+let uploadedFiles = [];
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.bmp'];
 
-// ==================== 工具函数 ====================
 function showToast(msg, type = 'info') {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -498,7 +459,6 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// ==================== 动态增删字段 ====================
 function addFeature(value = '') {
   const id = 'feat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
   features.push({ id, value });
@@ -561,7 +521,6 @@ function updateEnv(id, value) {
   if (e) { e.value = value; updatePreview(); }
 }
 
-// ==================== 使用步骤 ====================
 function addStep() {
   const id = 'step_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
   steps.push({ id, title: '', content: '', screenshots: [] });
@@ -647,7 +606,6 @@ function removeStepScreenshot(stepId, idx) {
   }
 }
 
-// ==================== 常见问题 ====================
 function addFaq() {
   const id = 'faq_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
   faqs.push({ id, q: '', a: '' });
@@ -693,7 +651,6 @@ function updateFaqA(id, value) {
   if (f) { f.a = value; updatePreview(); }
 }
 
-// ==================== 文件拖拽 ====================
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 
@@ -767,7 +724,6 @@ function renderFileList() {
   `).join('');
 }
 
-// ==================== README 生成 ====================
 function generateReadme() {
   const displayName = document.getElementById('displayName').value.trim();
   const toolName = document.getElementById('toolName').value.trim();
@@ -800,7 +756,8 @@ function generateReadme() {
     validSteps.forEach((s, idx) => {
       md += '### ' + (idx + 1) + '. ' + (s.title.trim() || '步骤 ' + (idx + 1)) + '\n\n';
       if (s.content.trim()) {
-        md += s.content.trim() + '\n\n';
+        const contentWithBreaks = s.content.trim().replace(/\n/g, '  \n');
+        md += contentWithBreaks + '\n\n';
       }
       s.screenshots.forEach(sc => {
         md += '![' + sc.name + '](images/' + sc.name + ')\n\n';
@@ -842,11 +799,49 @@ function updatePreview() {
   }
 }
 
+function suggestEnglishName() {
+  const displayName = document.getElementById('displayName').value.trim();
+  const toolNameInput = document.getElementById('toolName');
+  const suggestionDiv = document.getElementById('nameSuggestion');
+  const suggestedSpan = document.getElementById('suggestedName');
+
+  if (!displayName || toolNameInput.value) {
+    suggestionDiv.style.display = 'none';
+    return;
+  }
+
+  try {
+    if (typeof pinyinPro === 'undefined') {
+      suggestionDiv.style.display = 'none';
+      return;
+    }
+    const pinyinArr = pinyinPro.pinyin(displayName, { toneType: 'none', type: 'array' });
+    let suggested = pinyinArr.join('_').toLowerCase();
+    suggested = suggested.replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+    if (suggested && suggested.length >= 2) {
+      suggestedSpan.textContent = suggested;
+      suggestionDiv.style.display = 'block';
+      suggestedSpan.onclick = function() {
+        toolNameInput.value = suggested;
+        suggestionDiv.style.display = 'none';
+        updatePreview();
+      };
+    } else {
+      suggestionDiv.style.display = 'none';
+    }
+  } catch(e) {
+    suggestionDiv.style.display = 'none';
+  }
+}
+
+function hideSuggestion() {
+  document.getElementById('nameSuggestion').style.display = 'none';
+}
+
 ['displayName', 'toolName', 'description'].forEach(id => {
   document.getElementById(id).addEventListener('input', updatePreview);
 });
 
-// ==================== 生成打包 ====================
 async function generatePackage() {
   const toolName = document.getElementById('toolName').value.trim();
   const description = document.getElementById('description').value.trim();
@@ -946,13 +941,10 @@ async function generatePackage() {
   }
 }
 
-// ==================== 初始化 ====================
 addFeature();
 addEnv();
 addStep();
-
 updatePreview();
 </script>
-
 </body>
 </html>
