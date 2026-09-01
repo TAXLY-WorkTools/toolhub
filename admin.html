@@ -172,6 +172,7 @@ let confirmCallback = null;
 let labelsData = null;
 let labelsSha = null;
 let allReposCache = null;
+
 function showToast(msg, type = 'info') {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -202,6 +203,7 @@ async function ghPut(path, body) { return ghApi(path, { method: 'PUT', body }); 
 async function ghPost(path, body) { return ghApi(path, { method: 'POST', body }); }
 async function ghDelete(path) { return ghApi(path, { method: 'DELETE' }); }
 async function ghPatch(path, body) { return ghApi(path, { method: 'PATCH', body }); }
+
 function showTokenModal() { document.getElementById('tokenInput').value = currentToken; document.getElementById('tokenModal').classList.add('show'); }
 function closeTokenModal() { document.getElementById('tokenModal').classList.remove('show'); }
 async function saveToken() {
@@ -246,6 +248,7 @@ function showConfirm(title, body, callback, options = {}) {
 }
 function closeConfirmModal() { document.getElementById('confirmModal').classList.remove('show'); confirmCallback = null; }
 function executeConfirm() { closeConfirmModal(); if (confirmCallback) confirmCallback(); }
+
 function switchModule(module) {
   currentModule = module;
   document.querySelectorAll('.menu-item').forEach(el => { el.classList.toggle('active', el.dataset.module === module); });
@@ -253,6 +256,7 @@ function switchModule(module) {
   if (module === 'labels') renderLabels();
   else if (module === 'issues') renderIssues();
 }
+
 async function getAllToolRepos(forceRefresh = false) {
   if (allReposCache && !forceRefresh) return allReposCache;
   const repos = await ghGet(`/orgs/${ORG}/repos?per_page=100&sort=updated`);
@@ -271,6 +275,7 @@ async function countLabelUsage(labelId) {
   }
   return { count, usedBy };
 }
+
 async function renderLabels() {
   document.getElementById('content').innerHTML = `
     <div class="content__title">📑 标签管理</div>
@@ -295,6 +300,7 @@ async function renderLabels() {
   await loadLabelsDef();
   await loadToolReposForSelect();
 }
+
 async function loadLabelsDef() {
   try {
     const data = await ghGet(`/repos/${ORG}/${TOOLHUB_REPO}/contents/labels.json`);
@@ -303,12 +309,14 @@ async function loadLabelsDef() {
     renderLabelsDefList();
   } catch(e) { document.getElementById('labelsDefList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; }
 }
+
 function getTypeDisplayName(typeKey) {
   if (labelsData && labelsData.type_config && labelsData.type_config[typeKey]) {
     return labelsData.type_config[typeKey].display_name;
   }
   return typeKey === 'dept' ? '使用部门' : '功能分类';
 }
+
 function renderLabelsDefList() {
   const container = document.getElementById('labelsDefList');
   if (!labelsData) { container.innerHTML = '<div class="empty">无数据</div>'; return; }
@@ -369,6 +377,7 @@ function renderLabelsDefList() {
   }
   container.innerHTML = html;
 }
+
 function editTypeName(typeKey) {
   const currentName = getTypeDisplayName(typeKey);
   showConfirm(`修改类型名称`,
@@ -383,6 +392,7 @@ function editTypeName(typeKey) {
       await saveLabelsJson(`修改类型显示名称: ${typeKey} -> ${newName}`, false);
     }, { confirmBtnText: '保存' });
 }
+
 function editCustomTypeName(idx) {
   const ct = labelsData.custom_types[idx];
   showConfirm(`修改自定义类型名称`,
@@ -395,6 +405,7 @@ function editCustomTypeName(idx) {
       await saveLabelsJson(`修改自定义类型名称: ${ct.key} -> ${newName}`, false);
     }, { confirmBtnText: '保存' });
 }
+
 function showAddLabelModal(type) {
   const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func');
   const prefix = type === 'dept' ? 'dept-' : 'func-';
@@ -424,6 +435,7 @@ function showAddLabelModal(type) {
     }
   }, 100);
 }
+
 function showAddCustomTypeModal() {
   showConfirm('添加自定义标签类型',
     `<div class="form-group"><label>类型名称（中文）</label><input type="text" id="addTypeName" placeholder="如：难度、状态、优先级"></div>
@@ -439,6 +451,7 @@ function showAddCustomTypeModal() {
       await saveLabelsJson(`添加自定义标签类型: ${key}`, false);
     }, { confirmBtnText: '添加' });
 }
+
 function showAddLabelToCustomType(typeIdx) {
   const ct = labelsData.custom_types[typeIdx];
   showConfirm(`添加标签到「${ct.name}」`,
@@ -454,6 +467,7 @@ function showAddLabelToCustomType(typeIdx) {
       await saveLabelsJson(`添加标签到 ${ct.key}: ${id}`, false);
     }, { confirmBtnText: '添加' });
 }
+
 async function deleteLabelWithCheck(type, id, name) {
   const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func');
   showToast('正在检查标签使用情况...', 'info');
@@ -473,6 +487,7 @@ async function deleteLabelWithCheck(type, id, name) {
     showToast('检查使用情况失败：' + e.message, 'error');
   }
 }
+
 async function deleteCustomTypeWithCheck(idx) {
   const ct = labelsData.custom_types[idx];
   let totalUsage = 0;
@@ -493,6 +508,7 @@ async function deleteCustomTypeWithCheck(idx) {
     await saveLabelsJson(`删除自定义类型: ${ct.key}`, false);
   }, { danger: true });
 }
+
 async function deleteLabelFromCustomTypeWithCheck(typeIdx, id, name) {
   const ct = labelsData.custom_types[typeIdx];
   showToast('正在检查标签使用情况...', 'info');
@@ -511,6 +527,7 @@ async function deleteLabelFromCustomTypeWithCheck(typeIdx, id, name) {
     showToast('检查使用情况失败：' + e.message, 'error');
   }
 }
+
 async function saveLabelsJson(commitMsg, syncUploadTemplate = false) {
   try {
     const content = JSON.stringify(labelsData, null, 2) + '\n';
@@ -533,9 +550,10 @@ async function saveLabelsJson(commitMsg, syncUploadTemplate = false) {
     }
   } catch(e) { showToast('保存失败：' + e.message, 'error'); }
 }
+
 async function syncUploadTemplate() {
   const data = await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/contents/.github/ISSUE_TEMPLATE/upload.yml`);
-  const uploadYml = decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+  const uploadYml = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
   const uploadSha = data.sha;
   const deptNames = (labelsData.departments || []).map(l => l.name);
   const funcNames = (labelsData.categories || []).map(l => l.name);
@@ -551,6 +569,7 @@ async function syncUploadTemplate() {
     sha: uploadSha, branch: 'main'
   });
 }
+
 function replaceDropdownOptions(yamlContent, fieldId, options) {
   const lines = yamlContent.split('\n');
   let result = [];
@@ -583,8 +602,10 @@ function replaceDropdownOptions(yamlContent, fieldId, options) {
   }
   return result.join('\n');
 }
+
 let currentToolRepo = null;
 let currentToolTopics = [];
+
 async function loadToolReposForSelect() {
   try {
     const repos = await getAllToolRepos();
@@ -595,6 +616,7 @@ async function loadToolReposForSelect() {
     });
   } catch(e) { showToast('加载工具列表失败：' + e.message, 'error'); }
 }
+
 async function loadToolTopics() {
   const repoName = document.getElementById('toolRepoSelect').value;
   if (!repoName) { document.getElementById('toolTopicsArea').style.display = 'none'; return; }
@@ -606,6 +628,7 @@ async function loadToolTopics() {
     document.getElementById('toolTopicsArea').style.display = 'block';
   } catch(e) { showToast('加载工具标签失败：' + e.message, 'error'); }
 }
+
 function renderTopicsCheckboxes() {
   const container = document.getElementById('topicsCheckboxGroup');
   const allLabels = [];
@@ -627,6 +650,7 @@ function renderTopicsCheckboxes() {
   });
   container.innerHTML = html;
 }
+
 async function saveToolTopics() {
   const checkboxes = document.querySelectorAll('#topicsCheckboxGroup input[type="checkbox"]');
   const newTopics = [];
@@ -644,6 +668,7 @@ async function saveToolTopics() {
     }
   } catch(e) { showToast('保存失败：' + e.message, 'error'); }
 }
+
 async function renderIssues() {
   document.getElementById('content').innerHTML = `
     <div class="content__title">📋 上传记录</div>
@@ -654,6 +679,7 @@ async function renderIssues() {
     <div id="issuesList" class="loading">加载中...</div>`;
   await loadIssues();
 }
+
 let allIssues = [];
 async function loadIssues() {
   try {
@@ -662,6 +688,7 @@ async function loadIssues() {
     renderIssuesList(allIssues);
   } catch(e) { document.getElementById('issuesList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; }
 }
+
 function renderIssuesList(issues) {
   const list = document.getElementById('issuesList');
   if (issues.length === 0) { list.innerHTML = '<div class="empty">没有上传记录</div>'; return; }
@@ -675,6 +702,7 @@ function renderIssuesList(issues) {
   html += '</tbody></table>';
   list.innerHTML = html;
 }
+
 function filterIssues() {
   const keyword = document.getElementById('issueSearch').value.toLowerCase();
   const state = document.getElementById('issueStateFilter').value;
@@ -683,16 +711,19 @@ function filterIssues() {
   if (state !== 'all') filtered = filtered.filter(i => i.state === state);
   renderIssuesList(filtered);
 }
+
 async function closeIssue(num) {
   showConfirm('关闭 Issue', `确定要关闭 Issue #${num} 吗？`, async () => {
     try { await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'closed' }); showToast(`Issue #${num} 已关闭`, 'success'); await loadIssues(); }
     catch(e) { showToast('关闭失败：' + e.message, 'error'); }
   });
 }
+
 async function reopenIssue(num) {
   try { await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'open' }); showToast(`Issue #${num} 已重新打开`, 'success'); await loadIssues(); }
   catch(e) { showToast('重开失败：' + e.message, 'error'); }
 }
+
 initToken();
 </script>
 </body>
