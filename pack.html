@@ -282,7 +282,7 @@
     display: flex;
     justify-content: space-between;
   }
-  .file-list__body { max-height: 200px; overflow-y: auto; }
+  .file-list__body { max-height: 240px; overflow-y: auto; }
   .file-item {
     display: flex;
     justify-content: space-between;
@@ -304,6 +304,19 @@
   }
   .file-item__remove:hover { background: #ffebe9; }
   .file-list__empty { padding: 16px; text-align: center; color: #8b949e; font-style: italic; font-size: 13px; }
+  .file-dir { margin-bottom: 0; }
+  .file-dir__header {
+    padding: 6px 16px;
+    background: #f6f8fa;
+    font-size: 12px;
+    font-weight: 600;
+    color: #57606a;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid #eaeef2;
+  }
+  .file-dir__header:hover { background: #eaeef2; }
+  .file-dir__body.hidden { display: none; }
   .btn-generate {
     width: 100%;
     padding: 14px;
@@ -390,7 +403,13 @@
     </div>
 
     <div class="section">
-      <div class="section__title"><span class="num">5</span>常见问题 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选）</span></div>
+      <div class="section__title"><span class="num">5</span>示例文件 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选）</span></div>
+      <div id="examplesList"></div>
+      <button class="btn-add" onclick="addExample()">+ 添加示例文件</button>
+    </div>
+
+    <div class="section">
+      <div class="section__title"><span class="num">6</span>常见问题 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选）</span></div>
       <div id="faqList"></div>
       <button class="btn-add" onclick="addFaq()">+ 添加问题</button>
     </div>
@@ -406,14 +425,14 @@
 
     <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
       <div class="drop-zone__icon">📂</div>
-      <div class="drop-zone__text">拖拽文件到此处，或点击选择文件</div>
-      <div class="drop-zone__hint">代码文件自动归 src/，截图自动归 images/</div>
+      <div class="drop-zone__text">拖拽代码文件/文件夹到此处，或点击选择文件</div>
+      <div class="drop-zone__hint">支持文件夹拖拽，保留子目录结构，所有文件归 src/</div>
       <input type="file" id="fileInput" multiple style="display:none">
     </div>
 
     <div class="file-list">
       <div class="file-list__header">
-        <span>📁 已添加文件</span>
+        <span>📁 已添加文件（src/）</span>
         <span id="fileCount">0</span>
       </div>
       <div class="file-list__body" id="fileListBody">
@@ -432,24 +451,15 @@
 let features = [];
 let envs = [];
 let steps = [];
+let examples = [];
 let faqs = [];
 let uploadedFiles = [];
-const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.bmp'];
 
 function showToast(msg, type = 'info') {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
   toast.className = 'toast ' + type + ' show';
   setTimeout(() => { toast.className = 'toast ' + type; }, 2500);
-}
-
-function isImage(filename) {
-  const ext = filename.toLowerCase().substring(filename.lastIndexOf('.'));
-  return IMAGE_EXTENSIONS.includes(ext);
-}
-
-function getFileCategory(filename) {
-  return isImage(filename) ? 'images' : 'src';
 }
 
 function escapeHtml(text) {
@@ -470,22 +480,6 @@ function sanitizeFilename(filename) {
     name = 'file_' + Date.now();
   }
   return name + ext;
-}
-
-function ensureUniqueFilename(filename, existingNames) {
-  if (!existingNames.includes(filename)) {
-    return filename;
-  }
-  const lastDot = filename.lastIndexOf('.');
-  const name = lastDot > 0 ? filename.substring(0, lastDot) : filename;
-  const ext = lastDot > 0 ? filename.substring(lastDot) : '';
-  let counter = 2;
-  let newName = name + '_' + counter + ext;
-  while (existingNames.includes(newName)) {
-    counter++;
-    newName = name + '_' + counter + ext;
-  }
-  return newName;
 }
 
 function addFeature(value = '') {
@@ -616,11 +610,19 @@ function addStepScreenshot(stepId) {
 function handleStepScreenshot(stepId, files) {
   const s = steps.find(x => x.id === stepId);
   if (!s) return;
-  const existingNames = uploadedFiles.map(f => f.name);
+  const existingNames = [];
   steps.forEach(st => st.screenshots.forEach(sc => existingNames.push(sc.name)));
   Array.from(files).forEach(file => {
     const cleanName = sanitizeFilename(file.name);
-    const finalName = ensureUniqueFilename(cleanName, existingNames);
+    let finalName = cleanName;
+    let counter = 2;
+    while (existingNames.includes(finalName)) {
+      const dot = cleanName.lastIndexOf('.');
+      const name = dot > 0 ? cleanName.substring(0, dot) : cleanName;
+      const ext = dot > 0 ? cleanName.substring(dot) : '';
+      finalName = name + '_' + counter + ext;
+      counter++;
+    }
     existingNames.push(finalName);
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -643,6 +645,89 @@ function removeStepScreenshot(stepId, idx) {
     renderSteps();
     updatePreview();
   }
+}
+
+function addExample() {
+  const id = 'ex_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+  examples.push({ id, title: '', content: '', file: null });
+  renderExamples();
+}
+
+function removeExample(id) {
+  examples = examples.filter(e => e.id !== id);
+  renderExamples();
+  updatePreview();
+}
+
+function renderExamples() {
+  const container = document.getElementById('examplesList');
+  if (examples.length === 0) {
+    container.innerHTML = '<div style="color:#8b949e;font-size:13px;font-style:italic;margin-bottom:8px;">暂无示例文件，可跳过</div>';
+    return;
+  }
+  container.innerHTML = examples.map((e, idx) => `
+    <div class="step-card">
+      <div class="step-card__header">
+        <span class="step-card__title">示例 ${idx + 1}</span>
+        <button class="btn-remove" onclick="removeExample('${e.id}')" title="删除示例">×</button>
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <input type="text" value="${escapeHtml(e.title)}" placeholder="示例标题，如：输入模板"
+          oninput="updateExampleTitle('${e.id}', this.value)">
+      </div>
+      <div class="field">
+        <textarea rows="2" placeholder="示例说明，如：这是工具需要的输入格式模板，按列填写"
+          oninput="updateExampleContent('${e.id}', this.value)">${escapeHtml(e.content)}</textarea>
+      </div>
+      <div style="margin-top:8px;">
+        ${e.file ? `
+          <div class="step-screenshot-item">
+            📊 ${e.file.name}
+            ${e.file.originalName && e.file.originalName !== e.file.name ? '<span style="font-size:10px;color:#8b949e;">（原：' + escapeHtml(e.file.originalName) + '）</span>' : ''}
+            <span class="remove" onclick="removeExampleFile('${e.id}')">×</span>
+          </div>
+        ` : `
+          <button class="btn-add" onclick="document.getElementById('exFile_${e.id}').click()">📊 上传示例文件</button>
+          <input type="file" id="exFile_${e.id}" style="display:none" onchange="handleExampleFile('${e.id}', this.files)">
+        `}
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateExampleTitle(id, value) {
+  const e = examples.find(x => x.id === id);
+  if (e) { e.title = value; updatePreview(); }
+}
+
+function updateExampleContent(id, value) {
+  const e = examples.find(x => x.id === id);
+  if (e) { e.content = value; updatePreview(); }
+}
+
+function handleExampleFile(id, files) {
+  const e = examples.find(x => x.id === id);
+  if (!e || files.length === 0) return;
+  const file = files[0];
+  const cleanName = sanitizeFilename(file.name);
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    e.file = {
+      name: cleanName,
+      originalName: file.name,
+      data: ev.target.result,
+      size: file.size
+    };
+    renderExamples();
+    updatePreview();
+    showToast('已添加示例文件: ' + file.name, 'success');
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function removeExampleFile(id) {
+  const e = examples.find(x => x.id === id);
+  if (e) { e.file = null; renderExamples(); updatePreview(); }
 }
 
 function addFaq() {
@@ -702,9 +787,22 @@ dropZone.addEventListener('dragleave', () => {
   dropZone.classList.remove('dragover');
 });
 
-dropZone.addEventListener('drop', (e) => {
+dropZone.addEventListener('drop', async (e) => {
   e.preventDefault();
   dropZone.classList.remove('dragover');
+  const items = e.dataTransfer.items;
+  if (items && items.length > 0 && items[0].webkitGetAsEntry) {
+    const entries = [];
+    for (let i = 0; i < items.length; i++) {
+      const entry = items[i].webkitGetAsEntry();
+      if (entry) entries.push(entry);
+    }
+    if (entries.length > 0) {
+      showToast('正在读取文件夹结构...', 'info');
+      await handleEntries(entries);
+      return;
+    }
+  }
   handleFiles(e.dataTransfer.files);
 });
 
@@ -713,37 +811,77 @@ fileInput.addEventListener('change', (e) => {
   e.target.value = '';
 });
 
-function handleFiles(files) {
-  const existingNames = uploadedFiles.map(f => f.name);
-  Array.from(files).forEach(file => {
-    const cleanName = sanitizeFilename(file.name);
-    const finalName = ensureUniqueFilename(cleanName, existingNames);
-    existingNames.push(finalName);
-    if (uploadedFiles.some(f => f.name === finalName && f.size === file.size)) {
-      showToast('文件 ' + finalName + ' 已存在', 'error');
-      return;
+async function handleEntries(entries) {
+  const files = [];
+  for (const entry of entries) {
+    await traverseEntry(entry, '', files);
+  }
+  if (files.length > 0) {
+    addUploadedFiles(files);
+    showToast('已添加 ' + files.length + ' 个文件（保留目录结构）', 'success');
+  } else {
+    showToast('未找到文件', 'error');
+  }
+}
+
+async function traverseEntry(entry, basePath, files) {
+  if (entry.isFile) {
+    const file = await new Promise(resolve => entry.file(resolve));
+    files.push({ file, relativePath: basePath + entry.name });
+  } else if (entry.isDirectory) {
+    const reader = entry.createReader();
+    const allEntries = [];
+    while (true) {
+      const batch = await new Promise(resolve => reader.readEntries(resolve));
+      if (batch.length === 0) break;
+      allEntries.push(...batch);
     }
+    for (const subEntry of allEntries) {
+      await traverseEntry(subEntry, basePath + entry.name + '/', files);
+    }
+  }
+}
+
+function addUploadedFiles(fileList) {
+  const existingPaths = uploadedFiles.map(f => f.path);
+  fileList.forEach(({ file, relativePath }) => {
+    const parts = relativePath.split('/');
+    const fileName = parts.pop();
+    const cleanName = sanitizeFilename(fileName);
+    parts.push(cleanName);
+    let finalPath = 'src/' + parts.join('/');
+
+    let counter = 2;
+    while (existingPaths.includes(finalPath)) {
+      const dot = cleanName.lastIndexOf('.');
+      const name = dot > 0 ? cleanName.substring(0, dot) : cleanName;
+      const ext = dot > 0 ? cleanName.substring(dot) : '';
+      parts[parts.length - 1] = name + '_' + counter + ext;
+      finalPath = 'src/' + parts.join('/');
+      counter++;
+    }
+    existingPaths.push(finalPath);
+
     const reader = new FileReader();
     reader.onload = (e) => {
-      const category = getFileCategory(finalName);
       uploadedFiles.push({
-        name: finalName,
+        name: cleanName,
         originalName: file.name,
-        path: category + '/' + finalName,
-        category: category,
+        path: finalPath,
+        category: 'src',
         data: e.target.result,
         size: file.size
       });
       renderFileList();
       updatePreview();
-      if (finalName !== file.name) {
-        showToast('已添加: ' + file.name + ' → 重命名为 ' + finalName, 'success');
-      } else {
-        showToast('已添加: ' + finalName + ' → ' + category + '/', 'success');
-      }
     };
     reader.readAsArrayBuffer(file);
   });
+}
+
+function handleFiles(files) {
+  const fileList = Array.from(files).map(file => ({ file, relativePath: file.name }));
+  addUploadedFiles(fileList);
 }
 
 function removeFile(index) {
@@ -760,17 +898,37 @@ function renderFileList() {
     body.innerHTML = '<div class="file-list__empty">暂无文件</div>';
     return;
   }
-  body.innerHTML = uploadedFiles.map((f, i) => `
-    <div class="file-item">
-      <div class="file-item__name">
-        ${f.category === 'images' ? '🖼️' : '📄'}
-        <span>${escapeHtml(f.name)}</span>
-        ${f.originalName && f.originalName !== f.name ? '<span style="font-size:11px;color:#8b949e;">（原：' + escapeHtml(f.originalName) + '）</span>' : ''}
-        <span class="path">${f.path}</span>
+
+  const dirMap = {};
+  uploadedFiles.forEach((f, i) => {
+    const relPath = f.path.startsWith('src/') ? f.path.substring(4) : f.path;
+    const lastSlash = relPath.lastIndexOf('/');
+    const dir = lastSlash > 0 ? relPath.substring(0, lastSlash) : '(根目录)';
+    if (!dirMap[dir]) dirMap[dir] = [];
+    dirMap[dir].push({ ...f, index: i });
+  });
+
+  let html = '';
+  Object.keys(dirMap).sort().forEach((dir, dirIdx) => {
+    const dirId = 'dirbody_' + dirIdx;
+    html += `<div class="file-dir">
+      <div class="file-dir__header" onclick="document.getElementById('${dirId}').classList.toggle('hidden')">
+        📁 ${dir} (${dirMap[dir].length}个文件)
       </div>
-      <span class="file-item__remove" onclick="removeFile(${i})" title="移除">×</span>
-    </div>
-  `).join('');
+      <div class="file-dir__body" id="${dirId}">`;
+    dirMap[dir].forEach(f => {
+      html += `
+        <div class="file-item">
+          <div class="file-item__name">
+            📄 <span>${escapeHtml(f.name)}</span>
+            <span class="path">${f.path}</span>
+          </div>
+          <span class="file-item__remove" onclick="removeFile(${f.index})" title="移除">×</span>
+        </div>`;
+    });
+    html += '</div></div>';
+  });
+  body.innerHTML = html;
 }
 
 function generateReadme() {
@@ -815,12 +973,15 @@ function generateReadme() {
     });
   }
 
-  const uploadedImages = uploadedFiles.filter(f => f.category === 'images');
-  if (uploadedImages.length > 0 && validSteps.length === 0) {
-    md += '## 运行截图\n\n';
-    uploadedImages.forEach(img => {
-      const altText = img.originalName || img.name;
-      md += '![' + altText + '](images/' + img.name + ')\n\n';
+  const validExamples = examples.filter(e => e.file && (e.title.trim() || e.content.trim()));
+  if (validExamples.length > 0) {
+    md += '## 示例文件\n\n';
+    validExamples.forEach(e => {
+      md += '### ' + (e.title.trim() || '示例文件') + '\n\n';
+      if (e.content.trim()) {
+        md += e.content.trim() + '\n\n';
+      }
+      md += '📥 [' + e.file.name + '](examples/' + e.file.name + ')\n\n';
     });
   }
 
@@ -886,18 +1047,16 @@ async function generatePackage() {
     const readmeMd = generateReadme();
     zip.file('README.md', readmeMd);
 
-    const codeFiles = uploadedFiles.filter(f => f.category === 'src');
-    const imageFiles = uploadedFiles.filter(f => f.category === 'images');
-    const isSingleFile = codeFiles.length === 1 && imageFiles.length === 0;
+    const isSingleFile = uploadedFiles.length === 1;
 
     let portfolio = '# 工具下载配置（由上传打包器自动生成，请勿手动修改）\n';
     if (displayName) {
       portfolio += 'display_name = "' + displayName.replace(/"/g, '\\"') + '"\n';
     }
     if (isSingleFile) {
-      const f = codeFiles[0];
+      const f = uploadedFiles[0];
       portfolio += 'download_type = "single"\n';
-      portfolio += 'download_url = "https://raw.githubusercontent.com/TAXLY-WorkTools/' + toolName + '/main/src/' + f.name + '"\n';
+      portfolio += 'download_url = "https://raw.githubusercontent.com/TAXLY-WorkTools/' + toolName + '/main/' + f.path + '"\n';
     } else {
       portfolio += 'download_type = "release"\n';
       portfolio += 'download_url = "https://github.com/TAXLY-WorkTools/' + toolName + '/releases/download/v1.0.0/' + toolName + '.zip"\n';
@@ -905,7 +1064,26 @@ async function generatePackage() {
     uploadedFiles.forEach(f => {
       portfolio += '\n[[files]]\n';
       portfolio += 'name = "' + f.name.replace(/"/g, '\\"') + '"\n';
+      portfolio += 'path = "' + f.path + '"\n';
       portfolio += 'raw_url = "https://raw.githubusercontent.com/TAXLY-WorkTools/' + toolName + '/main/' + f.path + '"\n';
+    });
+
+    steps.forEach(s => {
+      s.screenshots.forEach(sc => {
+        portfolio += '\n[[files]]\n';
+        portfolio += 'name = "' + sc.name.replace(/"/g, '\\"') + '"\n';
+        portfolio += 'path = "images/' + sc.name + '"\n';
+        portfolio += 'raw_url = "https://raw.githubusercontent.com/TAXLY-WorkTools/' + toolName + '/main/images/' + sc.name + '"\n';
+      });
+    });
+
+    examples.forEach(e => {
+      if (e.file) {
+        portfolio += '\n[[files]]\n';
+        portfolio += 'name = "' + e.file.name.replace(/"/g, '\\"') + '"\n';
+        portfolio += 'path = "examples/' + e.file.name + '"\n';
+        portfolio += 'raw_url = "https://raw.githubusercontent.com/TAXLY-WorkTools/' + toolName + '/main/examples/' + e.file.name + '"\n';
+      }
     });
     zip.file('portfolio.toml', portfolio);
 
@@ -915,11 +1093,14 @@ async function generatePackage() {
 
     steps.forEach(s => {
       s.screenshots.forEach(sc => {
-        const exists = uploadedFiles.some(f => f.name === sc.name && f.category === 'images');
-        if (!exists) {
-          zip.file('images/' + sc.name, sc.data);
-        }
+        zip.file('images/' + sc.name, sc.data);
       });
+    });
+
+    examples.forEach(e => {
+      if (e.file) {
+        zip.file('examples/' + e.file.name, e.file.data);
+      }
     });
 
     const content = await zip.generateAsync({ type: 'blob' });
