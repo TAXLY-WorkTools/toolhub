@@ -12,18 +12,82 @@
     'gist': '代码片段',
 } %}
 {% block title %}{{ site.description }}{% endblock %}
-
 {% block content %}
 {% set pinned_projects   = projects | selectattr("pinned")   | list %}
 {% set active_projects   = projects | rejectattr("pinned") | rejectattr("archived") | list %}
 {% set archived_projects = projects | rejectattr("pinned") | selectattr("archived") | list %}
 {% set section_count = (1 if pinned_projects else 0) + (1 if active_projects else 0) + (1 if archived_projects else 0) %}
-
 <div class="page-heading">
   <h1>{{ site.description }}</h1>
   <p>{{ projects | length }} 个项目</p>
 </div>
-
+<style>
+.guide-bar { background: #f0f7ff; border: 1px solid #b6d4fe; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+.guide-bar__summary { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; }
+.guide-bar__summary span { font-size: 14px; color: #084298; }
+.guide-bar__toggle { background: none; border: none; color: #084298; cursor: pointer; font-size: 13px; padding: 4px 8px; border-radius: 4px; }
+.guide-bar__toggle:hover { background: #b6d4fe; }
+.guide-bar__detail { display: flex; gap: 24px; padding: 16px; border-top: 1px solid #b6d4fe; flex-wrap: wrap; }
+.guide-bar__section { flex: 1; min-width: 250px; }
+.guide-bar__section h4 { margin: 0 0 8px 0; font-size: 14px; color: #084298; }
+.guide-bar__section ol { margin: 0; padding-left: 20px; font-size: 13px; color: #333; line-height: 1.8; }
+.guide-bar__section p { margin: 0; font-size: 13px; color: #333; line-height: 1.6; }
+.guide-bar__section a { color: #084298; }
+@media (max-width: 768px) {
+  .guide-bar__summary { flex-direction: column; gap: 8px; align-items: flex-start; }
+}
+</style>
+<div class="guide-bar" id="guideBar">
+  <div class="guide-bar__summary">
+    <span>📖 新手指引：找工具 → 下载 → 运行 ｜ 上传工具 → 打包 → 发布</span>
+    <button class="guide-bar__toggle" onclick="toggleGuide()">展开详细步骤 ▼</button>
+  </div>
+  <div class="guide-bar__detail" id="guideDetail" style="display:none;">
+    <div class="guide-bar__section">
+      <h4>📥 使用工具</h4>
+      <ol>
+        <li>用上方搜索框或标签筛选找到需要的工具</li>
+        <li>点卡片进入详情页，查看功能说明和操作步骤</li>
+        <li>点「下载整合包」（推荐，含代码+说明+截图）</li>
+        <li>.exe 直接双击运行；.py 需先装 Python 3.8+</li>
+      </ol>
+    </div>
+    <div class="guide-bar__section">
+      <h4>📤 分享工具</h4>
+      <ol>
+        <li>打开 <a href="pack.html">pack.html</a>，填信息、拖代码和截图，一键生成 zip</li>
+        <li>自动跳 <a href="upload.html">upload.html</a>，确认信息后点提交</li>
+        <li>跳 GitHub Issue，在评论区拖拽 zip 上传</li>
+        <li>机器人自动处理，1-2 分钟后出现在列表</li>
+      </ol>
+    </div>
+    <div class="guide-bar__section">
+      <h4>ℹ️ 关于本平台</h4>
+      <p>工具存储在 GitHub 组织 TAXLY-WorkTools 下，本网站由 toolhub 自动生成展示。上传需 GitHub 账号并加入组织。下载慢可用 ghproxy 或 Steam++ 加速。</p>
+    </div>
+  </div>
+</div>
+<script>
+function toggleGuide() {
+  var detail = document.getElementById('guideDetail');
+  var btn = document.querySelector('.guide-bar__toggle');
+  if (detail.style.display === 'none') {
+    detail.style.display = 'flex';
+    btn.textContent = '收起 ▲';
+    try { localStorage.setItem('guide_expanded', 'true'); } catch(e) {}
+  } else {
+    detail.style.display = 'none';
+    btn.textContent = '展开详细步骤 ▼';
+    try { localStorage.setItem('guide_expanded', 'false'); } catch(e) {}
+  }
+}
+try {
+  if (localStorage.getItem('guide_expanded') === 'true') {
+    document.getElementById('guideDetail').style.display = 'flex';
+    document.querySelector('.guide-bar__toggle').textContent = '收起 ▲';
+  }
+} catch(e) {}
+</script>
 <div class="filter-bar">
   <span class="filter-bar__label">显示</span>
   <div class="filter-group">
@@ -41,7 +105,6 @@
   <div class="filter-sep filter-sep--license" style="display:none"></div>
   <div class="filter-group filter-group--license" style="display:none"></div>
 </div>
-
 {% if section_count >= 2 and projects | length > 15 %}
 <nav class="toc">
   {% if pinned_projects   %}<a class="toc__link" href="#sec-pinned">置顶</a>{% endif %}
@@ -49,7 +112,6 @@
   {% if archived_projects %}<a class="toc__link" href="#sec-archived">归档</a>{% endif %}
 </nav>
 {% endif %}
-
 {% macro project_card(project, section) %}
 <div class="project-card{% if project.pinned %} project-card--pinned{% endif %}"
      data-type="{{ project.type }}" data-section="{{ section }}" data-tags="{{ project.tags | join(' ') }}" data-license="{{ project.license or '' }}">
@@ -76,7 +138,6 @@
   {% endif %}
 </div>
 {% endmacro %}
-
 {% if pinned_projects %}
 <section class="project-section" id="sec-pinned" data-section="pinned">
   <h2 class="section-heading">置顶</h2>
@@ -85,7 +146,6 @@
   </div>
 </section>
 {% endif %}
-
 {% if active_projects %}
 <section class="project-section" id="sec-active" data-section="active">
   <h2 class="section-heading">活跃</h2>
@@ -94,7 +154,6 @@
   </div>
 </section>
 {% endif %}
-
 {% if archived_projects %}
 <section class="project-section" id="sec-archived" data-section="archived">
   <h2 class="section-heading">归档</h2>
@@ -103,16 +162,13 @@
   </div>
 </section>
 {% endif %}
-
 <script>
 (function () {
   // 注入中文映射表（从 Jinja2 传递过来）
   var tagMap = {{ topic_map | tojson }};
-
   var selectedTags = new Set();
   var tagGroup = document.querySelector('.filter-group--tags');
   var tagSep = document.querySelector('.filter-sep--tags');
-
   function renderCapsules() {
     tagGroup.innerHTML = '';
     if (selectedTags.size > 0) {
@@ -141,11 +197,9 @@
       tagSep.style.display = 'none';
     }
   }
-
   var selectedLicenses = new Set();
   var licenseGroup = document.querySelector('.filter-group--license');
   var licenseSep = document.querySelector('.filter-sep--license');
-
   function renderLicenseCapsules() {
     licenseGroup.innerHTML = '';
     if (selectedLicenses.size > 0) {
@@ -173,7 +227,6 @@
       licenseSep.style.display = 'none';
     }
   }
-
   function applyFilters() {
     var activeTypes = new Set(
       Array.from(document.querySelectorAll('input[name="type"]:checked')).map(function(el){ return el.value; })
@@ -207,7 +260,6 @@
       btn.classList.toggle('project-card__license--active', selectedLicenses.has(btn.dataset.license));
     });
   }
-
   document.querySelectorAll('.badge--tag').forEach(function(badge) {
     badge.addEventListener('click', function() {
       var tag = this.dataset.tag;
@@ -220,7 +272,6 @@
       applyFilters();
     });
   });
-
   document.querySelectorAll('.project-card__license').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var lic = this.dataset.license;
@@ -233,11 +284,9 @@
       applyFilters();
     });
   });
-
   document.querySelectorAll('input[name="type"], input[name="section"]').forEach(function(el) {
     el.addEventListener('change', applyFilters);
   });
-
   renderCapsules();
   renderLicenseCapsules();
 }());
