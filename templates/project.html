@@ -6,6 +6,25 @@
 {% block title %}{{ project.name }}{% endblock %}
 
 {% block content %}
+<style>
+.download-section { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+.download-section__title { margin: 0 0 16px 0; font-size: 18px; }
+.download-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.download-buttons .btn--large { padding: 12px 24px; font-size: 15px; }
+.btn--program { background: #28a745; color: #fff; border-color: #28a745; }
+.btn--program:hover { background: #218838; }
+.btn--full { background: #007bff; color: #fff; border-color: #007bff; }
+.btn--full:hover { background: #0056b3; }
+.file-group { margin-bottom: 16px; }
+.file-group__title { font-size: 14px; font-weight: 600; color: #555; margin: 0 0 8px 0; padding-bottom: 4px; border-bottom: 1px solid #e0e0e0; }
+.file-item { display: flex; align-items: center; padding: 6px 0; gap: 8px; font-size: 14px; }
+.file-item__icon { width: 20px; text-align: center; flex-shrink: 0; }
+.file-item__name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-item__src { color: #999; font-style: italic; font-size: 12px; margin-left: 4px; }
+.file-item__size { color: #888; font-size: 12px; flex-shrink: 0; min-width: 60px; text-align: right; }
+.file-item__download { flex-shrink: 0; }
+</style>
+
 <div class="project-header">
   <a class="project-header__back" href="../index.html">&#8592; {{ sections.back_link }}</a>
 
@@ -42,24 +61,108 @@
   </div>
 </div>
 
-{% if project.download_url %}
+{% if project.download_url or project.files %}
 <div class="download-section">
   <h2 class="download-section__title">📥 下载</h2>
-  {% if project.download_type == "release" %}
-  <a class="btn btn--primary btn--large" href="{{ project.download_url }}">⬇ 下载整包 (v1.0.0)</a>
+
+  <div class="download-buttons">
+    {% if project.program_download_url %}
+    <a class="btn btn--large btn--program" href="{{ project.program_download_url }}">⬇ 下载程序（源码）</a>
+    {% endif %}
+    {% if project.download_url %}
+    <a class="btn btn--large btn--full" href="{{ project.download_url }}">⬇ 下载全部文件（整包）</a>
+    {% endif %}
+  </div>
+
   {% if project.files %}
-  <div class="file-list">
-    <p class="file-list__hint">或单独下载：</p>
-    {% for file in project.files %}
+  {% set ns = namespace(program=[], doc=[], image=[], archive=[], other=[]) %}
+  {% for file in project.files %}
+    {% set fname = file.name | lower %}
+    {% set fpath = (file.path or file.name) | lower %}
+    {% if fpath[0:4] == 'src/' or fname.endswith('.py') or fname.endswith('.pyw') or fname.endswith('.exe') or fname.endswith('.html') or fname.endswith('.htm') or fname.endswith('.js') or fname.endswith('.ts') or fname.endswith('.bat') or fname.endswith('.cmd') or fname.endswith('.sh') or fname.endswith('.ps1') or fname.endswith('.vbs') or fname.endswith('.jar') or fname.endswith('.r') or fname.endswith('.go') or fname.endswith('.java') or fname.endswith('.cpp') or fname.endswith('.c') or fname.endswith('.cs') or fname.endswith('.php') or fname.endswith('.ipynb') %}
+      {% set _ = ns.program.append(file) %}
+    {% elif fname.endswith('.md') or fname.endswith('.markdown') or fname.endswith('.txt') or fname.endswith('.pdf') or fname.endswith('.doc') or fname.endswith('.docx') or fname.endswith('.xls') or fname.endswith('.xlsx') or fname.endswith('.ppt') or fname.endswith('.pptx') or fname.endswith('.rtf') %}
+      {% set _ = ns.doc.append(file) %}
+    {% elif fname.endswith('.jpg') or fname.endswith('.jpeg') or fname.endswith('.png') or fname.endswith('.gif') or fname.endswith('.svg') or fname.endswith('.bmp') or fname.endswith('.webp') or fname.endswith('.ico') or fname.endswith('.tiff') %}
+      {% set _ = ns.image.append(file) %}
+    {% elif fname.endswith('.zip') or fname.endswith('.rar') or fname.endswith('.7z') %}
+      {% set _ = ns.archive.append(file) %}
+    {% else %}
+      {% set _ = ns.other.append(file) %}
+    {% endif %}
+  {% endfor %}
+
+  {% if ns.program %}
+  <div class="file-group">
+    <h3 class="file-group__title">💻 程序文件（{{ ns.program | length }}）</h3>
+    {% for file in ns.program %}
+    {% set fpath = (file.path or file.name) | lower %}
     <div class="file-item">
-      <span class="file-item__name">{{ file.name }}</span>
-      <a class="btn btn--small" href="{{ file.raw_url }}">下载</a>
+      <span class="file-item__icon">📄</span>
+      <span class="file-item__name">{{ file.name }}{% if fpath[0:4] == 'src/' %}<span class="file-item__src">（源码）</span>{% endif %}</span>
+      {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
+      <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
     </div>
     {% endfor %}
   </div>
   {% endif %}
-  {% else %}
-  <a class="btn btn--primary btn--large" href="{{ project.download_url }}">⬇ 下载该文件</a>
+
+  {% if ns.doc %}
+  <div class="file-group">
+    <h3 class="file-group__title">📝 说明文件（{{ ns.doc | length }}）</h3>
+    {% for file in ns.doc %}
+    <div class="file-item">
+      <span class="file-item__icon">📝</span>
+      <span class="file-item__name">{{ file.name }}</span>
+      {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
+      <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if ns.image %}
+  <div class="file-group">
+    <h3 class="file-group__title">🖼 图片资源（{{ ns.image | length }}）</h3>
+    {% for file in ns.image %}
+    <div class="file-item">
+      <span class="file-item__icon">🖼</span>
+      <span class="file-item__name">{{ file.name }}</span>
+      {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
+      <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if ns.archive %}
+  <div class="file-group">
+    <h3 class="file-group__title">📦 压缩包（{{ ns.archive | length }}）</h3>
+    {% for file in ns.archive %}
+    <div class="file-item">
+      <span class="file-item__icon">📦</span>
+      <span class="file-item__name">{{ file.name }}</span>
+      {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
+      <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if ns.other %}
+  <div class="file-group">
+    <h3 class="file-group__title">📎 其他文件（{{ ns.other | length }}）</h3>
+    {% for file in ns.other %}
+    <div class="file-item">
+      <span class="file-item__icon">📎</span>
+      <span class="file-item__name">{{ file.name }}</span>
+      {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
+      <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   {% endif %}
 </div>
 {% endif %}
