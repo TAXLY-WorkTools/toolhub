@@ -545,7 +545,7 @@
       </div>
 
       <div class="section">
-        <div class="section__title"><span class="num">4</span>使用步骤 <span style="font-weight:400;font-size:12px;color:#8b949e;">（支持 Markdown：**加粗**、[链接](url)、`代码`、| 表格 |）</span></div>
+        <div class="section__title"><span class="num">4</span>使用步骤 <span style="font-weight:400;font-size:12px;color:#8b949e;">（支持 Markdown：**加粗**、[链接](url)、代码、| 表格 |）</span></div>
         <div id="stepsList"></div>
         <button class="btn-add" onclick="addStep()">+ 添加步骤</button>
       </div>
@@ -578,7 +578,7 @@
           <div class="md-toolbar">
             <button type="button" onclick="insertMdToTextarea('aiPrompt','bold')"><b>B</b></button>
             <button type="button" onclick="openLinkModal('aiPrompt')">🔗 链接</button>
-            <button type="button" onclick="insertMdToTextarea('aiPrompt','code')">`<>` 代码</button>
+            <button type="button" onclick="insertMdToTextarea('aiPrompt','code')"></> 代码</button>
             <button type="button" onclick="insertMdToTextarea('aiPrompt','table')">⊞ 表格</button>
             <button type="button" onclick="clearAiContent()" style="margin-left:auto;color:#cf222e;border-color:#f5c2c7;">清空</button>
           </div>
@@ -935,10 +935,10 @@ function renderSteps() {
           <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','bold')"><b>B</b></button>
           <button type="button" onclick="openLinkModal('stepContent_${s.id}')">🔗 链接</button>
           <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','image')">🖼️ 图片</button>
-          <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','code')">`<>` 代码</button>
+          <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','code')"></> 代码</button>
           <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','table')">⊞ 表格</button>
         </div>
-        <textarea id="stepContent_${s.id}" rows="2" placeholder="详细操作说明，支持 Markdown 语法（**加粗**、[链接](url)、`代码`、| 表格 |）"
+        <textarea id="stepContent_${s.id}" rows="2" placeholder="详细操作说明，支持 Markdown 语法（**加粗**、[链接](url)、代码、| 表格 |）"
           oninput="updateStepContent('${s.id}', this.value)">${escapeHtml(s.content)}</textarea>
       </div>
       ${s.screenshots.length > 0 ? `
