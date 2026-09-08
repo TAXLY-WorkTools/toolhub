@@ -7,7 +7,6 @@
 
 {% block content %}
 <style>
-/* 下载快捷区（靠右对齐） */
 .download-quick {
   display: flex;
   justify-content: flex-end;
@@ -32,8 +31,6 @@
 .btn--edit:hover {
   background: #ddf4ff;
 }
-
-/* 三标签页 */
 .tabs {
   display: flex;
   gap: 0;
@@ -64,8 +61,6 @@
 .tab-content.active {
   display: block;
 }
-
-/* 下载区域（标签页内） */
 .download-section { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; }
 .download-section__title { margin: 0 0 16px 0; font-size: 18px; }
 .file-group { margin-bottom: 16px; }
@@ -76,8 +71,6 @@
 .file-item__src { color: #999; font-style: italic; font-size: 12px; margin-left: 4px; }
 .file-item__size { color: #888; font-size: 12px; flex-shrink: 0; min-width: 60px; text-align: right; }
 .file-item__download { flex-shrink: 0; }
-
-/* AI提示词区域 */
 .ai-prompt-box {
   background: #f6f8fa;
   border: 1px solid #d0d7de;
@@ -124,9 +117,8 @@
   </div>
 
   <div class="project-header__actions">
-    <!-- 编辑此工具按钮 -->
-    {% if project.repo_name %}
-    <a class="btn btn--edit" href="https://github.com/TAXLY-WorkTools/{{ project.repo_name }}/edit/main/README.md" target="_blank" title="在 GitHub 在线编辑 README">✏️ 编辑此工具</a>
+    {% if project.name and project.type == 'repo' %}
+    <a class="btn btn--edit" href="https://github.com/TAXLY-WorkTools/{{ project.name }}/edit/main/README.md" target="_blank" title="在 GitHub 在线编辑 README">✏️ 编辑此工具</a>
     {% endif %}
     {% if project.live_url %}
     <a class="btn btn--primary" href="{{ project.live_url }}">&#8599; Live site</a>
@@ -144,7 +136,6 @@
   </div>
 </div>
 
-<!-- 下载快捷区（靠右对齐） -->
 {% if project.download_url or project.files %}
 <div class="download-quick">
   {% if project.program_download_url %}
@@ -156,7 +147,6 @@
 </div>
 {% endif %}
 
-<!-- 三标签页 -->
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('readme')">📖 使用说明</button>
   {% if project.ai_prompt %}
@@ -167,14 +157,12 @@
   {% endif %}
 </div>
 
-<!-- 使用说明标签页 -->
 <div class="tab-content active" id="tab-readme">
   <div class="readme">
     {{ readme_html | safe }}
   </div>
 </div>
 
-<!-- AI 提示词标签页 -->
 {% if project.ai_prompt %}
 <div class="tab-content" id="tab-ai">
   <div class="ai-prompt-box">
@@ -183,7 +171,6 @@
 </div>
 {% endif %}
 
-<!-- 下载标签页 -->
 {% if project.download_url or project.files %}
 <div class="tab-content" id="tab-download">
   <div class="download-section">
@@ -194,7 +181,7 @@
     {% for file in project.files %}
       {% set fname = file.name | lower %}
       {% set fpath = (file.path or file.name) | lower %}
-      {% if fpath[0:8] == 'prompts/' %}
+      {% if fpath[0:8] == 'prompts/' or fpath[0:12] == 'src/prompts/' %}
         {% set _ = ns.ai.append(file) %}
       {% elif fpath[0:4] == 'src/' or fname.endswith('.py') or fname.endswith('.pyw') or fname.endswith('.exe') or fname.endswith('.html') or fname.endswith('.htm') or fname.endswith('.js') or fname.endswith('.ts') or fname.endswith('.bat') or fname.endswith('.cmd') or fname.endswith('.sh') or fname.endswith('.ps1') or fname.endswith('.vbs') or fname.endswith('.jar') or fname.endswith('.r') or fname.endswith('.go') or fname.endswith('.java') or fname.endswith('.cpp') or fname.endswith('.c') or fname.endswith('.cs') or fname.endswith('.php') or fname.endswith('.ipynb') %}
         {% set _ = ns.program.append(file) %}
@@ -300,7 +287,6 @@
 {% endif %}
 
 <script>
-// 标签页切换
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(function(btn, i) {
     var tabs = ['readme', 'ai', 'download'];
@@ -313,21 +299,18 @@ function switchTab(tab) {
   if (target) target.classList.add('active');
 }
 
-// 图片加载修复：使用 jsDelivr CDN 替代 raw.githubusercontent.com
 document.addEventListener('DOMContentLoaded', function() {
   var readme = document.querySelector('.readme');
   if (!readme) return;
   readme.querySelectorAll('img').forEach(function(img) {
     var src = img.src || img.getAttribute('src');
     if (!src) return;
-    // 替换 raw.githubusercontent.com 为 jsDelivr CDN
     if (src.indexOf('raw.githubusercontent.com/TAXLY-WorkTools/') !== -1) {
       var newSrc = src.replace(
         'https://raw.githubusercontent.com/TAXLY-WorkTools/',
         'https://cdn.jsdelivr.net/gh/TAXLY-WorkTools/'
       ).replace('/main/', '@main/');
       img.src = newSrc;
-      // 如果加载失败，回退到 raw
       img.onerror = function() {
         img.onerror = null;
         img.src = src;
