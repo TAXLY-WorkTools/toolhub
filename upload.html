@@ -85,8 +85,6 @@ input.error, select.error {
   border-color: #cf222e;
   background: #ffebe9;
 }
-
-/* 文件上传区域 */
 .file-upload-area {
   border: 2px dashed #d0d7de;
   border-radius: 8px;
@@ -103,8 +101,6 @@ input.error, select.error {
 .file-upload-area__icon { font-size: 32px; margin-bottom: 8px; }
 .file-upload-area__text { font-size: 14px; color: #424a53; }
 .file-upload-area__hint { font-size: 12px; color: #8b949e; margin-top: 4px; }
-
-/* 已加载文件信息 */
 .file-info {
   display: flex;
   align-items: center;
@@ -136,8 +132,6 @@ input.error, select.error {
   border-radius: 4px;
 }
 .file-info__remove:hover { background: #ffebe9; }
-
-/* 自动加载提示 */
 .auto-load-notice {
   padding: 10px 14px;
   background: #fff8c5;
@@ -149,7 +143,6 @@ input.error, select.error {
   display: none;
 }
 .auto-load-notice.show { display: block; }
-
 .btn-submit {
   width: 100%;
   padding: 12px;
@@ -178,7 +171,6 @@ input.error, select.error {
 .message.error { background: #ffebe9; color: #82071e; border: 1px solid #ffc1c0; }
 .message.success { background: #dafbe1; color: #1a7f37; border: 1px solid #aceebb; }
 .message.info { background: #ddf4ff; color: #0550ae; border: 1px solid #54aeff; }
-
 .steps-guide {
   background: #f6f8fa;
   border: 1px solid #d0d7de;
@@ -200,23 +192,18 @@ input.error, select.error {
 <div class="container">
   <div class="card">
     <div class="card__title">📝 填写工具信息</div>
-
-    <!-- 自动加载提示 -->
     <div class="auto-load-notice" id="autoLoadNotice">
       ⏳ 正在从打包页面自动加载压缩包...
     </div>
-
     <form id="uploadForm">
       <div class="field">
         <label class="field__label">工具名称 <span class="required">*</span> <span class="hint">（英文小写+下划线，GitHub 仓库名）</span></label>
         <input type="text" id="toolName" placeholder="letter_generator" required>
       </div>
-
       <div class="field">
         <label class="field__label">工具描述 <span class="required">*</span></label>
         <input type="text" id="toolDesc" placeholder="自动生成银行函证工具" required>
       </div>
-
       <div class="field">
         <label class="field__label">所属部门 <span class="required">*</span></label>
         <select id="department" required>
@@ -226,7 +213,6 @@ input.error, select.error {
           <option value="咨询部">咨询部</option>
         </select>
       </div>
-
       <div class="field">
         <label class="field__label">功能分类 <span class="required">*</span></label>
         <select id="category" required>
@@ -237,11 +223,8 @@ input.error, select.error {
           <option value="报告生成">报告生成</option>
         </select>
       </div>
-
       <div class="field">
         <label class="field__label">压缩包 <span class="required">*</span> <span class="hint">（.zip 格式，从打包页面生成）</span></label>
-
-        <!-- 已加载文件信息 -->
         <div id="fileInfo" style="display:none;">
           <div class="file-info">
             <span class="file-info__icon">📦</span>
@@ -253,8 +236,6 @@ input.error, select.error {
             <span class="file-info__remove" onclick="removeFile()" title="移除">×</span>
           </div>
         </div>
-
-        <!-- 文件上传区域 -->
         <div class="file-upload-area" id="fileUploadArea" onclick="document.getElementById('fileInput').click()">
           <div class="file-upload-area__icon">📂</div>
           <div class="file-upload-area__text">点击选择或拖拽 .zip 压缩包到此处</div>
@@ -262,13 +243,10 @@ input.error, select.error {
         </div>
         <input type="file" id="fileInput" accept=".zip" style="display:none">
       </div>
-
       <button type="submit" class="btn-submit" id="submitBtn">🚀 跳转 GitHub 上传</button>
     </form>
-
     <div class="message" id="message"></div>
   </div>
-
   <div class="steps-guide">
     <div class="steps-guide__title">📋 上传流程</div>
     <ol>
@@ -276,7 +254,7 @@ input.error, select.error {
       <li>在此页面填写工具信息（从打包页面跳转会自动预填）</li>
       <li>压缩包会自动加载（从打包页面跳转时），或手动选择</li>
       <li>点击"跳转 GitHub 上传"，在 GitHub 评论区拖拽上传压缩包</li>
-      <li>系统自动处理，约 1-2 分钟后工具出现在工具库</li>
+      <li>后端自动处理（约1-2分钟），工具出现在工具库</li>
     </ol>
   </div>
 </div>
@@ -285,7 +263,6 @@ input.error, select.error {
 let loadedFile = null;
 let isAutoLoaded = false;
 
-// 显示消息
 function showMessage(text, type = 'info') {
   const msg = document.getElementById('message');
   msg.textContent = text;
@@ -293,14 +270,12 @@ function showMessage(text, type = 'info') {
   setTimeout(() => { msg.className = 'message'; }, 5000);
 }
 
-// 格式化文件大小
 function formatSize(bytes) {
   if (bytes > 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
   if (bytes > 1024) return (bytes / 1024).toFixed(1) + ' KB';
   return bytes + ' B';
 }
 
-// 设置已加载文件
 function setFile(file, autoLoaded = false) {
   loadedFile = file;
   isAutoLoaded = autoLoaded;
@@ -312,7 +287,6 @@ function setFile(file, autoLoaded = false) {
   document.getElementById('autoLoadNotice').classList.remove('show');
 }
 
-// 移除文件
 function removeFile() {
   loadedFile = null;
   isAutoLoaded = false;
@@ -321,19 +295,13 @@ function removeFile() {
   document.getElementById('fileInput').value = '';
 }
 
-// 从 IndexedDB 读取 zip
 function loadZipFromIndexedDB() {
   return new Promise((resolve, reject) => {
-    if (!window.indexedDB) {
-      reject(new Error('IndexedDB not supported'));
-      return;
-    }
+    if (!window.indexedDB) { reject(new Error('IndexedDB not supported')); return; }
     const request = indexedDB.open('ToolHubPack', 1);
     request.onupgradeneeded = (e) => {
       const db = e.target.result;
-      if (!db.objectStoreNames.contains('zips')) {
-        db.createObjectStore('zips');
-      }
+      if (!db.objectStoreNames.contains('zips')) db.createObjectStore('zips');
     };
     request.onsuccess = (e) => {
       const db = e.target.result;
@@ -343,26 +311,16 @@ function loadZipFromIndexedDB() {
         const getReq = store.get('latest_zip');
         getReq.onsuccess = () => {
           db.close();
-          if (getReq.result && getReq.result.blob) {
-            resolve(getReq.result);
-          } else {
-            reject(new Error('No zip found'));
-          }
+          if (getReq.result && getReq.result.blob) resolve(getReq.result);
+          else reject(new Error('No zip found'));
         };
-        getReq.onerror = () => {
-          db.close();
-          reject(getReq.error);
-        };
-      } catch (err) {
-        db.close();
-        reject(err);
-      }
+        getReq.onerror = () => { db.close(); reject(getReq.error); };
+      } catch (err) { db.close(); reject(err); }
     };
     request.onerror = () => reject(request.error);
   });
 }
 
-// 页面加载时检查 URL 参数和 IndexedDB
 document.addEventListener('DOMContentLoaded', async function() {
   const params = new URLSearchParams(window.location.search);
   const fromPack = params.get('from_pack') === '1';
@@ -370,24 +328,18 @@ document.addEventListener('DOMContentLoaded', async function() {
   const description = params.get('description');
   const displayName = params.get('display_name');
 
-  // 预填表单
   if (toolName) document.getElementById('toolName').value = toolName;
   if (description) document.getElementById('toolDesc').value = description;
 
-  // 如果从打包页面跳转，尝试自动加载 zip
   if (fromPack) {
     document.getElementById('autoLoadNotice').classList.add('show');
     try {
       const result = await loadZipFromIndexedDB();
       if (result && result.blob) {
-        const file = new File([result.blob], (result.toolName || 'tool') + '.zip', {
-          type: 'application/zip'
-        });
+        const file = new File([result.blob], (result.toolName || 'tool') + '.zip', { type: 'application/zip' });
         setFile(file, true);
         showMessage('✅ 已自动从打包页面加载压缩包，请确认信息后提交', 'success');
-      } else {
-        throw new Error('No zip data');
-      }
+      } else { throw new Error('No zip data'); }
     } catch (e) {
       console.warn('IndexedDB 自动加载失败:', e);
       document.getElementById('autoLoadNotice').classList.remove('show');
@@ -396,45 +348,29 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 });
 
-// 文件选择
 document.getElementById('fileInput').addEventListener('change', function(e) {
   if (e.target.files.length > 0) {
     const file = e.target.files[0];
-    if (!file.name.toLowerCase().endsWith('.zip')) {
-      showMessage('❌ 请选择 .zip 格式的压缩包', 'error');
-      return;
-    }
+    if (!file.name.toLowerCase().endsWith('.zip')) { showMessage('❌ 请选择 .zip 格式的压缩包', 'error'); return; }
     setFile(file, false);
   }
 });
 
-// 拖拽上传
 const dropZone = document.getElementById('fileUploadArea');
-dropZone.addEventListener('dragover', function(e) {
-  e.preventDefault();
-  dropZone.classList.add('dragover');
-});
-dropZone.addEventListener('dragleave', function() {
-  dropZone.classList.remove('dragover');
-});
+dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('dragover'); });
 dropZone.addEventListener('drop', function(e) {
   e.preventDefault();
   dropZone.classList.remove('dragover');
   if (e.dataTransfer.files.length > 0) {
     const file = e.dataTransfer.files[0];
-    if (!file.name.toLowerCase().endsWith('.zip')) {
-      showMessage('❌ 请选择 .zip 格式的压缩包', 'error');
-      return;
-    }
+    if (!file.name.toLowerCase().endsWith('.zip')) { showMessage('❌ 请选择 .zip 格式的压缩包', 'error'); return; }
     setFile(file, false);
   }
 });
 
-// 表单提交
 document.getElementById('uploadForm').addEventListener('submit', function(e) {
   e.preventDefault();
-
-  // 清除错误样式
   document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
 
   const toolName = document.getElementById('toolName').value.trim();
@@ -442,38 +378,16 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
   const department = document.getElementById('department').value;
   const category = document.getElementById('category').value;
 
-  // 验证
   let firstError = null;
-  if (!toolName) {
-    const el = document.getElementById('toolName');
-    el.classList.add('error');
-    firstError = firstError || el;
-  } else if (/[\u4e00-\u9fa5]/.test(toolName)) {
-    const el = document.getElementById('toolName');
-    el.classList.add('error');
-    firstError = firstError || el;
-    showMessage('❌ 工具名称请用英文小写 + 下划线', 'error');
-    return;
+  if (!toolName) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; }
+  else if (/[\u4e00-\u9fa5]/.test(toolName)) {
+    const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el;
+    showMessage('❌ 工具名称请用英文小写 + 下划线', 'error'); return;
   }
-  if (!toolDesc) {
-    const el = document.getElementById('toolDesc');
-    el.classList.add('error');
-    firstError = firstError || el;
-  }
-  if (!department) {
-    const el = document.getElementById('department');
-    el.classList.add('error');
-    firstError = firstError || el;
-  }
-  if (!category) {
-    const el = document.getElementById('category');
-    el.classList.add('error');
-    firstError = firstError || el;
-  }
-  if (!loadedFile) {
-    showMessage('❌ 请选择或加载 .zip 压缩包', 'error');
-    return;
-  }
+  if (!toolDesc) { const el = document.getElementById('toolDesc'); el.classList.add('error'); firstError = firstError || el; }
+  if (!department) { const el = document.getElementById('department'); el.classList.add('error'); firstError = firstError || el; }
+  if (!category) { const el = document.getElementById('category'); el.classList.add('error'); firstError = firstError || el; }
+  if (!loadedFile) { showMessage('❌ 请选择或加载 .zip 压缩包', 'error'); return; }
 
   if (firstError) {
     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -482,31 +396,24 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
     return;
   }
 
-  // 禁用按钮
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.textContent = '⏳ 正在跳转...';
 
-  // 构建 GitHub Issue URL
   const url = 'https://github.com/TAXLY-WorkTools/upload-portal/issues/new?template=upload.yml' +
     '&tool_name=' + encodeURIComponent(toolName) +
     '&description=' + encodeURIComponent(toolDesc) +
     '&department=' + encodeURIComponent(department) +
     '&category=' + encodeURIComponent(category);
 
-  // 提示用户
   showMessage('✅ 已跳转 GitHub，请在评论区拖拽上传压缩包：' + loadedFile.name, 'success');
-
-  // 新窗口打开
   window.open(url, '_blank');
 
-  // 恢复按钮
   setTimeout(() => {
     btn.disabled = false;
     btn.textContent = '🚀 跳转 GitHub 上传';
   }, 2000);
 });
 </script>
-
 </body>
 </html>
