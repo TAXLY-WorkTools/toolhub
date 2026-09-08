@@ -1034,9 +1034,15 @@ function renderFileList() {
     dirMap[dir].push({ ...f, index: i });
   });
   let html = '';
+  if (uploadedFiles.length > 50) {
+    html += '<div style="padding:8px 16px; background:#fff8c5; color:#9a6700; font-size:12px; border-bottom:1px solid #eaeef2;">📌 文件较多（' + uploadedFiles.length + '个），目录已默认折叠，点击文件夹可展开查看</div>';
+  }
+  const shouldCollapse = uploadedFiles.length > 50;
   Object.keys(dirMap).sort().forEach((dir, dirIdx) => {
     const dirId = 'dirbody_' + dirIdx;
-    html += `<div class="file-dir"><div class="file-dir__header" onclick="document.getElementById('${dirId}').classList.toggle('hidden')">📁 ${dir} (${dirMap[dir].length}个文件)</div><div class="file-dir__body" id="${dirId}">`;
+    const collapsedClass = shouldCollapse ? ' hidden' : '';
+    const arrow = shouldCollapse ? '▶' : '▼';
+    html += `<div class="file-dir"><div class="file-dir__header" onclick="var b=document.getElementById('${dirId}');b.classList.toggle('hidden');this.querySelector('.dir-arrow').textContent=b.classList.contains('hidden')?'▶':'▼';"><span class="dir-arrow">${arrow}</span> 📁 ${dir} (${dirMap[dir].length}个文件)</div><div class="file-dir__body${collapsedClass}" id="${dirId}">`;
     dirMap[dir].forEach(f => {
       html += `<div class="file-item"><div class="file-item__name">📄 <span>${escapeHtml(f.name)}</span> <span class="path">${f.path}</span></div><span class="file-item__remove" onclick="removeFile(${f.index})" title="移除">×</span></div>`;
     });
