@@ -7,6 +7,12 @@
 
 {% block content %}
 <style>
+h1 {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
 .download-quick {
   display: flex;
   justify-content: flex-end;
@@ -69,6 +75,23 @@
 .file-item__icon { width: 20px; text-align: center; flex-shrink: 0; }
 .file-item__name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .file-item__src { color: #999; font-style: italic; font-size: 12px; margin-left: 4px; }
+.file-tree-dir { margin-bottom: 0; }
+.file-tree-dir__header {
+  padding: 6px 8px;
+  background: #f6f8fa;
+  font-size: 13px;
+  font-weight: 600;
+  color: #57606a;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid #eaeef2;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+.file-tree-dir__header:hover { background: #eaeef2; }
+.file-tree-dir__count { font-weight: normal; font-size: 12px; color: #8b949e; }
+.file-tree-dir__body.hidden { display: none; }
+.file-tree-dir .file-item { padding-left: 24px !important; }
 .file-item__size { color: #888; font-size: 12px; flex-shrink: 0; min-width: 60px; text-align: right; }
 .file-item__download { flex-shrink: 0; }
 .ai-prompt-box {
@@ -177,110 +200,15 @@
     <h2 class="download-section__title">📥 下载文件列表</h2>
 
     {% if project.files %}
-    {% set ns = namespace(program=[], doc=[], image=[], ai=[], archive=[], other=[]) %}
+    <script id="fileTreeData" type="application/json">
+    [
     {% for file in project.files %}
-      {% set fname = file.name | lower %}
-      {% set fpath = (file.path or file.name) | lower %}
-      {% if fpath[0:8] == 'prompts/' or fpath[0:12] == 'src/prompts/' %}
-        {% set _ = ns.ai.append(file) %}
-      {% elif fpath[0:4] == 'src/' or fname.endswith('.py') or fname.endswith('.pyw') or fname.endswith('.exe') or fname.endswith('.html') or fname.endswith('.htm') or fname.endswith('.js') or fname.endswith('.ts') or fname.endswith('.bat') or fname.endswith('.cmd') or fname.endswith('.sh') or fname.endswith('.ps1') or fname.endswith('.vbs') or fname.endswith('.jar') or fname.endswith('.r') or fname.endswith('.go') or fname.endswith('.java') or fname.endswith('.cpp') or fname.endswith('.c') or fname.endswith('.cs') or fname.endswith('.php') or fname.endswith('.ipynb') %}
-        {% set _ = ns.program.append(file) %}
-      {% elif fname.endswith('.md') or fname.endswith('.markdown') or fname.endswith('.txt') or fname.endswith('.pdf') or fname.endswith('.doc') or fname.endswith('.docx') or fname.endswith('.xls') or fname.endswith('.xlsx') or fname.endswith('.ppt') or fname.endswith('.pptx') or fname.endswith('.rtf') %}
-        {% set _ = ns.doc.append(file) %}
-      {% elif fname.endswith('.jpg') or fname.endswith('.jpeg') or fname.endswith('.png') or fname.endswith('.gif') or fname.endswith('.svg') or fname.endswith('.bmp') or fname.endswith('.webp') or fname.endswith('.ico') or fname.endswith('.tiff') %}
-        {% set _ = ns.image.append(file) %}
-      {% elif fname.endswith('.zip') or fname.endswith('.rar') or fname.endswith('.7z') %}
-        {% set _ = ns.archive.append(file) %}
-      {% else %}
-        {% set _ = ns.other.append(file) %}
-      {% endif %}
+    {"name": "{{ file.name | e }}", "path": "{{ (file.path or file.name) | e }}", "size": {{ file.size or 0 }}, "url": "{{ (file.download_url or file.raw_url or '') | e }}"}
+    {% if not loop.last %},{% endif %}
     {% endfor %}
-
-    {% if ns.program %}
-    <div class="file-group">
-      <h3 class="file-group__title">💻 程序文件（{{ ns.program | length }}）</h3>
-      {% for file in ns.program %}
-      {% set fpath = (file.path or file.name) | lower %}
-      <div class="file-item">
-        <span class="file-item__icon">📄</span>
-        <span class="file-item__name">{{ file.name }}{% if fpath[0:4] == 'src/' %}<span class="file-item__src">（程序文件）</span>{% endif %}</span>
-        {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
-        <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    {% if ns.ai %}
-    <div class="file-group">
-      <h3 class="file-group__title">🤖 AI 提示词（{{ ns.ai | length }}）</h3>
-      {% for file in ns.ai %}
-      <div class="file-item">
-        <span class="file-item__icon">🤖</span>
-        <span class="file-item__name">{{ file.name }}</span>
-        {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
-        <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    {% if ns.doc %}
-    <div class="file-group">
-      <h3 class="file-group__title">📝 说明文件（{{ ns.doc | length }}）</h3>
-      {% for file in ns.doc %}
-      <div class="file-item">
-        <span class="file-item__icon">📝</span>
-        <span class="file-item__name">{{ file.name }}</span>
-        {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
-        <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    {% if ns.image %}
-    <div class="file-group">
-      <h3 class="file-group__title">🖼 图片资源（{{ ns.image | length }}）</h3>
-      {% for file in ns.image %}
-      <div class="file-item">
-        <span class="file-item__icon">🖼</span>
-        <span class="file-item__name">{{ file.name }}</span>
-        {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
-        <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    {% if ns.archive %}
-    <div class="file-group">
-      <h3 class="file-group__title">📦 压缩包（{{ ns.archive | length }}）</h3>
-      {% for file in ns.archive %}
-      <div class="file-item">
-        <span class="file-item__icon">📦</span>
-        <span class="file-item__name">{{ file.name }}</span>
-        {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
-        <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    {% if ns.other %}
-    <div class="file-group">
-      <h3 class="file-group__title">📎 其他文件（{{ ns.other | length }}）</h3>
-      {% for file in ns.other %}
-      <div class="file-item">
-        <span class="file-item__icon">📎</span>
-        <span class="file-item__name">{{ file.name }}</span>
-        {% if file.size %}<span class="file-item__size">{% if file.size > 1048576 %}{{ "%.1f"|format(file.size / 1048576) }} MB{% elif file.size > 1024 %}{{ "%.1f"|format(file.size / 1024) }} KB{% else %}{{ file.size }} B{% endif %}</span>{% endif %}
-        <a class="btn btn--small file-item__download" href="{{ file.download_url or file.raw_url }}">下载</a>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-
+    ]
+    </script>
+    <div id="fileTreeContainer"></div>
     {% endif %}
   </div>
 </div>
@@ -317,6 +245,93 @@ document.addEventListener('DOMContentLoaded', function() {
       };
     }
   });
+});
+
+function formatFileSize(size) {
+  if (!size) return '';
+  if (size > 1048576) return (size / 1048576).toFixed(1) + ' MB';
+  if (size > 1024) return (size / 1024).toFixed(1) + ' KB';
+  return size + ' B';
+}
+
+function getFileIcon(name) {
+  var ext = name.split('.').pop().toLowerCase();
+  if (['py', 'pyw', 'js', 'ts', 'html', 'htm', 'css', 'java', 'cpp', 'c', 'cs', 'go', 'r', 'php', 'ipynb', 'bat', 'cmd', 'sh', 'ps1', 'vbs', 'jar'].indexOf(ext) !== -1) return '📄';
+  if (['md', 'markdown', 'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'rtf'].indexOf(ext) !== -1) return '📝';
+  if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp', 'ico', 'tiff'].indexOf(ext) !== -1) return '🖼';
+  if (['zip', 'rar', '7z'].indexOf(ext) !== -1) return '📦';
+  if (ext === 'exe') return '⚙️';
+  return '📎';
+}
+
+function buildFileTree(files) {
+  var tree = { name: '/', children: {}, files: [] };
+  files.forEach(function(file) {
+    var path = file.path || file.name;
+    var parts = path.split('/');
+    var current = tree;
+    for (var i = 0; i < parts.length - 1; i++) {
+      var dir = parts[i];
+      if (!current.children[dir]) {
+        current.children[dir] = { name: dir, children: {}, files: [] };
+      }
+      current = current.children[dir];
+    }
+    current.files.push(file);
+  });
+  return tree;
+}
+
+function renderFileTree(node, level, container) {
+  var dirs = Object.keys(node.children).sort();
+  dirs.forEach(function(dirName) {
+    var dirNode = node.children[dirName];
+    var totalFiles = countFilesInDir(dirNode);
+    var dirId = 'dir_' + Math.random().toString(36).substr(2, 9);
+    var dirEl = document.createElement('div');
+    dirEl.className = 'file-tree-dir';
+    dirEl.style.paddingLeft = (level * 16) + 'px';
+    dirEl.innerHTML = '<div class="file-tree-dir__header" onclick="var b=document.getElementById(\'' + dirId + '\');b.classList.toggle(\'hidden\');this.querySelector(\'.dir-arrow\').textContent=b.classList.contains(\'hidden\')?\'▶\':\'▼\';"><span class="dir-arrow">▼</span> 📁 ' + dirName + ' <span class="file-tree-dir__count">(' + totalFiles + '个文件)</span></div><div class="file-tree-dir__body" id="' + dirId + '">';
+    container.appendChild(dirEl);
+    var dirBody = dirEl.querySelector('.file-tree-dir__body');
+    renderFileTree(dirNode, level + 1, dirBody);
+    dirBody.innerHTML += '</div>';
+  });
+  node.files.forEach(function(file) {
+    var fileName = file.name;
+    var filePath = file.path || file.name;
+    var isSrc = filePath.indexOf('src/') === 0;
+    var fileEl = document.createElement('div');
+    fileEl.className = 'file-item';
+    fileEl.style.paddingLeft = (level * 16 + 8) + 'px';
+    fileEl.innerHTML = '<span class="file-item__icon">' + getFileIcon(fileName) + '</span><span class="file-item__name">' + fileName + (isSrc ? '<span class="file-item__src">（程序文件）</span>' : '') + '</span>' + (file.size ? '<span class="file-item__size">' + formatFileSize(file.size) + '</span>' : '') + '<a class="btn btn--small file-item__download" href="' + (file.url || '') + '" target="_blank">下载</a>';
+    container.appendChild(fileEl);
+  });
+}
+
+function countFilesInDir(node) {
+  var count = node.files.length;
+  Object.keys(node.children).forEach(function(dirName) {
+    count += countFilesInDir(node.children[dirName]);
+  });
+  return count;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var dataEl = document.getElementById('fileTreeData');
+  var container = document.getElementById('fileTreeContainer');
+  if (!dataEl || !container) return;
+  try {
+    var files = JSON.parse(dataEl.textContent);
+    if (!files || files.length === 0) {
+      container.innerHTML = '<div style="padding:16px; text-align:center; color:#8b949e; font-style:italic;">暂无文件</div>';
+      return;
+    }
+    var tree = buildFileTree(files);
+    renderFileTree(tree, 0, container);
+  } catch(e) {
+    container.innerHTML = '<div style="padding:16px; text-align:center; color:#cf222e;">文件列表加载失败：' + e.message + '</div>';
+  }
 });
 </script>
 {% endblock %}
