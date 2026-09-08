@@ -499,7 +499,7 @@
 <div class="topbar">
   <div class="topbar__title">📦 <span>TAXLY WorkTools</span> · 工具上传打包器</div>
   <div class="topbar__actions">
-    <a class="topbar__btn topbar__btn--primary" href="upload.html">→ 去上传页面</a>
+    <button class="topbar__btn topbar__btn--primary" onclick="goToUploadPage()">→ 去上传页面</button>
   </div>
 </div>
 
@@ -680,6 +680,7 @@ let uploadedFiles = [];
 let customReadmeContent = null;
 let customReadmeName = null;
 let currentMode = 'form';
+let isPackaged = false;
 let currentLinkTarget = null;
 
 function showToast(msg, type = 'info') {
@@ -1429,6 +1430,73 @@ function scrollToError(element) {
   element.focus();
 }
 
+// 去上传页面（先验证表单，再带参数跳转）
+function goToUploadPage() {
+  clearErrors();
+
+  const toolName = document.getElementById('toolName').value.trim();
+  const description = document.getElementById('description').value.trim();
+  const displayName = document.getElementById('displayName').value.trim();
+
+  let firstError = null;
+
+  if (!toolName) {
+    const el = document.getElementById('toolName');
+    el.classList.add('error');
+    firstError = firstError || el;
+    showToast('请填写工具名称', 'error');
+  } else if (!/^[a-z0-9][a-z0-9._-]*$/.test(toolName)) {
+    const el = document.getElementById('toolName');
+    el.classList.add('error');
+    firstError = firstError || el;
+    showToast('工具名称只能用小写英文、数字、下划线、连字符、点', 'error');
+  }
+
+  if (!description) {
+    const el = document.getElementById('description');
+    el.classList.add('error');
+    firstError = firstError || el;
+    if (!firstError || firstError === el) showToast('请填写工具描述', 'error');
+  }
+
+  // 自定义模式需要上传README
+  if (currentMode === 'custom' && !customReadmeContent) {
+    showToast('请上传自定义 README.md 文件', 'error');
+    return;
+  }
+
+  // 表单模式至少需要一个步骤
+  if (currentMode === 'form') {
+    const validSteps = steps.filter(s => s.title.trim() || s.content.trim());
+    if (validSteps.length === 0) {
+      showToast('请至少添加一个使用步骤', 'error');
+      const stepsSection = document.querySelector('.section:nth-of-type(4)');
+      if (stepsSection) scrollToError(stepsSection);
+      return;
+    }
+  }
+
+  if (uploadedFiles.length === 0) {
+    showToast('请先添加代码文件', 'error');
+    return;
+  }
+
+  if (firstError) {
+    scrollToError(firstError);
+    return;
+  }
+
+  // 验证通过，带参数跳转
+  const params = new URLSearchParams();
+  params.set('tool_name', toolName);
+  params.set('description', description);
+  if (displayName) {
+    params.set('display_name', displayName);
+  }
+  params.set('from_pack', '1');
+  window.location.href = 'upload.html?' + params.toString();
+}
+
 // 生成打包
 async function generatePackage() {
   clearErrors();
@@ -1584,6 +1652,7 @@ async function generatePackage() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
+    isPackaged = true;
     showToast('打包成功！正在跳转上传页面...', 'success');
 
     setTimeout(() => {
