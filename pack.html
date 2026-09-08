@@ -48,10 +48,39 @@
     font-weight: 500;
   }
   .topbar__btn--primary:hover { background: #22863a; }
+
+  /* 模式切换条 */
+  .mode-switch {
+    display: flex;
+    gap: 0;
+    margin: 16px 24px 0;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 24px;
+  }
+  .mode-switch__btn {
+    padding: 8px 20px;
+    border: 1px solid #d0d7de;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .mode-switch__btn:first-child { border-radius: 6px 0 0 6px; }
+  .mode-switch__btn:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+  .mode-switch__btn.active {
+    background: #0969da;
+    color: #fff;
+    border-color: #0969da;
+    font-weight: 500;
+  }
+  .mode-switch__btn:hover:not(.active) { background: #f6f8fa; }
+
   .main {
     display: flex;
     gap: 20px;
-    padding: 20px 24px;
+    padding: 16px 24px 24px;
     max-width: 1400px;
     margin: 0 auto;
     align-items: flex-start;
@@ -120,8 +149,44 @@
     border-color: #0969da;
     box-shadow: 0 0 0 3px rgba(9,105,218,0.15);
   }
+  input.error, textarea.error {
+    border-color: #cf222e;
+    background: #ffebe9;
+  }
+  input.error:focus, textarea.error:focus {
+    box-shadow: 0 0 0 3px rgba(207,34,46,0.15);
+  }
   input::placeholder, textarea::placeholder { color: #8b949e; font-style: italic; }
-  textarea { resize: vertical; min-height: 60px; }
+  textarea { resize: none; overflow: hidden; min-height: 60px; }
+
+  /* Markdown 工具栏 */
+  .md-toolbar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .md-toolbar button {
+    padding: 4px 8px;
+    border: 1px solid #d0d7de;
+    border-radius: 4px;
+    background: #f6f8fa;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .md-toolbar button:hover {
+    background: #ddf4ff;
+    border-color: #0969da;
+    color: #0969da;
+  }
+  .md-toolbar .sep {
+    width: 1px;
+    background: #d0d7de;
+    margin: 2px 2px;
+  }
+
   .list-item {
     display: flex;
     align-items: flex-start;
@@ -189,6 +254,49 @@
     cursor: pointer;
     font-weight: bold;
   }
+
+  /* 自定义README模式 */
+  .custom-readme-mode {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .custom-readme-mode.show { display: block; }
+  .upload-area {
+    border: 2px dashed #d0d7de;
+    border-radius: 8px;
+    padding: 40px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fff;
+  }
+  .upload-area:hover, .upload-area.dragover {
+    border-color: #0969da;
+    background: #ddf4ff;
+  }
+  .upload-area__icon { font-size: 40px; margin-bottom: 12px; }
+  .upload-area__title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .upload-area__hint { font-size: 12px; color: #8b949e; }
+  .custom-file-info {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #ddf4ff;
+    border: 1px solid #0969da;
+    border-radius: 6px;
+    font-size: 13px;
+    display: none;
+    text-align: left;
+  }
+  .custom-file-info.show { display: block; }
+  .custom-notice {
+    margin-top: 20px;
+    text-align: left;
+    font-size: 12px;
+    color: #57606a;
+    line-height: 1.8;
+  }
+  .custom-notice strong { color: #24292f; }
+
   .right-panel {
     width: 480px;
     flex-shrink: 0;
@@ -349,6 +457,38 @@
   .toast.success { background: #1a7f37; }
   .toast.error { background: #cf222e; }
   .toast.info { background: #0969da; }
+
+  /* 弹窗 */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    width: 420px;
+    max-width: 90%;
+  }
+  .modal h3 { font-size: 16px; margin-bottom: 16px; }
+  .modal .field { margin-bottom: 12px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+  .modal-actions button {
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    border: 1px solid #d0d7de;
+    background: #fff;
+  }
+  .modal-actions .primary { background: #0969da; color: #fff; border-color: #0969da; }
+
   @media (max-width: 1024px) {
     .main { flex-direction: column; }
     .right-panel { width: 100%; position: static; }
@@ -363,55 +503,113 @@
   </div>
 </div>
 
+<!-- 模式切换 -->
+<div class="mode-switch">
+  <button class="mode-switch__btn active" onclick="switchMode('form')">📝 表单生成 README</button>
+  <button class="mode-switch__btn" onclick="switchMode('custom')">📂 上传自定义 README.md</button>
+</div>
+
 <div class="main">
   <div class="left-panel">
-    <div class="section">
-      <div class="section__title"><span class="num">1</span>基本信息</div>
-      <div class="field">
-        <label class="field__label">中文显示名 <span class="hint">（展示页大标题，可填中文）</span></label>
-        <input type="text" id="displayName" placeholder="如：函证批量生成器">
-      </div>
-      <div class="field">
-        <label class="field__label">工具名称 <span class="required">*</span> <span class="hint">（GitHub 仓库名，仅限英文/拼音）</span></label>
-        <input type="text" id="toolName" placeholder="如：letter_generator（小写英文，用下划线或连字符）">
-        <div style="margin-top:4px; font-size:12px; color:#8b949e; font-style:italic;">
-          建议使用英文小写+下划线，如 letter_generator；也可使用中文拼音全拼。此名称为 GitHub 仓库名，创建后不可修改。
+    <!-- 表单模式 -->
+    <div id="formMode">
+      <div class="section">
+        <div class="section__title"><span class="num">1</span>基本信息</div>
+        <div class="field">
+          <label class="field__label">中文显示名 <span class="hint">（展示页大标题，可填中文）</span></label>
+          <input type="text" id="displayName" placeholder="如：函证批量生成器">
+        </div>
+        <div class="field">
+          <label class="field__label">工具名称 <span class="required">*</span> <span class="hint">（GitHub 仓库名，仅限英文/拼音）</span></label>
+          <input type="text" id="toolName" placeholder="如：letter_generator（小写英文，用下划线或连字符）">
+          <div style="margin-top:4px; font-size:12px; color:#8b949e; font-style:italic;">
+            建议使用英文小写+下划线，如 letter_generator；也可使用中文拼音全拼。此名称为 GitHub 仓库名，创建后不可修改。
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label">工具描述 <span class="required">*</span></label>
+          <textarea id="description" rows="2" placeholder="一句话说明这个工具解决什么问题，如：自动从 Excel 读取客户信息并生成审计函证"></textarea>
         </div>
       </div>
-      <div class="field">
-        <label class="field__label">工具描述 <span class="required">*</span></label>
-        <textarea id="description" rows="2" placeholder="一句话说明这个工具解决什么问题，如：自动从 Excel 读取客户信息并生成审计函证"></textarea>
+
+      <div class="section">
+        <div class="section__title"><span class="num">2</span>主要功能</div>
+        <div id="featuresList"></div>
+        <button class="btn-add" onclick="addFeature()">+ 添加一条功能</button>
+      </div>
+
+      <div class="section">
+        <div class="section__title"><span class="num">3</span>环境要求</div>
+        <div id="envList"></div>
+        <button class="btn-add" onclick="addEnv()">+ 添加一条要求</button>
+      </div>
+
+      <div class="section">
+        <div class="section__title"><span class="num">4</span>使用步骤 <span style="font-weight:400;font-size:12px;color:#8b949e;">（支持 Markdown：**加粗**、[链接](url)、`代码`、| 表格 |）</span></div>
+        <div id="stepsList"></div>
+        <button class="btn-add" onclick="addStep()">+ 添加步骤</button>
+      </div>
+
+      <div class="section">
+        <div class="section__title"><span class="num">5</span>示例文件 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选）</span></div>
+        <div id="examplesList"></div>
+        <button class="btn-add" onclick="addExample()">+ 添加示例文件</button>
+      </div>
+
+      <div class="section">
+        <div class="section__title"><span class="num">6</span>常见问题 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选）</span></div>
+        <div id="faqList"></div>
+        <button class="btn-add" onclick="addFaq()">+ 添加问题</button>
+      </div>
+
+      <!-- AI 提示词板块 -->
+      <div class="section">
+        <div class="section__title"><span class="num">7</span>🤖 AI 提示词 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选，支持 Markdown）</span></div>
+        <div class="field">
+          <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
+            <button class="btn-add" style="margin-top:0;" onclick="document.getElementById('aiFileInput').click()">📂 上传 prompt 文件</button>
+            <span style="font-size:12px;color:#8b949e;">或直接在下方粘贴：</span>
+            <input type="file" id="aiFileInput" accept=".md,.txt,.json" style="display:none" onchange="handleAiFileUpload(this.files)">
+          </div>
+          <div id="aiFileInfo" class="custom-file-info" style="margin-top:0;margin-bottom:8px;"></div>
+        </div>
+        <div class="field">
+          <label class="field__label">提示词内容 <span class="hint">（支持 Markdown，可自由加超链接）</span></label>
+          <div class="md-toolbar">
+            <button type="button" onclick="insertMdToTextarea('aiPrompt','bold')"><b>B</b></button>
+            <button type="button" onclick="openLinkModal('aiPrompt')">🔗 链接</button>
+            <button type="button" onclick="insertMdToTextarea('aiPrompt','code')">`<>` 代码</button>
+            <button type="button" onclick="insertMdToTextarea('aiPrompt','table')">⊞ 表格</button>
+            <button type="button" onclick="clearAiContent()" style="margin-left:auto;color:#cf222e;border-color:#f5c2c7;">清空</button>
+          </div>
+          <textarea id="aiPrompt" rows="4" placeholder="在此粘贴 AI 提示词内容，支持 Markdown 语法...&#10;&#10;## 系统提示词&#10;你是一个专业的...&#10;&#10;## 用户提示词模板&#10;请帮我..."></textarea>
+        </div>
+        <div style="font-size:12px;color:#8b949e;font-style:italic;">
+          打包后生成 prompts/prompt.md，在工具详情页"AI 提示词"标签页展示
+        </div>
       </div>
     </div>
 
-    <div class="section">
-      <div class="section__title"><span class="num">2</span>主要功能</div>
-      <div id="featuresList"></div>
-      <button class="btn-add" onclick="addFeature()">+ 添加一条功能</button>
-    </div>
-
-    <div class="section">
-      <div class="section__title"><span class="num">3</span>环境要求</div>
-      <div id="envList"></div>
-      <button class="btn-add" onclick="addEnv()">+ 添加一条要求</button>
-    </div>
-
-    <div class="section">
-      <div class="section__title"><span class="num">4</span>使用步骤</div>
-      <div id="stepsList"></div>
-      <button class="btn-add" onclick="addStep()">+ 添加步骤</button>
-    </div>
-
-    <div class="section">
-      <div class="section__title"><span class="num">5</span>示例文件 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选）</span></div>
-      <div id="examplesList"></div>
-      <button class="btn-add" onclick="addExample()">+ 添加示例文件</button>
-    </div>
-
-    <div class="section">
-      <div class="section__title"><span class="num">6</span>常见问题 <span style="font-weight:400;font-size:12px;color:#8b949e;">（可选）</span></div>
-      <div id="faqList"></div>
-      <button class="btn-add" onclick="addFaq()">+ 添加问题</button>
+    <!-- 自定义README模式 -->
+    <div id="customMode" class="custom-readme-mode">
+      <div class="upload-area" id="customUploadArea" onclick="document.getElementById('customFileInput').click()">
+        <div class="upload-area__icon">📂</div>
+        <div class="upload-area__title">点击或拖拽上传自定义 README.md</div>
+        <div class="upload-area__hint">支持 Markdown 格式，可包含表格、超链接、图片引用</div>
+        <input type="file" id="customFileInput" accept=".md,.markdown" style="display:none" onchange="handleCustomReadmeUpload(this.files)">
+      </div>
+      <div class="custom-file-info" id="customFileInfo">
+        ✅ 已上传：<span id="customFileName"></span>（<span id="customFileSize"></span>）— 右侧预览已更新
+      </div>
+      <div class="custom-notice">
+        <strong>⚠️ 注意事项：</strong>
+        <ul style="margin-left:20px;margin-top:6px;">
+          <li>工具名称、描述、部门、分类仍需在上传界面填写（仓库元数据，不在 README 里）</li>
+          <li>README 中引用的图片请同时上传到步骤截图区域，打包时自动放到 images/ 目录</li>
+          <li>图片文件名会自动清洗（空格→下划线，删除特殊字符），README 中引用路径需对应清洗后的文件名</li>
+          <li>代码文件仍需拖拽到右侧上传区域</li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -445,15 +643,44 @@
   </div>
 </div>
 
+<!-- 插入链接弹窗 -->
+<div class="modal-overlay" id="linkModal">
+  <div class="modal">
+    <h3>🔗 插入链接</h3>
+    <div class="field">
+      <label class="field__label">显示文字</label>
+      <input type="text" id="linkText" placeholder="例如：官方文档">
+    </div>
+    <div class="field">
+      <label class="field__label">URL 地址</label>
+      <input type="text" id="linkUrl" placeholder="https://example.com">
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeModal('linkModal')">取消</button>
+      <button class="primary" onclick="insertLink()">插入</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
+// 配置 marked
+marked.setOptions({
+  breaks: true,
+  gfm: true
+});
+
 let features = [];
 let envs = [];
 let steps = [];
 let examples = [];
 let faqs = [];
 let uploadedFiles = [];
+let customReadmeContent = null;
+let customReadmeName = null;
+let currentMode = 'form';
+let currentLinkTarget = null;
 
 function showToast(msg, type = 'info') {
   const toast = document.getElementById('toast');
@@ -482,6 +709,136 @@ function sanitizeFilename(filename) {
   return name + ext;
 }
 
+// textarea 自动增高
+function autoResizeTextarea(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight, 400) + 'px';
+}
+
+function initAutoResize() {
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('input', function() {
+      autoResizeTextarea(this);
+    });
+    autoResizeTextarea(ta);
+  });
+}
+
+// Markdown 插入到指定 textarea
+function insertMdToTextarea(textareaId, type) {
+  const ta = document.getElementById(textareaId);
+  if (!ta) return;
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end);
+  let insert = '';
+  if (type === 'bold') insert = '**' + (selected || '加粗文字') + '**';
+  else if (type === 'code') insert = '`' + (selected || '代码') + '`';
+  else if (type === 'table') insert = '\n| 列1 | 列2 |\n|-----|-----|\n| 数据 | 数据 |\n';
+  ta.value = ta.value.substring(0, start) + insert + ta.value.substring(end);
+  ta.focus();
+  autoResizeTextarea(ta);
+  ta.dispatchEvent(new Event('input'));
+}
+
+// 链接弹窗
+function openLinkModal(textareaId) {
+  currentLinkTarget = textareaId;
+  document.getElementById('linkText').value = '';
+  document.getElementById('linkUrl').value = '';
+  document.getElementById('linkModal').classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function insertLink() {
+  const text = document.getElementById('linkText').value || '链接文字';
+  const url = document.getElementById('linkUrl').value || 'https://';
+  const ta = document.getElementById(currentLinkTarget);
+  if (ta) {
+    const start = ta.selectionStart;
+    ta.value = ta.value.substring(0, start) + `[${text}](${url})` + ta.value.substring(ta.selectionEnd);
+    ta.focus();
+    autoResizeTextarea(ta);
+    ta.dispatchEvent(new Event('input'));
+  }
+  closeModal('linkModal');
+}
+
+// 模式切换
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-switch__btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (mode === 'form' && i === 0) || (mode === 'custom' && i === 1));
+  });
+  document.getElementById('formMode').style.display = mode === 'form' ? 'block' : 'none';
+  document.getElementById('customMode').classList.toggle('show', mode === 'custom');
+  updatePreview();
+}
+
+// 自定义README上传
+function handleCustomReadmeUpload(files) {
+  if (files.length === 0) return;
+  const file = files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    customReadmeContent = e.target.result;
+    customReadmeName = file.name;
+    document.getElementById('customFileName').textContent = file.name;
+    document.getElementById('customFileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+    document.getElementById('customFileInfo').classList.add('show');
+    showToast('已加载自定义 README.md', 'success');
+    updatePreview();
+  };
+  reader.readAsText(file);
+}
+
+// 自定义README拖拽
+const customUploadArea = document.getElementById('customUploadArea');
+if (customUploadArea) {
+  customUploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    customUploadArea.classList.add('dragover');
+  });
+  customUploadArea.addEventListener('dragleave', () => {
+    customUploadArea.classList.remove('dragover');
+  });
+  customUploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    customUploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+      handleCustomReadmeUpload(e.dataTransfer.files);
+    }
+  });
+}
+
+// AI提示词文件上传
+function handleAiFileUpload(files) {
+  if (files.length === 0) return;
+  const file = files[0];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('aiPrompt').value = e.target.result;
+    const info = document.getElementById('aiFileInfo');
+    info.innerHTML = '✅ 已加载：' + file.name + '（' + (file.size / 1024).toFixed(1) + ' KB）— 可在下方编辑';
+    info.classList.add('show');
+    autoResizeTextarea(document.getElementById('aiPrompt'));
+    showToast('已加载 prompt 文件', 'success');
+    updatePreview();
+  };
+  reader.readAsText(file);
+}
+
+function clearAiContent() {
+  document.getElementById('aiPrompt').value = '';
+  document.getElementById('aiFileInfo').classList.remove('show');
+  autoResizeTextarea(document.getElementById('aiPrompt'));
+  updatePreview();
+}
+
+// 功能列表
 function addFeature(value = '') {
   const id = 'feat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
   features.push({ id, value });
@@ -513,6 +870,7 @@ function updateFeature(id, value) {
   if (f) { f.value = value; updatePreview(); }
 }
 
+// 环境要求
 function addEnv(value = '') {
   const id = 'env_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
   envs.push({ id, value });
@@ -544,6 +902,7 @@ function updateEnv(id, value) {
   if (e) { e.value = value; updatePreview(); }
 }
 
+// 步骤
 function addStep() {
   const id = 'step_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
   steps.push({ id, title: '', content: '', screenshots: [] });
@@ -572,7 +931,14 @@ function renderSteps() {
           oninput="updateStepTitle('${s.id}', this.value)">
       </div>
       <div class="field">
-        <textarea rows="2" placeholder="详细操作说明，可写多行"
+        <div class="md-toolbar">
+          <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','bold')"><b>B</b></button>
+          <button type="button" onclick="openLinkModal('stepContent_${s.id}')">🔗 链接</button>
+          <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','image')">🖼️ 图片</button>
+          <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','code')">`<>` 代码</button>
+          <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','table')">⊞ 表格</button>
+        </div>
+        <textarea id="stepContent_${s.id}" rows="2" placeholder="详细操作说明，支持 Markdown 语法（**加粗**、[链接](url)、`代码`、| 表格 |）"
           oninput="updateStepContent('${s.id}', this.value)">${escapeHtml(s.content)}</textarea>
       </div>
       ${s.screenshots.length > 0 ? `
@@ -586,11 +952,12 @@ function renderSteps() {
           `).join('')}
         </div>
       ` : ''}
-      <button class="btn-add" style="margin-top:8px;" onclick="addStepScreenshot('${s.id}')">+ 添加步骤截图</button>
+      <button class="btn-add" style="margin-top:8px;" onclick="addStepScreenshot('${s.id}')">+ 添加步骤截图（自动插入引用）</button>
       <input type="file" id="stepImg_${s.id}" accept="image/*" multiple style="display:none"
         onchange="handleStepScreenshot('${s.id}', this.files)">
     </div>
   `).join('');
+  initAutoResize();
 }
 
 function updateStepTitle(id, value) {
@@ -631,8 +998,14 @@ function handleStepScreenshot(stepId, files) {
         originalName: file.name,
         data: e.target.result
       });
+      // 自动在步骤描述末尾插入图片引用
+      const altText = file.name.replace(/\.[^/.]+$/, '');
+      if (!s.content.includes('images/' + finalName)) {
+        s.content = (s.content ? s.content.trim() + '\n\n' : '') + '![' + altText + '](images/' + finalName + ')';
+      }
       renderSteps();
       updatePreview();
+      showToast('已添加截图并自动插入引用: ' + file.name, 'success');
     };
     reader.readAsArrayBuffer(file);
   });
@@ -641,12 +1014,19 @@ function handleStepScreenshot(stepId, files) {
 function removeStepScreenshot(stepId, idx) {
   const s = steps.find(x => x.id === stepId);
   if (s) {
+    const removed = s.screenshots[idx];
+    // 从描述中移除对应的图片引用
+    if (removed) {
+      s.content = s.content.replace(new RegExp('!\\[[^\\]]*\\]\\(images/' + removed.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\)\\n?', 'g'), '');
+      s.content = s.content.trim();
+    }
     s.screenshots.splice(idx, 1);
     renderSteps();
     updatePreview();
   }
 }
 
+// 示例文件
 function addExample() {
   const id = 'ex_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
   examples.push({ id, title: '', content: '', file: null });
@@ -693,6 +1073,7 @@ function renderExamples() {
       </div>
     </div>
   `).join('');
+  initAutoResize();
 }
 
 function updateExampleTitle(id, value) {
@@ -730,6 +1111,7 @@ function removeExampleFile(id) {
   if (e) { e.file = null; renderExamples(); updatePreview(); }
 }
 
+// 常见问题
 function addFaq() {
   const id = 'faq_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
   faqs.push({ id, q: '', a: '' });
@@ -763,6 +1145,7 @@ function renderFaqs() {
       </div>
     </div>
   `).join('');
+  initAutoResize();
 }
 
 function updateFaqQ(id, value) {
@@ -775,6 +1158,7 @@ function updateFaqA(id, value) {
   if (f) { f.a = value; updatePreview(); }
 }
 
+// 文件上传
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 
@@ -931,7 +1315,12 @@ function renderFileList() {
   body.innerHTML = html;
 }
 
+// 生成README
 function generateReadme() {
+  if (currentMode === 'custom' && customReadmeContent) {
+    return customReadmeContent;
+  }
+
   const displayName = document.getElementById('displayName').value.trim();
   const toolName = document.getElementById('toolName').value.trim();
   const description = document.getElementById('description').value.trim();
@@ -963,13 +1352,8 @@ function generateReadme() {
     validSteps.forEach((s, idx) => {
       md += '### ' + (idx + 1) + '. ' + (s.title.trim() || '步骤 ' + (idx + 1)) + '\n\n';
       if (s.content.trim()) {
-        const contentWithBreaks = s.content.trim().replace(/\n/g, '  \n');
-        md += contentWithBreaks + '\n\n';
+        md += s.content.trim() + '\n\n';
       }
-      s.screenshots.forEach(sc => {
-        const altText = sc.originalName || sc.name;
-        md += '![' + altText + '](images/' + sc.name + ')\n\n';
-      });
     });
   }
 
@@ -997,43 +1381,108 @@ function generateReadme() {
   return md;
 }
 
+// 获取AI提示词内容
+function getAiPromptContent() {
+  return document.getElementById('aiPrompt').value.trim();
+}
+
+// 更新预览
 function updatePreview() {
   const md = generateReadme();
+  const aiPrompt = getAiPromptContent();
   const body = document.getElementById('previewBody');
-  if (!md.trim() || md === '# 未命名工具\n\n') {
+
+  let fullMd = md;
+  if (aiPrompt && currentMode === 'form') {
+    fullMd += '\n\n---\n\n## 🤖 AI 提示词\n\n' + aiPrompt + '\n';
+  }
+
+  if (!fullMd.trim() || fullMd === '# 未命名工具\n\n') {
     body.innerHTML = '<div class="preview-empty">填写左侧信息后，这里会实时显示 README 效果</div>';
     return;
   }
   try {
-    body.innerHTML = marked.parse(md);
+    body.innerHTML = marked.parse(fullMd);
   } catch (e) {
-    body.innerHTML = '<pre>' + escapeHtml(md) + '</pre>';
+    body.innerHTML = '<pre>' + escapeHtml(fullMd) + '</pre>';
   }
 }
 
-['displayName', 'toolName', 'description'].forEach(id => {
-  document.getElementById(id).addEventListener('input', updatePreview);
+['displayName', 'toolName', 'description', 'aiPrompt'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input', function() {
+      updatePreview();
+      this.classList.remove('error');
+    });
+  }
 });
 
+// 清除错误高亮
+function clearErrors() {
+  document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+}
+
+// 滚动到错误元素
+function scrollToError(element) {
+  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  element.focus();
+}
+
+// 生成打包
 async function generatePackage() {
+  clearErrors();
+
   const toolName = document.getElementById('toolName').value.trim();
   const description = document.getElementById('description').value.trim();
   const displayName = document.getElementById('displayName').value.trim();
 
+  // 表单验证
+  let firstError = null;
+
   if (!toolName) {
+    const el = document.getElementById('toolName');
+    el.classList.add('error');
+    firstError = firstError || el;
     showToast('请填写工具名称', 'error');
-    return;
-  }
-  if (!description) {
-    showToast('请填写工具描述', 'error');
-    return;
-  }
-  if (!/^[a-z0-9][a-z0-9._-]*$/.test(toolName)) {
+  } else if (!/^[a-z0-9][a-z0-9._-]*$/.test(toolName)) {
+    const el = document.getElementById('toolName');
+    el.classList.add('error');
+    firstError = firstError || el;
     showToast('工具名称只能用小写英文、数字、下划线、连字符、点', 'error');
+  }
+
+  if (!description) {
+    const el = document.getElementById('description');
+    el.classList.add('error');
+    firstError = firstError || el;
+    if (!firstError || firstError === el) showToast('请填写工具描述', 'error');
+  }
+
+  // 自定义模式需要上传README
+  if (currentMode === 'custom' && !customReadmeContent) {
+    showToast('请上传自定义 README.md 文件', 'error');
     return;
   }
+
+  // 表单模式至少需要一个步骤
+  if (currentMode === 'form') {
+    const validSteps = steps.filter(s => s.title.trim() || s.content.trim());
+    if (validSteps.length === 0) {
+      showToast('请至少添加一个使用步骤', 'error');
+      const stepsSection = document.querySelector('.section:nth-of-type(4)');
+      if (stepsSection) scrollToError(stepsSection);
+      return;
+    }
+  }
+
   if (uploadedFiles.length === 0) {
     showToast('请至少添加一个代码文件', 'error');
+    return;
+  }
+
+  if (firstError) {
+    scrollToError(firstError);
     return;
   }
 
@@ -1046,6 +1495,12 @@ async function generatePackage() {
 
     const readmeMd = generateReadme();
     zip.file('README.md', readmeMd);
+
+    // AI提示词
+    const aiPrompt = getAiPromptContent();
+    if (aiPrompt) {
+      zip.file('prompts/prompt.md', aiPrompt);
+    }
 
     const isSingleFile = uploadedFiles.length === 1;
 
@@ -1085,6 +1540,14 @@ async function generatePackage() {
         portfolio += 'raw_url = "https://raw.githubusercontent.com/TAXLY-WorkTools/' + toolName + '/main/examples/' + e.file.name + '"\n';
       }
     });
+
+    if (aiPrompt) {
+      portfolio += '\n[[files]]\n';
+      portfolio += 'name = "prompt.md"\n';
+      portfolio += 'path = "prompts/prompt.md"\n';
+      portfolio += 'raw_url = "https://raw.githubusercontent.com/TAXLY-WorkTools/' + toolName + '/main/prompts/prompt.md"\n';
+    }
+
     zip.file('portfolio.toml', portfolio);
 
     uploadedFiles.forEach(f => {
@@ -1104,6 +1567,14 @@ async function generatePackage() {
     });
 
     const content = await zip.generateAsync({ type: 'blob' });
+
+    // 尝试存储到 IndexedDB 供上传页使用
+    try {
+      await storeZipInIndexedDB(toolName, content);
+    } catch (e) {
+      console.warn('IndexedDB 存储失败，将使用传统下载方式', e);
+    }
+
     const url = URL.createObjectURL(content);
     const a = document.createElement('a');
     a.href = url;
@@ -1122,6 +1593,7 @@ async function generatePackage() {
       if (displayName) {
         params.set('display_name', displayName);
       }
+      params.set('from_pack', '1');
       window.location.href = 'upload.html?' + params.toString();
     }, 1500);
 
@@ -1134,9 +1606,49 @@ async function generatePackage() {
   }
 }
 
+// IndexedDB 存储 zip
+function storeZipInIndexedDB(toolName, blob) {
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(new Error('IndexedDB not supported'));
+      return;
+    }
+    const request = indexedDB.open('ToolHubPack', 1);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('zips')) {
+        db.createObjectStore('zips');
+      }
+    };
+    request.onsuccess = (e) => {
+      const db = e.target.result;
+      const tx = db.transaction('zips', 'readwrite');
+      const store = tx.objectStore('zips');
+      // 存储 blob 和元数据
+      const data = {
+        blob: blob,
+        toolName: toolName,
+        timestamp: Date.now()
+      };
+      const putReq = store.put(data, 'latest_zip');
+      putReq.onsuccess = () => {
+        db.close();
+        resolve();
+      };
+      putReq.onerror = () => {
+        db.close();
+        reject(putReq.error);
+      };
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// 初始化
 addFeature();
 addEnv();
 addStep();
+initAutoResize();
 updatePreview();
 </script>
 </body>
