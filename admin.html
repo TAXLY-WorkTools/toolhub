@@ -6,62 +6,41 @@
 <title>工具管理后台 · TAXLY WorkTools</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: #f6f8fa; color: #24292f; font-size: 14px; line-height: 1.6;
-  }
-  .topbar {
-    background: #24292f; color: #fff; padding: 12px 24px;
-    display: flex; justify-content: space-between; align-items: center;
-    position: sticky; top: 0; z-index: 100;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: #f6f8fa; color: #24292f; font-size: 14px; line-height: 1.6; }
+  .topbar { background: #24292f; color: #fff; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
   .topbar__title { font-size: 16px; font-weight: 600; }
   .topbar__title span { color: #58a6ff; }
   .topbar__right { display: flex; align-items: center; gap: 12px; }
   .token-status { font-size: 12px; padding: 4px 10px; border-radius: 12px; background: rgba(255,255,255,0.1); }
   .token-status.ok { background: #238636; }
   .token-status.no { background: #6e7681; }
-  .btn {
-    padding: 6px 14px; border: 1px solid #d0d7de; border-radius: 6px;
-    background: #f6f8fa; cursor: pointer; font-size: 13px; transition: background 0.15s;
-  }
+  .btn { padding: 6px 14px; border: 1px solid #d0d7de; border-radius: 6px; background: #f6f8fa; cursor: pointer; font-size: 13px; transition: background 0.15s; font-family: inherit; }
   .btn:hover { background: #eaeef2; }
   .btn--primary { background: #2da44e; color: #fff; border-color: #2da44e; }
   .btn--primary:hover { background: #22863a; }
   .btn--danger { background: #cf222e; color: #fff; border-color: #cf222e; }
   .btn--danger:hover { background: #a40e26; }
-  .btn--sm { padding: 4px 10px; font-size: 12px; }
+  .btn--sm { padding: 3px 8px; font-size: 11px; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .main { display: flex; min-height: calc(100vh - 52px); }
-  .sidebar {
-    width: 200px; background: #fff; border-right: 1px solid #d0d7de;
-    padding: 16px 0; flex-shrink: 0;
-  }
-  .menu-item {
-    padding: 10px 20px; cursor: pointer; font-size: 14px; color: #24292f;
-    display: flex; align-items: center; gap: 8px; transition: background 0.15s;
-    border-left: 3px solid transparent;
-  }
+  .sidebar { width: 180px; background: #fff; border-right: 1px solid #d0d7de; padding: 16px 0; flex-shrink: 0; }
+  .menu-item { padding: 10px 20px; cursor: pointer; font-size: 14px; color: #24292f; display: flex; align-items: center; gap: 8px; transition: background 0.15s; border-left: 3px solid transparent; }
   .menu-item:hover { background: #f6f8fa; }
   .menu-item.active { background: #ddf4ff; color: #0969da; border-left-color: #0969da; font-weight: 500; }
-  .content { flex: 1; padding: 24px; min-width: 0; }
+  .content { flex: 1; padding: 20px; min-width: 0; }
   .content__title { font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #d0d7de; }
-  .card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; }
-  .card__title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #1f2328; }
+  .split-layout { display: flex; gap: 16px; align-items: flex-start; }
+  .split-left { flex: 1; min-width: 0; }
+  .split-right { width: 480px; flex-shrink: 0; }
+  .card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .card__title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #1f2328; display: flex; justify-content: space-between; align-items: center; }
   .card__desc { font-size: 12px; color: #57606a; margin-bottom: 12px; }
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; font-weight: 500; font-size: 13px; margin-bottom: 4px; color: #424a53; }
-  .form-group input, .form-group select, .form-group textarea {
-    width: 100%; padding: 8px 12px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 13px; font-family: inherit;
-  }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    outline: none; border-color: #0969da; box-shadow: 0 0 0 3px rgba(9,105,218,0.15);
-  }
-  .table {
-    width: 100%; border-collapse: collapse; background: #fff;
-    border: 1px solid #d0d7de; border-radius: 8px; overflow: hidden;
-  }
-  .table th, .table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #f0f1f3; font-size: 13px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 13px; font-family: inherit; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0969da; box-shadow: 0 0 0 3px rgba(9,105,218,0.15); }
+  .table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #d0d7de; border-radius: 8px; overflow: hidden; }
+  .table th, .table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #f0f1f3; font-size: 12px; }
   .table th { background: #f6f8fa; font-weight: 600; color: #424a53; }
   .table tr:last-child td { border-bottom: none; }
   .table tr:hover { background: #f6f8fa; }
@@ -70,55 +49,39 @@
   .tag--func { background: #dafbe1; color: #116329; }
   .tag--custom { background: #fff8c5; color: #9a6700; }
   .tag--offline { background: #eaeef2; color: #57606a; }
-  .search-box { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
-  .search-box input { flex: 1; padding: 8px 12px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 13px; }
-  .toast {
-    position: fixed; top: 70px; right: 24px; padding: 12px 20px; border-radius: 8px; color: #fff; font-size: 14px;
-    z-index: 1000; opacity: 0; transform: translateY(-10px); transition: opacity 0.2s, transform 0.2s; max-width: 400px;
-  }
+  .search-box { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; }
+  .search-box input { flex: 1; padding: 6px 10px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 12px; }
+  .toast { position: fixed; top: 70px; right: 24px; padding: 12px 20px; border-radius: 8px; color: #fff; font-size: 14px; z-index: 1000; opacity: 0; transform: translateY(-10px); transition: opacity 0.2s, transform 0.2s; max-width: 400px; }
   .toast.show { opacity: 1; transform: translateY(0); }
   .toast.success { background: #1a7f37; }
   .toast.error { background: #cf222e; }
   .toast.info { background: #0969da; }
-  .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);
-    z-index: 200; justify-content: center; align-items: center;
-  }
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
   .modal-overlay.show { display: flex; }
-  .modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+  .modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 560px; width: 90%; max-height: 80vh; overflow-y: auto; }
   .modal__title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
   .modal__actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-  .loading { text-align: center; padding: 40px; color: #8b949e; }
-  .loading::after {
-    content: ''; display: inline-block; width: 20px; height: 20px; border: 2px solid #d0d7de;
-    border-top-color: #0969da; border-radius: 50%; animation: spin 0.8s linear infinite; margin-left: 10px; vertical-align: middle;
-  }
+  .loading { text-align: center; padding: 30px; color: #8b949e; }
+  .loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid #d0d7de; border-top-color: #0969da; border-radius: 50%; animation: spin 0.8s linear infinite; margin-left: 8px; vertical-align: middle; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .empty { text-align: center; padding: 40px; color: #8b949e; font-style: italic; }
-  .section-divider {
-    margin: 24px 0 16px; padding: 8px 12px; background: #f6f8fa; border-radius: 6px;
-    font-weight: 600; font-size: 14px; color: #424a53;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .section-divider .type-actions { display: flex; gap: 6px; align-items: center; }
-  .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
-  .checkbox-item {
-    display: flex; align-items: center; gap: 6px; padding: 6px 12px;
-    border: 1px solid #d0d7de; border-radius: 6px; cursor: pointer; transition: all 0.15s;
-  }
+  .empty { text-align: center; padding: 30px; color: #8b949e; font-style: italic; font-size: 13px; }
+  .section-divider { margin: 16px 0 10px; padding: 8px 12px; background: #f6f8fa; border-radius: 6px; font-weight: 600; font-size: 13px; color: #424a53; display: flex; justify-content: space-between; align-items: center; }
+  .section-divider .type-actions { display: flex; gap: 4px; align-items: center; }
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .checkbox-item { display: flex; align-items: center; gap: 4px; padding: 4px 8px; border: 1px solid #d0d7de; border-radius: 6px; cursor: pointer; transition: all 0.15s; font-size: 12px; }
   .checkbox-item:hover { background: #f6f8fa; }
   .checkbox-item.checked { background: #ddf4ff; border-color: #0969da; }
   .checkbox-item input { cursor: pointer; }
-  .warn-box {
-    background: #fff8c5; border: 1px solid #d4a72c; border-radius: 6px;
-    padding: 10px 14px; margin-bottom: 12px; font-size: 13px; color: #9a6700;
-  }
-  @media (max-width: 768px) {
-    .main { flex-direction: column; }
-    .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 8px; }
-    .menu-item { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; }
-    .menu-item.active { border-bottom-color: #0969da; border-left: none; }
-  }
+  .warn-box { background: #fff8c5; border: 1px solid #d4a72c; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; font-size: 13px; color: #9a6700; }
+  .usage-count { display: inline-block; padding: 1px 6px; border-radius: 10px; background: #eaeef2; color: #57606a; font-size: 11px; font-weight: 600; }
+  .usage-count.has { background: #ddf4ff; color: #0969da; }
+  .sort-btns { display: inline-flex; flex-direction: column; gap: 1px; }
+  .sort-btns button { padding: 0 4px; font-size: 9px; line-height: 1.2; border: 1px solid #d0d7de; background: #f6f8fa; cursor: pointer; border-radius: 2px; }
+  .sort-btns button:hover { background: #eaeef2; }
+  .sort-btns button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .tool-row-tags { max-width: 200px; }
+  @media (max-width: 1200px) { .split-layout { flex-direction: column; } .split-right { width: 100%; } }
+  @media (max-width: 768px) { .main { flex-direction: column; } .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 8px; } .menu-item { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; } .menu-item.active { border-bottom-color: #0969da; border-left: none; } }
 </style>
 </head>
 <body>
@@ -140,25 +103,23 @@
 <div class="modal-overlay" id="tokenModal">
   <div class="modal">
     <div class="modal__title">🔑 设置 GitHub Token</div>
-    <p style="margin-bottom:12px; font-size:13px; color:#57606a;">
-      需要具有 <strong>repo</strong> 权限的 Personal Access Token (PAT)。<br>
-      Token 仅保存在您的浏览器 localStorage 中，不会上传到任何服务器。
-    </p>
+    <p style="margin-bottom:12px; font-size:13px; color:#57606a;">需要具有 <strong>repo</strong> 权限的 Personal Access Token (PAT)。<br>Token 仅保存在您的浏览器 localStorage 中，不会上传到任何服务器。</p>
     <div class="form-group"><label>Token</label><input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"></div>
-    <div class="modal__actions">
-      <button class="btn" onclick="closeTokenModal()">取消</button>
-      <button class="btn btn--primary" onclick="saveToken()">保存并验证</button>
-    </div>
+    <div class="modal__actions"><button class="btn" onclick="closeTokenModal()">取消</button><button class="btn btn--primary" onclick="saveToken()">保存并验证</button></div>
   </div>
 </div>
 <div class="modal-overlay" id="confirmModal">
   <div class="modal">
     <div class="modal__title" id="confirmTitle">确认操作</div>
     <div id="confirmBody" style="margin-bottom:12px;"></div>
-    <div class="modal__actions">
-      <button class="btn" onclick="closeConfirmModal()">取消</button>
-      <button class="btn btn--danger" id="confirmBtn" onclick="executeConfirm()">确认</button>
-    </div>
+    <div class="modal__actions"><button class="btn" onclick="closeConfirmModal()">取消</button><button class="btn btn--danger" id="confirmBtn" onclick="executeConfirm()">确认</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="editTagsModal">
+  <div class="modal">
+    <div class="modal__title" id="editTagsTitle">编辑工具标签</div>
+    <div id="editTagsBody"></div>
+    <div class="modal__actions"><button class="btn" onclick="closeEditTagsModal()">取消</button><button class="btn btn--primary" onclick="saveEditTags()">💾 保存</button></div>
   </div>
 </div>
 <script>
@@ -172,32 +133,14 @@ let confirmCallback = null;
 let labelsData = null;
 let labelsSha = null;
 let allReposCache = null;
+let labelUsageCache = {};
+let currentEditTool = null;
+let currentEditTopics = [];
 
-function showToast(msg, type = 'info') {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'toast ' + type + ' show';
-  setTimeout(() => { toast.className = 'toast ' + type; }, 3000);
-}
+function showToast(msg, type = 'info') { const toast = document.getElementById('toast'); toast.textContent = msg; toast.className = 'toast ' + type + ' show'; setTimeout(() => { toast.className = 'toast ' + type; }, 3000); }
 function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
-function formatDate(isoStr) {
-  if (!isoStr) return '-';
-  return new Date(isoStr).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-}
-async function ghApi(path, options = {}) {
-  if (!currentToken) throw new Error('请先设置 GitHub Token');
-  const url = path.startsWith('http') ? path : `https://api.github.com${path}`;
-  const headers = { 'Authorization': `token ${currentToken}`, 'Accept': 'application/vnd.github.v3+json', ...options.headers };
-  if (options.body && typeof options.body === 'object') { headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(options.body); }
-  const resp = await fetch(url, { ...options, headers });
-  if (!resp.ok) {
-    let errMsg = `HTTP ${resp.status}`;
-    try { const errData = await resp.json(); errMsg = errData.message || errMsg; } catch(e) {}
-    throw new Error(errMsg);
-  }
-  if (resp.status === 204) return null;
-  return resp.json();
-}
+function formatDate(isoStr) { if (!isoStr) return '-'; return new Date(isoStr).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+async function ghApi(path, options = {}) { if (!currentToken) throw new Error('请先设置 GitHub Token'); const url = path.startsWith('http') ? path : `https://api.github.com${path}`; const headers = { 'Authorization': `token ${currentToken}`, 'Accept': 'application/vnd.github.v3+json', ...options.headers }; if (options.body && typeof options.body === 'object') { headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(options.body); } const resp = await fetch(url, { ...options, headers }); if (!resp.ok) { let errMsg = `HTTP ${resp.status}`; try { const errData = await resp.json(); errMsg = errData.message || errMsg; } catch(e) {} throw new Error(errMsg); } if (resp.status === 204) return null; return resp.json(); }
 async function ghGet(path) { return ghApi(path); }
 async function ghPut(path, body) { return ghApi(path, { method: 'PUT', body }); }
 async function ghPost(path, body) { return ghApi(path, { method: 'POST', body }); }
@@ -206,523 +149,88 @@ async function ghPatch(path, body) { return ghApi(path, { method: 'PATCH', body 
 
 function showTokenModal() { document.getElementById('tokenInput').value = currentToken; document.getElementById('tokenModal').classList.add('show'); }
 function closeTokenModal() { document.getElementById('tokenModal').classList.remove('show'); }
-async function saveToken() {
-  const token = document.getElementById('tokenInput').value.trim();
-  if (!token) { showToast('请输入 Token', 'error'); return; }
-  currentToken = token;
-  try {
-    const user = await ghGet('/user');
-    currentUser = user;
-    localStorage.setItem('admin_token', token);
-    updateTokenStatus();
-    closeTokenModal();
-    showToast(`认证成功：${user.login}`, 'success');
-    switchModule(currentModule);
-  } catch(e) { showToast('Token 验证失败：' + e.message, 'error'); currentToken = ''; }
-}
-function updateTokenStatus() {
-  const el = document.getElementById('tokenStatus');
-  if (currentToken && currentUser) { el.textContent = `✅ ${currentUser.login}`; el.className = 'token-status ok'; }
-  else { el.textContent = '未认证'; el.className = 'token-status no'; }
-}
-async function initToken() {
-  if (currentToken) {
-    try {
-      const user = await ghGet('/user');
-      currentUser = user;
-      updateTokenStatus();
-      switchModule(currentModule);
-      return;
-    } catch(e) { currentToken = ''; localStorage.removeItem('admin_token'); }
-  }
-  document.getElementById('content').innerHTML = '<div class="empty">请先点击右上角"设置 Token"进行认证</div>';
-}
-function showConfirm(title, body, callback, options = {}) {
-  document.getElementById('confirmTitle').textContent = title;
-  document.getElementById('confirmBody').innerHTML = body;
-  confirmCallback = callback;
-  const confirmBtn = document.getElementById('confirmBtn');
-  confirmBtn.className = 'btn ' + (options.danger ? 'btn--danger' : 'btn--primary');
-  confirmBtn.textContent = options.confirmBtnText || '确认';
-  document.getElementById('confirmModal').classList.add('show');
-}
+async function saveToken() { const token = document.getElementById('tokenInput').value.trim(); if (!token) { showToast('请输入 Token', 'error'); return; } currentToken = token; try { const user = await ghGet('/user'); currentUser = user; localStorage.setItem('admin_token', token); updateTokenStatus(); closeTokenModal(); showToast(`认证成功：${user.login}`, 'success'); switchModule(currentModule); } catch(e) { showToast('Token 验证失败：' + e.message, 'error'); currentToken = ''; } }
+function updateTokenStatus() { const el = document.getElementById('tokenStatus'); if (currentToken && currentUser) { el.textContent = `✅ ${currentUser.login}`; el.className = 'token-status ok'; } else { el.textContent = '未认证'; el.className = 'token-status no'; } }
+async function initToken() { if (currentToken) { try { const user = await ghGet('/user'); currentUser = user; updateTokenStatus(); switchModule(currentModule); return; } catch(e) { currentToken = ''; localStorage.removeItem('admin_token'); } } document.getElementById('content').innerHTML = '<div class="empty">请先点击右上角"设置 Token"进行认证</div>'; }
+function showConfirm(title, body, callback, options = {}) { document.getElementById('confirmTitle').textContent = title; document.getElementById('confirmBody').innerHTML = body; confirmCallback = callback; const confirmBtn = document.getElementById('confirmBtn'); confirmBtn.className = 'btn ' + (options.danger ? 'btn--danger' : 'btn--primary'); confirmBtn.textContent = options.confirmBtnText || '确认'; document.getElementById('confirmModal').classList.add('show'); }
 function closeConfirmModal() { document.getElementById('confirmModal').classList.remove('show'); confirmCallback = null; }
 function executeConfirm() { closeConfirmModal(); if (confirmCallback) confirmCallback(); }
 
-function switchModule(module) {
-  currentModule = module;
-  document.querySelectorAll('.menu-item').forEach(el => { el.classList.toggle('active', el.dataset.module === module); });
-  if (!currentToken) { document.getElementById('content').innerHTML = '<div class="empty">请先设置 GitHub Token</div>'; return; }
-  if (module === 'labels') renderLabels();
-  else if (module === 'issues') renderIssues();
-}
+function switchModule(module) { currentModule = module; document.querySelectorAll('.menu-item').forEach(el => { el.classList.toggle('active', el.dataset.module === module); }); if (!currentToken) { document.getElementById('content').innerHTML = '<div class="empty">请先设置 GitHub Token</div>'; return; } if (module === 'labels') renderLabels(); else if (module === 'issues') renderIssues(); }
 
-async function getAllToolRepos(forceRefresh = false) {
-  if (allReposCache && !forceRefresh) return allReposCache;
-  const repos = await ghGet(`/orgs/${ORG}/repos?per_page=100&sort=updated`);
-  allReposCache = repos.filter(r => !['toolhub', 'upload-portal', 'tool-template'].includes(r.name));
-  return allReposCache;
-}
-async function countLabelUsage(labelId) {
-  const repos = await getAllToolRepos();
-  let count = 0;
-  const usedBy = [];
-  for (const repo of repos) {
-    if (repo.topics && repo.topics.includes(labelId)) {
-      count++;
-      usedBy.push(repo.name);
-    }
-  }
-  return { count, usedBy };
-}
+async function getAllToolRepos(forceRefresh = false) { if (allReposCache && !forceRefresh) return allReposCache; const repos = await ghGet(`/orgs/${ORG}/repos?per_page=100&sort=updated`); allReposCache = repos.filter(r => !['toolhub', 'upload-portal', 'tool-template'].includes(r.name)); return allReposCache; }
 
-async function renderLabels() {
-  document.getElementById('content').innerHTML = `
-    <div class="content__title">📑 标签管理</div>
-    <div class="card">
-      <div class="card__title">A. 标签定义管理</div>
-      <div class="card__desc">管理标签类型和标签定义。修改部门/功能标签后会自动同步到上传页面的下拉选项。</div>
-      <div id="labelsDefList" class="loading">加载中...</div>
-    </div>
-    <div class="card">
-      <div class="card__title">B. 工具标签分配</div>
-      <div class="card__desc">选择工具仓库，查看并修改其 GitHub Topics 标签。修改后立即生效。</div>
-      <div class="form-group"><label>选择工具仓库</label>
-        <select id="toolRepoSelect" onchange="loadToolTopics()"><option value="">请选择工具...</option></select>
-      </div>
-      <div id="toolTopicsArea" style="display:none;">
-        <div class="form-group"><label>当前标签（勾选/取消后保存）</label>
-          <div class="checkbox-group" id="topicsCheckboxGroup"></div>
-        </div>
-        <div style="display:flex; gap:10px;"><button class="btn btn--primary" onclick="saveToolTopics()">💾 保存标签</button></div>
-      </div>
-    </div>`;
-  await loadLabelsDef();
-  await loadToolReposForSelect();
-}
+async function refreshAllLabelUsage() { labelUsageCache = {}; const repos = await getAllToolRepos(); const allLabelIds = []; if (labelsData) { (labelsData.departments || []).forEach(l => allLabelIds.push(l.id)); (labelsData.categories || []).forEach(l => allLabelIds.push(l.id)); (labelsData.custom_types || []).forEach(ct => (ct.labels || []).forEach(l => allLabelIds.push(l.id))); } allLabelIds.forEach(id => { labelUsageCache[id] = { count: 0, usedBy: [] }; }); repos.forEach(repo => { (repo.topics || []).forEach(topic => { if (labelUsageCache[topic]) { labelUsageCache[topic].count++; labelUsageCache[topic].usedBy.push(repo.name); } }); }); }
 
-async function loadLabelsDef() {
-  try {
-    const data = await ghGet(`/repos/${ORG}/${TOOLHUB_REPO}/contents/labels.json`);
-    labelsSha = data.sha;
-    labelsData = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
-    renderLabelsDefList();
-  } catch(e) { document.getElementById('labelsDefList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; }
-}
+async function renderLabels() { document.getElementById('content').innerHTML = `<div class="content__title">📑 标签管理</div><div class="split-layout"><div class="split-left"><div class="card"><div class="card__title">A. 标签定义管理</div><div class="card__desc">管理标签类型和标签定义。修改部门/功能标签后会自动同步到上传页面的下拉选项。</div><div id="labelsDefList" class="loading">加载中...</div></div></div><div class="split-right"><div class="card"><div class="card__title">B. 工具标签分配</div><div class="card__desc">点击工具行的"编辑标签"按钮，勾选/取消后保存。</div><div class="search-box"><input type="text" id="toolSearch" placeholder="搜索工具名称..." oninput="filterToolTable()"></div><div id="toolTagsTable" class="loading">加载中...</div></div></div></div>`; await loadLabelsDef(); await loadToolTagsTable(); }
 
-function getTypeDisplayName(typeKey) {
-  if (labelsData && labelsData.type_config && labelsData.type_config[typeKey]) {
-    return labelsData.type_config[typeKey].display_name;
-  }
-  return typeKey === 'dept' ? '使用部门' : '功能分类';
-}
+async function loadLabelsDef() { try { const data = await ghGet(`/repos/${ORG}/${TOOLHUB_REPO}/contents/labels.json`); labelsSha = data.sha; labelsData = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))); await refreshAllLabelUsage(); renderLabelsDefList(); } catch(e) { document.getElementById('labelsDefList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; } }
 
-function renderLabelsDefList() {
-  const container = document.getElementById('labelsDefList');
-  if (!labelsData) { container.innerHTML = '<div class="empty">无数据</div>'; return; }
-  let html = '';
-  const deptName = getTypeDisplayName('dept');
-  html += `<div class="section-divider">
-    <span>🏢 ${escapeHtml(deptName)} <code style="font-size:11px; color:#8b949e;">(departments)</code></span>
-    <div class="type-actions">
-      <button class="btn btn--sm" onclick="editTypeName('dept')">✏️ 改名称</button>
-      <button class="btn btn--sm btn--primary" onclick="showAddLabelModal('dept')">+ 添加标签</button>
-    </div>
-  </div>`;
-  html += '<table class="table"><thead><tr><th>标签 ID</th><th>中文名称</th><th>操作</th></tr></thead><tbody>';
-  (labelsData.departments || []).forEach(l => {
-    html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabelWithCheck('dept','${escapeHtml(l.id)}','${escapeHtml(l.name)}')">删除</button></td></tr>`;
-  });
-  html += '</tbody></table>';
-  const funcName = getTypeDisplayName('func');
-  html += `<div class="section-divider" style="margin-top:20px;">
-    <span>⚙️ ${escapeHtml(funcName)} <code style="font-size:11px; color:#8b949e;">(categories)</code></span>
-    <div class="type-actions">
-      <button class="btn btn--sm" onclick="editTypeName('func')">✏️ 改名称</button>
-      <button class="btn btn--sm btn--primary" onclick="showAddLabelModal('func')">+ 添加标签</button>
-    </div>
-  </div>`;
-  html += '<table class="table"><thead><tr><th>标签 ID</th><th>中文名称</th><th>操作</th></tr></thead><tbody>';
-  (labelsData.categories || []).forEach(l => {
-    html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabelWithCheck('func','${escapeHtml(l.id)}','${escapeHtml(l.name)}')">删除</button></td></tr>`;
-  });
-  html += '</tbody></table>';
-  const customTypes = labelsData.custom_types || [];
-  html += `<div class="section-divider" style="margin-top:20px;">
-    <span>🏷️ 自定义类型 <code style="font-size:11px; color:#8b949e;">(custom_types)</code></span>
-    <button class="btn btn--sm btn--primary" onclick="showAddCustomTypeModal()">+ 添加类型</button>
-  </div>`;
-  if (customTypes.length === 0) {
-    html += '<div class="empty">暂无自定义类型，点击上方"添加类型"创建。自定义类型不会同步到上传页面，由管理员在工具标签分配中手动添加。</div>';
-  } else {
-    customTypes.forEach((ct, idx) => {
-      html += `<div style="margin-bottom:16px; border:1px solid #d0d7de; border-radius:8px; padding:12px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <strong>${escapeHtml(ct.name)} <code style="font-size:11px; color:#57606a;">(${escapeHtml(ct.key)})</code></strong>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn--sm" onclick="editCustomTypeName(${idx})">✏️ 改名称</button>
-            <button class="btn btn--sm" onclick="showAddLabelToCustomType(${idx})">+ 标签</button>
-            <button class="btn btn--sm btn--danger" onclick="deleteCustomTypeWithCheck(${idx})">删除类型</button>
-          </div>
-        </div>`;
-      if (ct.labels && ct.labels.length > 0) {
-        html += '<table class="table"><thead><tr><th>标签 ID</th><th>中文名称</th><th>操作</th></tr></thead><tbody>';
-        ct.labels.forEach(l => {
-          html += `<tr><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><button class="btn btn--sm btn--danger" onclick="deleteLabelFromCustomTypeWithCheck(${idx},'${escapeHtml(l.id)}','${escapeHtml(l.name)}')">删除</button></td></tr>`;
-        });
-        html += '</tbody></table>';
-      } else { html += '<div style="padding:8px; color:#8b949e; font-size:12px;">暂无标签</div>'; }
-      html += '</div>';
-    });
-  }
-  container.innerHTML = html;
-}
+function getTypeDisplayName(typeKey) { if (labelsData && labelsData.type_config && labelsData.type_config[typeKey]) { return labelsData.type_config[typeKey].display_name; } return typeKey === 'dept' ? '使用部门' : '功能分类'; }
 
-function editTypeName(typeKey) {
-  const currentName = getTypeDisplayName(typeKey);
-  showConfirm(`修改类型名称`,
-    `<div class="form-group"><label>类型显示名称</label><input type="text" id="editTypeNameInput" value="${escapeHtml(currentName)}"></div>
-     <div style="font-size:12px; color:#57606a;">这只是界面显示名称，不影响 labels.json 中的字段名和上传脚本逻辑。</div>`,
-    async () => {
-      const newName = document.getElementById('editTypeNameInput').value.trim();
-      if (!newName) { showToast('请输入名称', 'error'); return; }
-      if (!labelsData.type_config) labelsData.type_config = {};
-      if (!labelsData.type_config[typeKey]) labelsData.type_config[typeKey] = {};
-      labelsData.type_config[typeKey].display_name = newName;
-      await saveLabelsJson(`修改类型显示名称: ${typeKey} -> ${newName}`, false);
-    }, { confirmBtnText: '保存' });
-}
+function renderLabelsDefList() { const container = document.getElementById('labelsDefList'); if (!labelsData) { container.innerHTML = '<div class="empty">无数据</div>'; return; } let html = ''; const deptName = getTypeDisplayName('dept'); html += `<div class="section-divider"><span>🏢 ${escapeHtml(deptName)} <code style="font-size:10px; color:#8b949e;">(departments)</code></span><div class="type-actions"><button class="btn btn--sm" onclick="editTypeName('dept')">✏️ 改名称</button><button class="btn btn--sm btn--primary" onclick="showAddLabelModal('dept')">+ 添加</button></div></div>`; html += '<table class="table"><thead><tr><th style="width:30px;">序</th><th>标签 ID</th><th>中文名称</th><th style="width:50px;">使用</th><th style="width:140px;">操作</th></tr></thead><tbody>'; (labelsData.departments || []).forEach((l, idx) => { const usage = labelUsageCache[l.id] || { count: 0 }; html += `<tr><td><span class="sort-btns"><button onclick="moveLabel('dept',${idx},-1)" ${idx===0?'disabled':''}>▲</button><button onclick="moveLabel('dept',${idx},1)" ${idx===labelsData.departments.length-1?'disabled':''}>▼</button></span></td><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><span class="usage-count ${usage.count>0?'has':''}" title="${usage.count>0?'使用工具: '+usage.usedBy.join(', '):'未使用'}">${usage.count}</span></td><td><button class="btn btn--sm" onclick="editLabel('dept',${idx})">✏️ 编辑</button> <button class="btn btn--sm btn--danger" onclick="deleteLabelWithCheck('dept','${escapeHtml(l.id)}','${escapeHtml(l.name)}')">删</button></td></tr>`; }); html += '</tbody></table>'; const funcName = getTypeDisplayName('func'); html += `<div class="section-divider" style="margin-top:20px;"><span>⚙️ ${escapeHtml(funcName)} <code style="font-size:10px; color:#8b949e;">(categories)</code></span><div class="type-actions"><button class="btn btn--sm" onclick="editTypeName('func')">✏️ 改名称</button><button class="btn btn--sm btn--primary" onclick="showAddLabelModal('func')">+ 添加</button></div></div>`; html += '<table class="table"><thead><tr><th style="width:30px;">序</th><th>标签 ID</th><th>中文名称</th><th style="width:50px;">使用</th><th style="width:140px;">操作</th></tr></thead><tbody>'; (labelsData.categories || []).forEach((l, idx) => { const usage = labelUsageCache[l.id] || { count: 0 }; html += `<tr><td><span class="sort-btns"><button onclick="moveLabel('func',${idx},-1)" ${idx===0?'disabled':''}>▲</button><button onclick="moveLabel('func',${idx},1)" ${idx===labelsData.categories.length-1?'disabled':''}>▼</button></span></td><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><span class="usage-count ${usage.count>0?'has':''}" title="${usage.count>0?'使用工具: '+usage.usedBy.join(', '):'未使用'}">${usage.count}</span></td><td><button class="btn btn--sm" onclick="editLabel('func',${idx})">✏️ 编辑</button> <button class="btn btn--sm btn--danger" onclick="deleteLabelWithCheck('func','${escapeHtml(l.id)}','${escapeHtml(l.name)}')">删</button></td></tr>`; }); html += '</tbody></table>'; const customTypes = labelsData.custom_types || []; html += `<div class="section-divider" style="margin-top:20px;"><span>🏷️ 自定义类型 <code style="font-size:10px; color:#8b949e;">(custom_types)</code></span><button class="btn btn--sm btn--primary" onclick="showAddCustomTypeModal()">+ 添加类型</button></div>`; if (customTypes.length === 0) { html += '<div class="empty">暂无自定义类型。自定义类型不会同步到上传页面，由管理员在工具标签分配中手动添加。</div>'; } else { customTypes.forEach((ct, ctIdx) => { html += `<div style="margin-bottom:14px; border:1px solid #d0d7de; border-radius:8px; padding:10px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><strong style="font-size:13px;">${escapeHtml(ct.name)} <code style="font-size:10px; color:#57606a;">(${escapeHtml(ct.key)})</code></strong><div style="display:flex; gap:4px;"><button class="btn btn--sm" onclick="editCustomTypeName(${ctIdx})">✏️ 改名称</button><button class="btn btn--sm" onclick="showAddLabelToCustomType(${ctIdx})">+ 标签</button><button class="btn btn--sm btn--danger" onclick="deleteCustomTypeWithCheck(${ctIdx})">删类型</button></div></div>`; if (ct.labels && ct.labels.length > 0) { html += '<table class="table"><thead><tr><th style="width:30px;">序</th><th>标签 ID</th><th>中文名称</th><th style="width:50px;">使用</th><th style="width:140px;">操作</th></tr></thead><tbody>'; ct.labels.forEach((l, idx) => { const usage = labelUsageCache[l.id] || { count: 0 }; html += `<tr><td><span class="sort-btns"><button onclick="moveCustomLabel(${ctIdx},${idx},-1)" ${idx===0?'disabled':''}>▲</button><button onclick="moveCustomLabel(${ctIdx},${idx},1)" ${idx===ct.labels.length-1?'disabled':''}>▼</button></span></td><td><code>${escapeHtml(l.id)}</code></td><td>${escapeHtml(l.name)}</td><td><span class="usage-count ${usage.count>0?'has':''}">${usage.count}</span></td><td><button class="btn btn--sm" onclick="editCustomLabel(${ctIdx},${idx})">✏️ 编辑</button> <button class="btn btn--sm btn--danger" onclick="deleteLabelFromCustomTypeWithCheck(${ctIdx},'${escapeHtml(l.id)}','${escapeHtml(l.name)}')">删</button></td></tr>`; }); html += '</tbody></table>'; } else { html += '<div style="padding:6px; color:#8b949e; font-size:12px;">暂无标签</div>'; } html += '</div>'; }); } container.innerHTML = html; }
 
-function editCustomTypeName(idx) {
-  const ct = labelsData.custom_types[idx];
-  showConfirm(`修改自定义类型名称`,
-    `<div class="form-group"><label>类型名称（中文）</label><input type="text" id="editCustomTypeNameInput" value="${escapeHtml(ct.name)}"></div>
-     <div class="form-group"><label>类型 Key（英文前缀，不可修改）</label><input type="text" value="${escapeHtml(ct.key)}" disabled></div>`,
-    async () => {
-      const newName = document.getElementById('editCustomTypeNameInput').value.trim();
-      if (!newName) { showToast('请输入名称', 'error'); return; }
-      ct.name = newName;
-      await saveLabelsJson(`修改自定义类型名称: ${ct.key} -> ${newName}`, false);
-    }, { confirmBtnText: '保存' });
-}
+function editLabel(type, idx) { const arr = type === 'dept' ? labelsData.departments : labelsData.categories; const label = arr[idx]; const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func'); showConfirm(`编辑${typeName}标签`, `<div class="form-group"><label>标签 ID（不可修改）</label><input type="text" value="${escapeHtml(label.id)}" disabled></div><div class="form-group"><label>中文名称</label><input type="text" id="editLabelNameInput" value="${escapeHtml(label.name)}"></div><div style="font-size:12px; color:#57606a;">修改中文名称不影响工具使用（标签 ID 不变）。</div>`, async () => { const newName = document.getElementById('editLabelNameInput').value.trim(); if (!newName) { showToast('请输入名称', 'error'); return; } label.name = newName; await saveLabelsJson(`编辑${typeName}标签名称: ${label.id} -> ${newName}`, true); }, { confirmBtnText: '保存' }); }
 
-function showAddLabelModal(type) {
-  const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func');
-  const prefix = type === 'dept' ? 'dept-' : 'func-';
-  showConfirm(`添加${typeName}标签`,
-    `<div class="form-group"><label>中文名称</label><input type="text" id="addLabelName" placeholder="如：IT部 / 数据可视化"></div>
-     <div class="form-group"><label>标签 ID（自动生成，可修改）</label><input type="text" id="addLabelId" placeholder="${prefix}xxx"></div>
-     <div style="font-size:12px; color:#57606a;">添加后会自动同步到上传页面的下拉选项。</div>`,
-    async () => {
-      const name = document.getElementById('addLabelName').value.trim();
-      let id = document.getElementById('addLabelId').value.trim();
-      if (!name) { showToast('请输入中文名称', 'error'); return; }
-      if (!id) id = prefix + name.toLowerCase().replace(/\s+/g, '-');
-      const arr = type === 'dept' ? labelsData.departments : labelsData.categories;
-      if (arr.some(l => l.id === id)) { showToast('标签 ID 已存在', 'error'); return; }
-      arr.push({ id, name });
-      await saveLabelsJson(`添加${typeName}标签: ${id}`, true);
-    }, { confirmBtnText: '添加' });
-  setTimeout(() => {
-    const nameInput = document.getElementById('addLabelName');
-    const idInput = document.getElementById('addLabelId');
-    if (nameInput) {
-      nameInput.oninput = () => {
-        if (!idInput.value || idInput.value.startsWith(prefix)) {
-          idInput.value = prefix + nameInput.value.toLowerCase().replace(/\s+/g, '-');
-        }
-      };
-    }
-  }, 100);
-}
+function editCustomLabel(ctIdx, idx) { const ct = labelsData.custom_types[ctIdx]; const label = ct.labels[idx]; showConfirm(`编辑「${ct.name}」标签`, `<div class="form-group"><label>标签 ID（不可修改）</label><input type="text" value="${escapeHtml(label.id)}" disabled></div><div class="form-group"><label>中文名称</label><input type="text" id="editCustomLabelNameInput" value="${escapeHtml(label.name)}"></div>`, async () => { const newName = document.getElementById('editCustomLabelNameInput').value.trim(); if (!newName) { showToast('请输入名称', 'error'); return; } label.name = newName; await saveLabelsJson(`编辑自定义标签名称: ${label.id} -> ${newName}`, false); }, { confirmBtnText: '保存' }); }
 
-function showAddCustomTypeModal() {
-  showConfirm('添加自定义标签类型',
-    `<div class="form-group"><label>类型名称（中文）</label><input type="text" id="addTypeName" placeholder="如：难度、状态、优先级"></div>
-     <div class="form-group"><label>类型 Key（英文前缀）</label><input type="text" id="addTypeKey" placeholder="如：level、status、priority"></div>
-     <div style="font-size:12px; color:#57606a;">自定义类型不会同步到上传页面，由管理员在工具标签分配中手动添加。</div>`,
-    async () => {
-      const name = document.getElementById('addTypeName').value.trim();
-      const key = document.getElementById('addTypeKey').value.trim();
-      if (!name || !key) { showToast('请填写类型名称和 Key', 'error'); return; }
-      if (!labelsData.custom_types) labelsData.custom_types = [];
-      if (labelsData.custom_types.some(ct => ct.key === key)) { showToast('类型 Key 已存在', 'error'); return; }
-      labelsData.custom_types.push({ key, name, labels: [] });
-      await saveLabelsJson(`添加自定义标签类型: ${key}`, false);
-    }, { confirmBtnText: '添加' });
-}
+function moveLabel(type, idx, direction) { const arr = type === 'dept' ? labelsData.departments : labelsData.categories; const newIdx = idx + direction; if (newIdx < 0 || newIdx >= arr.length) return; [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]]; const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func'); saveLabelsJson(`调整${typeName}标签顺序`, true); }
 
-function showAddLabelToCustomType(typeIdx) {
-  const ct = labelsData.custom_types[typeIdx];
-  showConfirm(`添加标签到「${ct.name}」`,
-    `<div class="form-group"><label>中文名称</label><input type="text" id="addCustomLabelName" placeholder="如：简单 / 进行中"></div>
-     <div class="form-group"><label>标签 ID</label><input type="text" id="addCustomLabelId" placeholder="${ct.key}-xxx"></div>`,
-    async () => {
-      const name = document.getElementById('addCustomLabelName').value.trim();
-      let id = document.getElementById('addCustomLabelId').value.trim();
-      if (!name) { showToast('请输入中文名称', 'error'); return; }
-      if (!id) id = `${ct.key}-` + name.toLowerCase().replace(/\s+/g, '-');
-      if (ct.labels.some(l => l.id === id)) { showToast('标签 ID 已存在', 'error'); return; }
-      ct.labels.push({ id, name });
-      await saveLabelsJson(`添加标签到 ${ct.key}: ${id}`, false);
-    }, { confirmBtnText: '添加' });
-}
+function moveCustomLabel(ctIdx, idx, direction) { const ct = labelsData.custom_types[ctIdx]; const newIdx = idx + direction; if (newIdx < 0 || newIdx >= ct.labels.length) return; [ct.labels[idx], ct.labels[newIdx]] = [ct.labels[newIdx], ct.labels[idx]]; saveLabelsJson(`调整自定义标签顺序: ${ct.key}`, false); }
 
-async function deleteLabelWithCheck(type, id, name) {
-  const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func');
-  showToast('正在检查标签使用情况...', 'info');
-  try {
-    const { count, usedBy } = await countLabelUsage(id);
-    let body = `确定要删除${typeName}标签 <strong>${escapeHtml(name)}</strong> (<code>${escapeHtml(id)}</code>) 吗？`;
-    if (count > 0) {
-      body += `<div class="warn-box" style="margin-top:10px;">⚠️ 有 <strong>${count}</strong> 个工具正在使用此标签：${usedBy.map(n => `<code>${escapeHtml(n)}</code>`).join(', ')}<br>删除后这些工具的标签将变为"未定义"状态，不会自动移除。</div>`;
-    }
-    showConfirm(`删除${typeName}标签`, body, async () => {
-      const arr = type === 'dept' ? labelsData.departments : labelsData.categories;
-      const idx = arr.findIndex(l => l.id === id);
-      if (idx >= 0) arr.splice(idx, 1);
-      await saveLabelsJson(`删除${typeName}标签: ${id}`, true);
-    }, { danger: true });
-  } catch(e) {
-    showToast('检查使用情况失败：' + e.message, 'error');
-  }
-}
+function editTypeName(typeKey) { const currentName = getTypeDisplayName(typeKey); showConfirm(`修改类型名称`, `<div class="form-group"><label>类型显示名称</label><input type="text" id="editTypeNameInput" value="${escapeHtml(currentName)}"></div><div style="font-size:12px; color:#57606a;">这只是界面显示名称，不影响 labels.json 中的字段名和上传脚本逻辑。</div>`, async () => { const newName = document.getElementById('editTypeNameInput').value.trim(); if (!newName) { showToast('请输入名称', 'error'); return; } if (!labelsData.type_config) labelsData.type_config = {}; if (!labelsData.type_config[typeKey]) labelsData.type_config[typeKey] = {}; labelsData.type_config[typeKey].display_name = newName; await saveLabelsJson(`修改类型显示名称: ${typeKey} -> ${newName}`, false); }, { confirmBtnText: '保存' }); }
 
-async function deleteCustomTypeWithCheck(idx) {
-  const ct = labelsData.custom_types[idx];
-  let totalUsage = 0;
-  const usageDetails = [];
-  for (const label of (ct.labels || [])) {
-    const { count, usedBy } = await countLabelUsage(label.id);
-    if (count > 0) {
-      totalUsage += count;
-      usageDetails.push(`${label.name}: ${count}个工具`);
-    }
-  }
-  let body = `确定要删除自定义类型「<strong>${escapeHtml(ct.name)}</strong>」及其 <strong>${(ct.labels||[]).length}</strong> 个标签吗？`;
-  if (totalUsage > 0) {
-    body += `<div class="warn-box" style="margin-top:10px;">⚠️ 该类型下有 <strong>${totalUsage}</strong> 个标签正在被工具使用：${usageDetails.join('；')}<br>删除后这些工具的标签将变为"未定义"状态。</div>`;
-  }
-  showConfirm('删除自定义类型', body, async () => {
-    labelsData.custom_types.splice(idx, 1);
-    await saveLabelsJson(`删除自定义类型: ${ct.key}`, false);
-  }, { danger: true });
-}
+function editCustomTypeName(idx) { const ct = labelsData.custom_types[idx]; showConfirm(`修改自定义类型名称`, `<div class="form-group"><label>类型名称（中文）</label><input type="text" id="editCustomTypeNameInput" value="${escapeHtml(ct.name)}"></div><div class="form-group"><label>类型 Key（英文前缀，不可修改）</label><input type="text" value="${escapeHtml(ct.key)}" disabled></div>`, async () => { const newName = document.getElementById('editCustomTypeNameInput').value.trim(); if (!newName) { showToast('请输入名称', 'error'); return; } ct.name = newName; await saveLabelsJson(`修改自定义类型名称: ${ct.key} -> ${newName}`, false); }, { confirmBtnText: '保存' }); }
 
-async function deleteLabelFromCustomTypeWithCheck(typeIdx, id, name) {
-  const ct = labelsData.custom_types[typeIdx];
-  showToast('正在检查标签使用情况...', 'info');
-  try {
-    const { count, usedBy } = await countLabelUsage(id);
-    let body = `确定要删除标签 <strong>${escapeHtml(name)}</strong> (<code>${escapeHtml(id)}</code>) 吗？`;
-    if (count > 0) {
-      body += `<div class="warn-box" style="margin-top:10px;">⚠️ 有 <strong>${count}</strong> 个工具正在使用此标签：${usedBy.map(n => `<code>${escapeHtml(n)}</code>`).join(', ')}<br>删除后这些工具的标签将变为"未定义"状态。</div>`;
-    }
-    showConfirm('删除标签', body, async () => {
-      const idx = ct.labels.findIndex(l => l.id === id);
-      if (idx >= 0) ct.labels.splice(idx, 1);
-      await saveLabelsJson(`删除标签: ${id}`, false);
-    }, { danger: true });
-  } catch(e) {
-    showToast('检查使用情况失败：' + e.message, 'error');
-  }
-}
+function showAddLabelModal(type) { const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func'); const prefix = type === 'dept' ? 'dept-' : 'func-'; showConfirm(`添加${typeName}标签`, `<div class="form-group"><label>中文名称</label><input type="text" id="addLabelName" placeholder="如：IT部 / 数据可视化"></div><div class="form-group"><label>标签 ID（自动生成，可修改）</label><input type="text" id="addLabelId" placeholder="${prefix}xxx"></div><div style="font-size:12px; color:#57606a;">添加后会自动同步到上传页面的下拉选项。</div>`, async () => { const name = document.getElementById('addLabelName').value.trim(); let id = document.getElementById('addLabelId').value.trim(); if (!name) { showToast('请输入中文名称', 'error'); return; } if (!id) id = prefix + name.toLowerCase().replace(/\s+/g, '-'); const arr = type === 'dept' ? labelsData.departments : labelsData.categories; if (arr.some(l => l.id === id)) { showToast('标签 ID 已存在', 'error'); return; } arr.push({ id, name }); await saveLabelsJson(`添加${typeName}标签: ${id}`, true); }, { confirmBtnText: '添加' }); setTimeout(() => { const nameInput = document.getElementById('addLabelName'); const idInput = document.getElementById('addLabelId'); if (nameInput) { nameInput.oninput = () => { if (!idInput.value || idInput.value.startsWith(prefix)) { idInput.value = prefix + nameInput.value.toLowerCase().replace(/\s+/g, '-'); } }; } }, 100); }
 
-async function saveLabelsJson(commitMsg, syncUploadTemplate = false) {
-  try {
-    const content = JSON.stringify(labelsData, null, 2) + '\n';
-    await ghPut(`/repos/${ORG}/${TOOLHUB_REPO}/contents/labels.json`, {
-      message: commitMsg,
-      content: btoa(unescape(encodeURIComponent(content))),
-      sha: labelsSha, branch: 'main'
-    });
-    showToast('labels.json 已保存', 'success');
-    allReposCache = null;
-    await loadLabelsDef();
-    if (syncUploadTemplate) {
-      try {
-        showToast('正在同步上传页面下拉选项...', 'info');
-        await syncUploadTemplate();
-        showToast('上传页面下拉选项已同步', 'success');
-      } catch(e) {
-        showToast('同步上传模板失败：' + e.message, 'error');
-      }
-    }
-  } catch(e) { showToast('保存失败：' + e.message, 'error'); }
-}
+function showAddCustomTypeModal() { showConfirm('添加自定义标签类型', `<div class="form-group"><label>类型名称（中文）</label><input type="text" id="addTypeName" placeholder="如：难度、状态、优先级"></div><div class="form-group"><label>类型 Key（英文前缀）</label><input type="text" id="addTypeKey" placeholder="如：level、status、priority"></div><div style="font-size:12px; color:#57606a;">自定义类型不会同步到上传页面，由管理员在工具标签分配中手动添加。</div>`, async () => { const name = document.getElementById('addTypeName').value.trim(); const key = document.getElementById('addTypeKey').value.trim(); if (!name || !key) { showToast('请填写类型名称和 Key', 'error'); return; } if (!labelsData.custom_types) labelsData.custom_types = []; if (labelsData.custom_types.some(ct => ct.key === key)) { showToast('类型 Key 已存在', 'error'); return; } labelsData.custom_types.push({ key, name, labels: [] }); await saveLabelsJson(`添加自定义标签类型: ${key}`, false); }, { confirmBtnText: '添加' }); }
 
-async function syncUploadTemplate() {
-  const data = await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/contents/.github/ISSUE_TEMPLATE/upload.yml`);
-  const uploadYml = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
-  const uploadSha = data.sha;
-  const deptNames = (labelsData.departments || []).map(l => l.name);
-  const funcNames = (labelsData.categories || []).map(l => l.name);
-  let updated = replaceDropdownOptions(uploadYml, 'department', deptNames);
-  updated = replaceDropdownOptions(updated, 'category', funcNames);
-  if (updated === uploadYml) {
-    console.log('upload.yml 无需更新');
-    return;
-  }
-  await ghPut(`/repos/${ORG}/${UPLOAD_REPO}/contents/.github/ISSUE_TEMPLATE/upload.yml`, {
-    message: `chore: 同步标签下拉选项（${deptNames.length}部门, ${funcNames.length}功能）`,
-    content: btoa(unescape(encodeURIComponent(updated))),
-    sha: uploadSha, branch: 'main'
-  });
-}
+function showAddLabelToCustomType(typeIdx) { const ct = labelsData.custom_types[typeIdx]; showConfirm(`添加标签到「${ct.name}」`, `<div class="form-group"><label>中文名称</label><input type="text" id="addCustomLabelName" placeholder="如：简单 / 进行中"></div><div class="form-group"><label>标签 ID</label><input type="text" id="addCustomLabelId" placeholder="${ct.key}-xxx"></div>`, async () => { const name = document.getElementById('addCustomLabelName').value.trim(); let id = document.getElementById('addCustomLabelId').value.trim(); if (!name) { showToast('请输入中文名称', 'error'); return; } if (!id) id = `${ct.key}-` + name.toLowerCase().replace(/\s+/g, '-'); if (ct.labels.some(l => l.id === id)) { showToast('标签 ID 已存在', 'error'); return; } ct.labels.push({ id, name }); await saveLabelsJson(`添加标签到 ${ct.key}: ${id}`, false); }, { confirmBtnText: '添加' }); }
 
-function replaceDropdownOptions(yamlContent, fieldId, options) {
-  const lines = yamlContent.split('\n');
-  let result = [];
-  let i = 0;
-  while (i < lines.length) {
-    const line = lines[i];
-    const idMatch = line.match(/^\s+id:\s*(\S+)/);
-    if (idMatch && idMatch[1] === fieldId) {
-      result.push(line);
-      i++;
-      while (i < lines.length && !lines[i].match(/^\s+options:/)) {
-        result.push(lines[i]);
-        i++;
-      }
-      if (i < lines.length) {
-        result.push(lines[i]);
-        i++;
-        while (i < lines.length && lines[i].match(/^\s+-\s+/)) {
-          i++;
-        }
-        const indent = '        ';
-        for (const opt of options) {
-          result.push(`${indent}- ${opt}`);
-        }
-      }
-    } else {
-      result.push(line);
-      i++;
-    }
-  }
-  return result.join('\n');
-}
+async function deleteLabelWithCheck(type, id, name) { const typeName = type === 'dept' ? getTypeDisplayName('dept') : getTypeDisplayName('func'); const usage = labelUsageCache[id] || { count: 0, usedBy: [] }; let body = `确定要删除${typeName}标签 <strong>${escapeHtml(name)}</strong> (<code>${escapeHtml(id)}</code>) 吗？`; if (usage.count > 0) { body += `<div class="warn-box" style="margin-top:10px;">⚠️ 有 <strong>${usage.count}</strong> 个工具正在使用此标签：${usage.usedBy.map(n => `<code>${escapeHtml(n)}</code>`).join(', ')}<br>删除后这些工具的标签将变为"未定义"状态，不会自动移除。</div>`; } showConfirm(`删除${typeName}标签`, body, async () => { const arr = type === 'dept' ? labelsData.departments : labelsData.categories; const idx = arr.findIndex(l => l.id === id); if (idx >= 0) arr.splice(idx, 1); await saveLabelsJson(`删除${typeName}标签: ${id}`, true); }, { danger: true }); }
 
-let currentToolRepo = null;
-let currentToolTopics = [];
+async function deleteCustomTypeWithCheck(idx) { const ct = labelsData.custom_types[idx]; let totalUsage = 0; const usageDetails = []; for (const label of (ct.labels || [])) { const usage = labelUsageCache[label.id] || { count: 0 }; if (usage.count > 0) { totalUsage += usage.count; usageDetails.push(`${label.name}: ${usage.count}个工具`); } } let body = `确定要删除自定义类型「<strong>${escapeHtml(ct.name)}</strong>」及其 <strong>${(ct.labels||[]).length}</strong> 个标签吗？`; if (totalUsage > 0) { body += `<div class="warn-box" style="margin-top:10px;">⚠️ 该类型下有 <strong>${totalUsage}</strong> 个标签正在被工具使用：${usageDetails.join('；')}<br>删除后这些工具的标签将变为"未定义"状态。</div>`; } showConfirm('删除自定义类型', body, async () => { labelsData.custom_types.splice(idx, 1); await saveLabelsJson(`删除自定义类型: ${ct.key}`, false); }, { danger: true }); }
 
-async function loadToolReposForSelect() {
-  try {
-    const repos = await getAllToolRepos();
-    const select = document.getElementById('toolRepoSelect');
-    select.innerHTML = '<option value="">请选择工具...</option>';
-    repos.forEach(r => {
-      select.innerHTML += `<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)} — ${escapeHtml(r.description || '')}</option>`;
-    });
-  } catch(e) { showToast('加载工具列表失败：' + e.message, 'error'); }
-}
+async function deleteLabelFromCustomTypeWithCheck(typeIdx, id, name) { const ct = labelsData.custom_types[typeIdx]; const usage = labelUsageCache[id] || { count: 0, usedBy: [] }; let body = `确定要删除标签 <strong>${escapeHtml(name)}</strong> (<code>${escapeHtml(id)}</code>) 吗？`; if (usage.count > 0) { body += `<div class="warn-box" style="margin-top:10px;">⚠️ 有 <strong>${usage.count}</strong> 个工具正在使用此标签：${usage.usedBy.map(n => `<code>${escapeHtml(n)}</code>`).join(', ')}<br>删除后这些工具的标签将变为"未定义"状态。</div>`; } showConfirm('删除标签', body, async () => { const idx = ct.labels.findIndex(l => l.id === id); if (idx >= 0) ct.labels.splice(idx, 1); await saveLabelsJson(`删除标签: ${id}`, false); }, { danger: true }); }
 
-async function loadToolTopics() {
-  const repoName = document.getElementById('toolRepoSelect').value;
-  if (!repoName) { document.getElementById('toolTopicsArea').style.display = 'none'; return; }
-  currentToolRepo = repoName;
-  try {
-    const repo = await ghGet(`/repos/${ORG}/${repoName}`);
-    currentToolTopics = repo.topics || [];
-    renderTopicsCheckboxes();
-    document.getElementById('toolTopicsArea').style.display = 'block';
-  } catch(e) { showToast('加载工具标签失败：' + e.message, 'error'); }
-}
+async function saveLabelsJson(commitMsg, syncUploadTemplate = false) { try { const content = JSON.stringify(labelsData, null, 2) + '\n'; await ghPut(`/repos/${ORG}/${TOOLHUB_REPO}/contents/labels.json`, { message: commitMsg, content: btoa(unescape(encodeURIComponent(content))), sha: labelsSha, branch: 'main' }); showToast('labels.json 已保存', 'success'); allReposCache = null; await loadLabelsDef(); if (syncUploadTemplate) { try { showToast('正在同步上传页面下拉选项...', 'info'); await syncUploadTemplate(); showToast('上传页面下拉选项已同步', 'success'); } catch(e) { showToast('同步上传模板失败：' + e.message, 'error'); } } } catch(e) { showToast('保存失败：' + e.message, 'error'); } }
 
-function renderTopicsCheckboxes() {
-  const container = document.getElementById('topicsCheckboxGroup');
-  const allLabels = [];
-  (labelsData?.departments || []).forEach(l => allLabels.push({ ...l, type: 'dept' }));
-  (labelsData?.categories || []).forEach(l => allLabels.push({ ...l, type: 'func' }));
-  (labelsData?.custom_types || []).forEach(ct => { (ct.labels || []).forEach(l => allLabels.push({ ...l, type: 'custom', typeName: ct.name })); });
-  currentToolTopics.forEach(t => {
-    if (!allLabels.some(l => l.id === t)) { allLabels.push({ id: t, name: t + ' (未定义)', type: 'unknown' }); }
-  });
-  let html = '';
-  allLabels.forEach(l => {
-    const checked = currentToolTopics.includes(l.id);
-    const cls = l.type === 'dept' ? 'tag--dept' : l.type === 'func' ? 'tag--func' : l.type === 'custom' ? 'tag--custom' : 'tag--offline';
-    html += `<label class="checkbox-item ${checked ? 'checked' : ''}">
-      <input type="checkbox" value="${escapeHtml(l.id)}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('checked', this.checked)">
-      <span class="tag ${cls}">${escapeHtml(l.name)}</span>
-      <code style="font-size:11px; color:#57606a;">${escapeHtml(l.id)}</code>
-    </label>`;
-  });
-  container.innerHTML = html;
-}
+async function syncUploadTemplate() { const data = await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/contents/.github/ISSUE_TEMPLATE/upload.yml`); const uploadYml = decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))); const uploadSha = data.sha; const deptNames = (labelsData.departments || []).map(l => l.name); const funcNames = (labelsData.categories || []).map(l => l.name); let updated = replaceDropdownOptions(uploadYml, 'department', deptNames); updated = replaceDropdownOptions(updated, 'category', funcNames); if (updated === uploadYml) { return; } await ghPut(`/repos/${ORG}/${UPLOAD_REPO}/contents/.github/ISSUE_TEMPLATE/upload.yml`, { message: `chore: 同步标签下拉选项（${deptNames.length}部门, ${funcNames.length}功能）`, content: btoa(unescape(encodeURIComponent(updated))), sha: uploadSha, branch: 'main' }); }
 
-async function saveToolTopics() {
-  const checkboxes = document.querySelectorAll('#topicsCheckboxGroup input[type="checkbox"]');
-  const newTopics = [];
-  checkboxes.forEach(cb => { if (cb.checked) newTopics.push(cb.value); });
-  try {
-    await ghPut(`/repos/${ORG}/${currentToolRepo}/topics`, { names: newTopics });
-    currentToolTopics = newTopics;
-    allReposCache = null;
-    showToast('标签已保存，正在触发展示页面重建...', 'info');
-    try {
-      await ghPost(`/repos/${ORG}/${TOOLHUB_REPO}/actions/workflows/deploy.yml/dispatches`, { ref: 'main' });
-      showToast('标签已保存，展示页面将在 1-2 分钟后自动更新', 'success');
-    } catch(e) {
-      showToast(`标签已保存，但触发构建失败：${e.message}（请手动在 Actions 页面触发构建）`, 'error');
-    }
-  } catch(e) { showToast('保存失败：' + e.message, 'error'); }
-}
+function replaceDropdownOptions(yamlContent, fieldId, options) { const lines = yamlContent.split('\n'); let result = []; let i = 0; while (i < lines.length) { const line = lines[i]; const idMatch = line.match(/^\s+id:\s*(\S+)/); if (idMatch && idMatch[1] === fieldId) { result.push(line); i++; while (i < lines.length && !lines[i].match(/^\s+options:/)) { result.push(lines[i]); i++; } if (i < lines.length) { result.push(lines[i]); i++; while (i < lines.length && lines[i].match(/^\s+-\s+/)) { i++; } const indent = '        '; for (const opt of options) { result.push(`${indent}- ${opt}`); } } } else { result.push(line); i++; } } return result.join('\n'); }
 
-async function renderIssues() {
-  document.getElementById('content').innerHTML = `
-    <div class="content__title">📋 上传记录</div>
-    <div class="search-box">
-      <input type="text" id="issueSearch" placeholder="搜索工具名称..." oninput="filterIssues()">
-      <select id="issueStateFilter" onchange="filterIssues()"><option value="all">全部状态</option><option value="open">进行中</option><option value="closed">已关闭</option></select>
-    </div>
-    <div id="issuesList" class="loading">加载中...</div>`;
-  await loadIssues();
-}
+let allToolReposData = [];
+
+async function loadToolTagsTable() { try { const repos = await getAllToolRepos(); allToolReposData = repos; renderToolTagsTable(repos); } catch(e) { document.getElementById('toolTagsTable').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; } }
+
+function renderToolTagsTable(repos) { const container = document.getElementById('toolTagsTable'); if (repos.length === 0) { container.innerHTML = '<div class="empty">暂无工具</div>'; return; } let html = '<div style="max-height:500px; overflow-y:auto;"><table class="table"><thead><tr><th>工具名称</th><th>标签</th><th style="width:80px;">操作</th></tr></thead><tbody>'; repos.forEach(repo => { const tags = (repo.topics || []).map(t => { const label = findLabelById(t); const cls = label ? (label.type === 'dept' ? 'tag--dept' : label.type === 'func' ? 'tag--func' : 'tag--custom') : 'tag--offline'; const name = label ? label.name : t; return `<span class="tag ${cls}">${escapeHtml(name)}</span>`; }).join(''); html += `<tr><td><strong>${escapeHtml(repo.name)}</strong><br><span style="font-size:11px; color:#8b949e;">${escapeHtml(repo.description || '')}</span></td><td class="tool-row-tags">${tags || '<span style="color:#8b949e; font-size:11px;">无标签</span>'}</td><td><button class="btn btn--sm" onclick="openEditTagsModal('${escapeHtml(repo.name)}')">✏️ 编辑</button></td></tr>`; }); html += '</tbody></table></div>'; container.innerHTML = html; }
+
+function findLabelById(id) { if (!labelsData) return null; for (const l of (labelsData.departments || [])) { if (l.id === id) return { ...l, type: 'dept' }; } for (const l of (labelsData.categories || [])) { if (l.id === id) return { ...l, type: 'func' }; } for (const ct of (labelsData.custom_types || [])) { for (const l of (ct.labels || [])) { if (l.id === id) return { ...l, type: 'custom', typeName: ct.name }; } } return null; }
+
+function filterToolTable() { const keyword = document.getElementById('toolSearch').value.toLowerCase(); if (!keyword) { renderToolTagsTable(allToolReposData); return; } const filtered = allToolReposData.filter(r => r.name.toLowerCase().includes(keyword) || (r.description || '').toLowerCase().includes(keyword) || (r.topics || []).some(t => t.toLowerCase().includes(keyword))); renderToolTagsTable(filtered); }
+
+function openEditTagsModal(repoName) { currentEditTool = repoName; const repo = allToolReposData.find(r => r.name === repoName); currentEditTopics = repo ? [...(repo.topics || [])] : []; document.getElementById('editTagsTitle').textContent = `编辑标签：${repoName}`; const allLabels = []; (labelsData?.departments || []).forEach(l => allLabels.push({ ...l, type: 'dept' })); (labelsData?.categories || []).forEach(l => allLabels.push({ ...l, type: 'func' })); (labelsData?.custom_types || []).forEach(ct => { (ct.labels || []).forEach(l => allLabels.push({ ...l, type: 'custom', typeName: ct.name })); }); currentEditTopics.forEach(t => { if (!allLabels.some(l => l.id === t)) { allLabels.push({ id: t, name: t + ' (未定义)', type: 'unknown' }); } }); let html = '<div class="form-group"><label>勾选/取消标签</label><div class="checkbox-group">'; allLabels.forEach(l => { const checked = currentEditTopics.includes(l.id); const cls = l.type === 'dept' ? 'tag--dept' : l.type === 'func' ? 'tag--func' : l.type === 'custom' ? 'tag--custom' : 'tag--offline'; html += `<label class="checkbox-item ${checked ? 'checked' : ''}"><input type="checkbox" value="${escapeHtml(l.id)}" ${checked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('checked', this.checked)"><span class="tag ${cls}">${escapeHtml(l.name)}</span></label>`; }); html += '</div></div>'; document.getElementById('editTagsBody').innerHTML = html; document.getElementById('editTagsModal').classList.add('show'); }
+
+function closeEditTagsModal() { document.getElementById('editTagsModal').classList.remove('show'); currentEditTool = null; }
+
+async function saveEditTags() { const checkboxes = document.querySelectorAll('#editTagsBody input[type="checkbox"]'); const newTopics = []; checkboxes.forEach(cb => { if (cb.checked) newTopics.push(cb.value); }); try { await ghPut(`/repos/${ORG}/${currentEditTool}/topics`, { names: newTopics }); const repo = allToolReposData.find(r => r.name === currentEditTool); if (repo) repo.topics = newTopics; allReposCache = null; labelUsageCache = {}; await refreshAllLabelUsage(); renderLabelsDefList(); filterToolTable(); closeEditTagsModal(); showToast('标签已保存，正在触发展示页面重建...', 'info'); try { await ghPost(`/repos/${ORG}/${TOOLHUB_REPO}/actions/workflows/deploy.yml/dispatches`, { ref: 'main' }); showToast('标签已保存，展示页面将在 1-2 分钟后自动更新', 'success'); } catch(e) { showToast(`标签已保存，但触发构建失败：${e.message}（请手动在 Actions 页面触发构建）`, 'error'); } } catch(e) { showToast('保存失败：' + e.message, 'error'); } }
 
 let allIssues = [];
-async function loadIssues() {
-  try {
-    const issues = await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/issues?state=all&per_page=100&sort=created&direction=desc`);
-    allIssues = issues.filter(i => !i.pull_request);
-    renderIssuesList(allIssues);
-  } catch(e) { document.getElementById('issuesList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; }
-}
 
-function renderIssuesList(issues) {
-  const list = document.getElementById('issuesList');
-  if (issues.length === 0) { list.innerHTML = '<div class="empty">没有上传记录</div>'; return; }
-  let html = '<table class="table"><thead><tr><th>#</th><th>工具名称</th><th>上传者</th><th>状态</th><th>标签</th><th>创建时间</th><th>操作</th></tr></thead><tbody>';
-  issues.forEach(issue => {
-    const stateTag = issue.state === 'open' ? '<span class="tag tag--func">进行中</span>' : '<span class="tag tag--offline">已关闭</span>';
-    const labels = (issue.labels || []).map(l => `<span class="tag ${l.name === '已下线' ? 'tag--offline' : 'tag--dept'}">${escapeHtml(l.name)}</span>`).join('');
-    const toolName = issue.title ? issue.title.replace('[上传工具]:', '').trim() : '-';
-    html += `<tr><td>#${issue.number}</td><td><strong>${escapeHtml(toolName)}</strong></td><td>${escapeHtml(issue.user.login)}</td><td>${stateTag}</td><td>${labels || '-'}</td><td>${formatDate(issue.created_at)}</td><td><a class="btn btn--sm" href="${issue.html_url}" target="_blank">查看</a> ${issue.state === 'open' ? `<button class="btn btn--sm" onclick="closeIssue(${issue.number})">关闭</button>` : `<button class="btn btn--sm" onclick="reopenIssue(${issue.number})">重开</button>`}</td></tr>`;
-  });
-  html += '</tbody></table>';
-  list.innerHTML = html;
-}
+async function renderIssues() { document.getElementById('content').innerHTML = `<div class="content__title">📋 上传记录</div><div class="search-box"><input type="text" id="issueSearch" placeholder="搜索工具名称..." oninput="filterIssues()"><select id="issueStateFilter" onchange="filterIssues()"><option value="all">全部状态</option><option value="open">进行中</option><option value="closed">已关闭</option></select></div><div id="issuesList" class="loading">加载中...</div>`; await loadIssues(); }
 
-function filterIssues() {
-  const keyword = document.getElementById('issueSearch').value.toLowerCase();
-  const state = document.getElementById('issueStateFilter').value;
-  let filtered = allIssues;
-  if (keyword) filtered = filtered.filter(i => (i.title || '').toLowerCase().includes(keyword));
-  if (state !== 'all') filtered = filtered.filter(i => i.state === state);
-  renderIssuesList(filtered);
-}
+async function loadIssues() { try { const issues = await ghGet(`/repos/${ORG}/${UPLOAD_REPO}/issues?state=all&per_page=100&sort=created&direction=desc`); allIssues = issues.filter(i => !i.pull_request); renderIssuesList(allIssues); } catch(e) { document.getElementById('issuesList').innerHTML = `<div class="empty">加载失败：${escapeHtml(e.message)}</div>`; } }
 
-async function closeIssue(num) {
-  showConfirm('关闭 Issue', `确定要关闭 Issue #${num} 吗？`, async () => {
-    try { await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'closed' }); showToast(`Issue #${num} 已关闭`, 'success'); await loadIssues(); }
-    catch(e) { showToast('关闭失败：' + e.message, 'error'); }
-  });
-}
+function renderIssuesList(issues) { const list = document.getElementById('issuesList'); if (issues.length === 0) { list.innerHTML = '<div class="empty">没有上传记录</div>'; return; } let html = '<table class="table"><thead><tr><th>#</th><th>工具名称</th><th>上传者</th><th>状态</th><th>标签</th><th>创建时间</th><th style="width:200px;">操作</th></tr></thead><tbody>'; issues.forEach(issue => { const stateTag = issue.state === 'open' ? '<span class="tag tag--func">进行中</span>' : '<span class="tag tag--offline">已关闭</span>'; const labels = (issue.labels || []).map(l => `<span class="tag ${l.name === '已下线' ? 'tag--offline' : 'tag--dept'}">${escapeHtml(l.name)}</span>`).join(''); const toolName = issue.title ? issue.title.replace('[上传工具]:', '').trim() : '-'; const hasOffline = (issue.labels || []).some(l => l.name === '已下线'); html += `<tr><td>#${issue.number}</td><td><strong>${escapeHtml(toolName)}</strong></td><td>${escapeHtml(issue.user.login)}</td><td>${stateTag}</td><td>${labels || '-'}</td><td>${formatDate(issue.created_at)}</td><td><a class="btn btn--sm" href="${issue.html_url}" target="_blank">查看</a> ${!hasOffline ? `<button class="btn btn--sm" onclick="markOffline(${issue.number})">🏷️ 已下线</button>` : ''} ${issue.state === 'open' ? `<button class="btn btn--sm" onclick="closeIssue(${issue.number})">关闭</button>` : `<button class="btn btn--sm" onclick="reopenIssue(${issue.number})">重开</button>`}</td></tr>`; }); html += '</tbody></table>'; list.innerHTML = html; }
 
-async function reopenIssue(num) {
-  try { await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'open' }); showToast(`Issue #${num} 已重新打开`, 'success'); await loadIssues(); }
-  catch(e) { showToast('重开失败：' + e.message, 'error'); }
-}
+async function markOffline(num) { showConfirm('标记已下线', `确定要给 Issue #${num} 添加"已下线"标签吗？`, async () => { try { await ghPost(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}/labels`, { labels: ['已下线'] }); showToast(`Issue #${num} 已标记为"已下线"`, 'success'); await loadIssues(); } catch(e) { showToast('标记失败：' + e.message, 'error'); } }, { confirmBtnText: '标记' }); }
+
+function filterIssues() { const keyword = document.getElementById('issueSearch').value.toLowerCase(); const state = document.getElementById('issueStateFilter').value; let filtered = allIssues; if (keyword) filtered = filtered.filter(i => (i.title || '').toLowerCase().includes(keyword)); if (state !== 'all') filtered = filtered.filter(i => i.state === state); renderIssuesList(filtered); }
+
+async function closeIssue(num) { showConfirm('关闭 Issue', `确定要关闭 Issue #${num} 吗？`, async () => { try { await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'closed' }); showToast(`Issue #${num} 已关闭`, 'success'); await loadIssues(); } catch(e) { showToast('关闭失败：' + e.message, 'error'); } }); }
+
+async function reopenIssue(num) { try { await ghPatch(`/repos/${ORG}/${UPLOAD_REPO}/issues/${num}`, { state: 'open' }); showToast(`Issue #${num} 已重新打开`, 'success'); await loadIssues(); } catch(e) { showToast('重开失败：' + e.message, 'error'); } }
 
 initToken();
 </script>
