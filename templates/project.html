@@ -13,6 +13,16 @@ h1 {
   overflow-wrap: break-word;
   white-space: normal;
 }
+.project-header__subtitle {
+  font-size: 14px;
+  color: #8b949e;
+  font-family: monospace;
+  margin-top: -8px;
+  margin-bottom: 12px;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
 .download-quick {
   display: flex;
   justify-content: flex-end;
@@ -123,7 +133,12 @@ h1 {
 <div class="project-header">
   <a class="project-header__back" href="../index.html">&#8592; {{ sections.back_link }}</a>
 
+  {% if project.cn_name %}
+  <h1>{{ project.cn_name }}</h1>
+  <div class="project-header__subtitle">{{ project.name }}</div>
+  {% else %}
   <h1>{{ project.name }}</h1>
+  {% endif %}
 
   {% if project.description %}
   <div class="project-header__desc">{{ project.description }}</div>
