@@ -1,4 +1,16 @@
 {% extends "base.html" %}
+{% set topic_map = {
+    'dept-audit': '审计部',
+    'dept-tax': '税务部',
+    'dept-consulting': '咨询部',
+    'func-data-analysis': '数据分析',
+    'func-letter-gen': '函证生成',
+    'func-workpaper-check': '底稿检查',
+    'func-report-gen': '报告生成',
+    'language-python': 'Python',
+    'repo': '仓库',
+    'gist': '代码片段',
+} %}
 {% block stylesheets %}<link rel="stylesheet" href="../static/style.css">{% endblock %}
 {% block feed_link %}<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="../feed.xml">{% endblock %}
 {% block home_href %}../index.html{% endblock %}
@@ -145,9 +157,11 @@ h1 {
   {% endif %}
 
   <div class="project-header__meta">
-    <span class="badge badge--type">{{ project.type }}</span>
+    {% if project.type == 'gist' %}
+    <span class="badge badge--type">代码片段</span>
+    {% endif %}
     {% for tag in project.tags %}
-    <span class="badge">{{ tag }}</span>
+    <span class="badge">{{ topic_map.get(tag, tag) }}</span>
     {% endfor %}
     {% if project.license %}
     <span class="badge">{{ project.license }}</span>
