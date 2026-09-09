@@ -11,117 +11,300 @@
     'repo': '仓库',
     'gist': '代码片段',
 } %}
+{% set icon_map = {
+    'func-data-analysis': '📊',
+    'func-letter-gen': '📋',
+    'func-workpaper-check': '📑',
+    'func-report-gen': '📝',
+    'dept-audit': '🔍',
+    'dept-tax': '💰',
+    'dept-consulting': '💡',
+} %}
 {% block title %}{{ site.description }}{% endblock %}
 {% block content %}
 {% set pinned_projects   = projects | selectattr("pinned")   | list %}
 {% set active_projects   = projects | rejectattr("pinned") | rejectattr("archived") | list %}
 {% set archived_projects = projects | rejectattr("pinned") | selectattr("archived") | list %}
 {% set section_count = (1 if pinned_projects else 0) + (1 if active_projects else 0) + (1 if archived_projects else 0) %}
-<div class="page-heading">
-  <h1>{{ site.description }}</h1>
-  <p>{{ projects | length }} 个项目</p>
-</div>
+
 <style>
-.guide-bar { background: #f0f7ff; border: 1px solid #b6d4fe; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
-.guide-bar__summary { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; }
-.guide-bar__summary span { font-size: 14px; color: #084298; }
-.guide-bar__toggle { background: none; border: none; color: #084298; cursor: pointer; font-size: 13px; padding: 4px 8px; border-radius: 4px; }
-.guide-bar__toggle:hover { background: #b6d4fe; }
-.guide-bar__detail { display: flex; gap: 24px; padding: 16px; border-top: 1px solid #b6d4fe; flex-wrap: wrap; }
-.guide-bar__section { flex: 1; min-width: 250px; }
-.guide-bar__section h4 { margin: 0 0 8px 0; font-size: 14px; color: #084298; }
-.guide-bar__section ol { margin: 0; padding-left: 20px; font-size: 13px; color: #333; line-height: 1.8; }
-.guide-bar__section p { margin: 0; font-size: 13px; color: #333; line-height: 1.6; }
-.guide-bar__section a { color: #084298; }
+.search-bar {
+  max-width: 1400px;
+  margin: 16px auto 0;
+  padding: 0 24px;
+}
+.search-bar__input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  font-size: 15px;
+  border: 2px solid #d0d7de;
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2357606a' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.search-bar__input:focus {
+  outline: none;
+  border-color: #5D9C3C;
+  box-shadow: 0 0 0 3px rgba(93,156,60,0.15);
+}
+.filter-bar {
+  max-width: 1400px;
+  margin: 12px auto 0;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.filter-bar__group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.filter-bar__label {
+  font-size: 13px;
+  color: #57606a;
+  font-weight: 600;
+}
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 13px;
+  border: 1px solid #d0d7de;
+  border-radius: 16px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+.filter-chip:hover { border-color: #5D9C3C; }
+.filter-chip input { display: none; }
+.filter-chip:has(input:checked) {
+  background: #5D9C3C;
+  color: #fff;
+  border-color: #5D9C3C;
+}
+.filter-bar__sep {
+  width: 1px;
+  height: 24px;
+  background: #d0d7de;
+}
+.tag-capsules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.tag-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px 4px 12px;
+  font-size: 12px;
+  background: #ddf4ff;
+  color: #0969da;
+  border-radius: 12px;
+  border: 1px solid #54aeff;
+}
+.tag-capsule__remove {
+  background: none;
+  border: none;
+  color: #0969da;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  line-height: 1;
+}
+.tag-capsule__remove:hover { color: #cf222e; }
+.project-card {
+  position: relative;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.project-card:hover {
+  border-color: #5D9C3C;
+  box-shadow: 0 4px 12px rgba(93,156,60,0.15);
+  transform: translateY(-2px);
+}
+.project-card--pinned {
+  border-color: #d4a72c;
+  background: linear-gradient(135deg, #fffbeb 0%, #fff 100%);
+}
+.project-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.project-card__icon {
+  font-size: 32px;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f8fa;
+  border-radius: 8px;
+}
+.project-card__info { flex: 1; min-width: 0; }
+.project-card__name {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+.project-card__name a {
+  color: #1f2328;
+  text-decoration: none;
+}
+.project-card__name a:hover { color: #5D9C3C; }
+.project-card__desc {
+  font-size: 13px;
+  color: #57606a;
+  margin: 4px 0 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.project-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+}
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: 10px;
+  background: #f6f8fa;
+  color: #57606a;
+  border: 1px solid #d0d7de;
+}
+.badge--type {
+  background: #ddf4ff;
+  color: #0969da;
+  border-color: #54aeff;
+}
+.badge--tag {
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.badge--tag:hover { border-color: #5D9C3C; }
+.badge--tag-active {
+  background: #5D9C3C;
+  color: #fff;
+  border-color: #5D9C3C;
+}
+.project-card__links {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eaeef2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.project-card__links a {
+  font-size: 12px;
+  color: #0969da;
+  text-decoration: none;
+}
+.project-card__links a:hover { text-decoration: underline; }
+.pin-icon { color: #d4a72c; margin-right: 4px; }
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: #8b949e;
+}
+.no-results .icon { font-size: 48px; margin-bottom: 12px; }
 @media (max-width: 768px) {
-  .guide-bar__summary { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .search-bar, .filter-bar { padding: 0 12px; }
+  .filter-bar { padding: 10px 12px; }
 }
 </style>
-<div class="guide-bar" id="guideBar">
-  <div class="guide-bar__summary">
-    <span>📖 新手指引：找工具 → 下载 → 运行 ｜ 上传工具 → 打包 → 发布</span>
-    <button class="guide-bar__toggle" onclick="toggleGuide()">展开详细步骤 ▼</button>
-  </div>
-  <div class="guide-bar__detail" id="guideDetail" style="display:none;">
-    <div class="guide-bar__section">
-      <h4>📥 使用工具</h4>
-      <ol>
-        <li>用上方搜索框或标签筛选找到需要的工具</li>
-        <li>点卡片进入详情页，查看功能说明和操作步骤</li>
-        <li>点「下载整合包」（推荐，含代码+说明+截图）</li>
-        <li>.exe 直接双击运行；.py 需先装 Python 3.8+</li>
-      </ol>
-    </div>
-    <div class="guide-bar__section">
-      <h4>📤 分享工具</h4>
-      <ol>
-        <li>打开 <a href="pack.html">pack.html</a>，填信息、拖代码和截图，一键生成 zip</li>
-        <li>自动跳 <a href="upload.html">upload.html</a>，确认信息后点提交</li>
-        <li>跳 GitHub Issue，在评论区拖拽 zip 上传</li>
-        <li>机器人自动处理，1-2 分钟后出现在列表</li>
-      </ol>
-    </div>
-    <div class="guide-bar__section">
-      <h4>ℹ️ 关于本平台</h4>
-      <p>工具存储在 GitHub 组织 TAXLY-WorkTools 下，本网站由 toolhub 自动生成展示。上传需 GitHub 账号并加入组织。下载慢可用 ghproxy 或 Steam++ 加速。</p>
-    </div>
-  </div>
+
+<div class="search-bar">
+  <input type="text" class="search-bar__input" id="searchInput" placeholder="搜索工具名称、描述、标签..." autocomplete="off">
 </div>
-<script>
-function toggleGuide() {
-  var detail = document.getElementById('guideDetail');
-  var btn = document.querySelector('.guide-bar__toggle');
-  if (detail.style.display === 'none') {
-    detail.style.display = 'flex';
-    btn.textContent = '收起 ▲';
-    try { localStorage.setItem('guide_expanded', 'true'); } catch(e) {}
-  } else {
-    detail.style.display = 'none';
-    btn.textContent = '展开详细步骤 ▼';
-    try { localStorage.setItem('guide_expanded', 'false'); } catch(e) {}
-  }
-}
-try {
-  if (localStorage.getItem('guide_expanded') === 'true') {
-    document.getElementById('guideDetail').style.display = 'flex';
-    document.querySelector('.guide-bar__toggle').textContent = '收起 ▲';
-  }
-} catch(e) {}
-</script>
+
 <div class="filter-bar">
-  <span class="filter-bar__label">显示</span>
-  <div class="filter-group">
+  <div class="filter-bar__group">
+    <span class="filter-bar__label">类型</span>
     <label class="filter-chip"><input type="checkbox" name="type" value="repo" checked> 仓库</label>
     <label class="filter-chip"><input type="checkbox" name="type" value="gist" checked> 代码片段</label>
   </div>
-  <div class="filter-sep"></div>
-  <div class="filter-group">
+  <div class="filter-bar__sep"></div>
+  <div class="filter-bar__group">
+    <span class="filter-bar__label">状态</span>
     {% if pinned_projects   %}<label class="filter-chip"><input type="checkbox" name="section" value="pinned"   checked> 置顶</label>{% endif %}
     {% if active_projects   %}<label class="filter-chip"><input type="checkbox" name="section" value="active"   checked> 活跃</label>{% endif %}
     {% if archived_projects %}<label class="filter-chip"><input type="checkbox" name="section" value="archived" checked> 归档</label>{% endif %}
   </div>
-  <div class="filter-sep filter-sep--tags" style="display:none"></div>
-  <div class="filter-group filter-group--tags" style="display:none"></div>
-  <div class="filter-sep filter-sep--license" style="display:none"></div>
-  <div class="filter-group filter-group--license" style="display:none"></div>
+  <div class="filter-bar__sep"></div>
+  <div class="filter-bar__group">
+    <span class="filter-bar__label">部门</span>
+    <label class="filter-chip"><input type="checkbox" name="dept" value="dept-audit"> 审计部</label>
+    <label class="filter-chip"><input type="checkbox" name="dept" value="dept-tax"> 税务部</label>
+    <label class="filter-chip"><input type="checkbox" name="dept" value="dept-consulting"> 咨询部</label>
+  </div>
+  <div class="filter-bar__sep"></div>
+  <div class="filter-bar__group">
+    <span class="filter-bar__label">功能</span>
+    <label class="filter-chip"><input type="checkbox" name="func" value="func-data-analysis"> 数据分析</label>
+    <label class="filter-chip"><input type="checkbox" name="func" value="func-letter-gen"> 函证生成</label>
+    <label class="filter-chip"><input type="checkbox" name="func" value="func-workpaper-check"> 底稿检查</label>
+    <label class="filter-chip"><input type="checkbox" name="func" value="func-report-gen"> 报告生成</label>
+  </div>
 </div>
+
+<div class="tag-capsules" id="selectedTags" style="max-width:1400px;margin:8px auto 0;padding:0 24px;display:none;"></div>
+
 {% if section_count >= 2 and projects | length > 15 %}
-<nav class="toc">
+<nav class="toc" style="max-width:1400px;margin:16px auto 0;padding:0 24px;">
   {% if pinned_projects   %}<a class="toc__link" href="#sec-pinned">置顶</a>{% endif %}
   {% if active_projects   %}<a class="toc__link" href="#sec-active">活跃</a>{% endif %}
   {% if archived_projects %}<a class="toc__link" href="#sec-archived">归档</a>{% endif %}
 </nav>
 {% endif %}
+
 {% macro project_card(project, section) %}
 <div class="project-card{% if project.pinned %} project-card--pinned{% endif %}"
-     data-type="{{ project.type }}" data-section="{{ section }}" data-tags="{{ project.tags | join(' ') }}" data-license="{{ project.license or '' }}">
-  <div class="project-card__name">
-    {% if project.pinned %}<span class="pin-icon" title="置顶">&#9679;</span>{% endif %}
-    <a href="{{ project.slug }}/index.html">{{ project.cn_name or project.name }}</a>
+     data-type="{{ project.type }}" data-section="{{ section }}"
+     data-tags="{{ project.tags | join(' ') }}"
+     data-search="{{ (project.cn_name or project.name) }} {{ project.description or '' }} {{ project.tags | join(' ') }}">
+  <div class="project-card__header">
+    <div class="project-card__icon">
+      {% set ns = namespace(found=false) %}
+      {% for tag in project.tags %}
+        {% if tag in icon_map and not ns.found %}{{ icon_map[tag] }}{% set ns.found = true %}{% endif %}
+      {% endfor %}
+      {% if not ns.found %}📦{% endif %}
+    </div>
+    <div class="project-card__info">
+      <h3 class="project-card__name">
+        {% if project.pinned %}<span class="pin-icon" title="置顶">&#9679;</span>{% endif %}
+        <a href="{{ project.slug }}/index.html">{{ project.cn_name or project.name }}</a>
+      </h3>
+      {% if project.description %}
+      <p class="project-card__desc">{{ project.description }}</p>
+      {% endif %}
+    </div>
   </div>
-  {% if project.description %}
-  <div class="project-card__desc">{{ project.description }}</div>
-  {% endif %}
   <div class="project-card__meta">
     <span class="badge badge--type">{{ topic_map.get(project.type, project.type) }}</span>
     {% for tag in project.tags %}<button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ topic_map.get(tag, tag) }}</button>{% endfor %}
@@ -133,14 +316,20 @@ try {
     {% if project.docs_url %}<a href="{{ project.docs_url }}">&#8599; 文档</a>{% endif %}
     {% if project.repo_url %}<a href="{{ project.repo_url }}">&#8599; 仓库</a>
     {% elif project.gist_url %}<a href="{{ project.gist_url }}">&#8599; 代码片段</a>{% endif %}
-    {% if project.license %}<button class="project-card__license" data-license="{{ project.license }}" type="button">{{ project.license }}</button>{% endif %}
   </div>
   {% endif %}
 </div>
 {% endmacro %}
+
+<div id="noResults" class="no-results" style="display:none;">
+  <div class="icon">🔍</div>
+  <p>没有找到匹配的工具</p>
+  <p style="font-size:13px;">尝试调整搜索关键词或筛选条件</p>
+</div>
+
 {% if pinned_projects %}
 <section class="project-section" id="sec-pinned" data-section="pinned">
-  <h2 class="section-heading">置顶</h2>
+  <h2 class="section-heading">📌 置顶</h2>
   <div class="project-grid">
     {% for p in pinned_projects %}{{ project_card(p, "pinned") }}{% endfor %}
   </div>
@@ -148,7 +337,7 @@ try {
 {% endif %}
 {% if active_projects %}
 <section class="project-section" id="sec-active" data-section="active">
-  <h2 class="section-heading">活跃</h2>
+  <h2 class="section-heading">🔥 活跃</h2>
   <div class="project-grid">
     {% for p in active_projects %}{{ project_card(p, "active") }}{% endfor %}
   </div>
@@ -156,77 +345,57 @@ try {
 {% endif %}
 {% if archived_projects %}
 <section class="project-section" id="sec-archived" data-section="archived">
-  <h2 class="section-heading">归档</h2>
+  <h2 class="section-heading">📦 归档</h2>
   <div class="project-grid">
     {% for p in archived_projects %}{{ project_card(p, "archived") }}{% endfor %}
   </div>
 </section>
 {% endif %}
+
 <script>
 (function () {
-  // 注入中文映射表（从 Jinja2 传递过来）
   var tagMap = {{ topic_map | tojson }};
-  var selectedTags = new Set();
-  var tagGroup = document.querySelector('.filter-group--tags');
-  var tagSep = document.querySelector('.filter-sep--tags');
-  function renderCapsules() {
-    tagGroup.innerHTML = '';
-    if (selectedTags.size > 0) {
-      selectedTags.forEach(function(tag) {
+  var selectedDepts = new Set();
+  var selectedFuncs = new Set();
+  var searchQuery = '';
+
+  var searchInput = document.getElementById('searchInput');
+  var selectedTagsContainer = document.getElementById('selectedTags');
+  var noResults = document.getElementById('noResults');
+
+  function renderSelectedTags() {
+    selectedTagsContainer.innerHTML = '';
+    var allSelected = [];
+    selectedDepts.forEach(function(t) { allSelected.push({tag: t, type: 'dept'}); });
+    selectedFuncs.forEach(function(t) { allSelected.push({tag: t, type: 'func'}); });
+
+    if (allSelected.length > 0) {
+      selectedTagsContainer.style.display = 'flex';
+      allSelected.forEach(function(item) {
         var capsule = document.createElement('span');
         capsule.className = 'tag-capsule';
-        var displayTag = tagMap[tag] || tag;
-        capsule.appendChild(document.createTextNode(displayTag));
+        capsule.appendChild(document.createTextNode(tagMap[item.tag] || item.tag));
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'tag-capsule__remove';
-        btn.setAttribute('aria-label', '移除 ' + displayTag + ' 筛选');
+        btn.setAttribute('aria-label', '移除 ' + (tagMap[item.tag] || item.tag));
         btn.textContent = '\u00d7';
         btn.addEventListener('click', function() {
-          selectedTags.delete(tag);
-          renderCapsules();
+          if (item.type === 'dept') selectedDepts.delete(item.tag);
+          else selectedFuncs.delete(item.tag);
+          var checkbox = document.querySelector('input[name="' + item.type + '"][value="' + item.tag + '"]');
+          if (checkbox) checkbox.checked = false;
+          renderSelectedTags();
           applyFilters();
         });
         capsule.appendChild(btn);
-        tagGroup.appendChild(capsule);
+        selectedTagsContainer.appendChild(capsule);
       });
-      tagGroup.style.display = '';
-      tagSep.style.display = '';
     } else {
-      tagGroup.style.display = 'none';
-      tagSep.style.display = 'none';
+      selectedTagsContainer.style.display = 'none';
     }
   }
-  var selectedLicenses = new Set();
-  var licenseGroup = document.querySelector('.filter-group--license');
-  var licenseSep = document.querySelector('.filter-sep--license');
-  function renderLicenseCapsules() {
-    licenseGroup.innerHTML = '';
-    if (selectedLicenses.size > 0) {
-      selectedLicenses.forEach(function(lic) {
-        var capsule = document.createElement('span');
-        capsule.className = 'tag-capsule';
-        capsule.appendChild(document.createTextNode(lic));
-        var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'tag-capsule__remove';
-        btn.setAttribute('aria-label', '移除 ' + lic + ' 筛选');
-        btn.textContent = '\u00d7';
-        btn.addEventListener('click', function() {
-          selectedLicenses.delete(lic);
-          renderLicenseCapsules();
-          applyFilters();
-        });
-        capsule.appendChild(btn);
-        licenseGroup.appendChild(capsule);
-      });
-      licenseGroup.style.display = '';
-      licenseSep.style.display = '';
-    } else {
-      licenseGroup.style.display = 'none';
-      licenseSep.style.display = 'none';
-    }
-  }
+
   function applyFilters() {
     var activeTypes = new Set(
       Array.from(document.querySelectorAll('input[name="type"]:checked')).map(function(el){ return el.value; })
@@ -234,6 +403,10 @@ try {
     var activeSections = new Set(
       Array.from(document.querySelectorAll('input[name="section"]:checked')).map(function(el){ return el.value; })
     );
+
+    var query = searchQuery.toLowerCase().trim();
+    var visibleCount = 0;
+
     document.querySelectorAll('.project-section').forEach(function(section) {
       if (!activeSections.has(section.dataset.section)) {
         section.style.display = 'none';
@@ -241,54 +414,83 @@ try {
       }
       var visible = 0;
       section.querySelectorAll('.project-card').forEach(function(card) {
-        var tagMatch = selectedTags.size === 0 ||
-          (card.dataset.tags || '').split(' ').filter(Boolean).some(function(t) {
-            return selectedTags.has(t);
-          });
-        var licenseMatch = selectedLicenses.size === 0 ||
-          selectedLicenses.has(card.dataset.license || '');
-        var show = activeTypes.has(card.dataset.type) && tagMatch && licenseMatch;
+        var tags = (card.dataset.tags || '').split(' ').filter(Boolean);
+        var deptMatch = selectedDepts.size === 0 || tags.some(function(t) { return selectedDepts.has(t); });
+        var funcMatch = selectedFuncs.size === 0 || tags.some(function(t) { return selectedFuncs.has(t); });
+        var typeMatch = activeTypes.has(card.dataset.type);
+        var searchMatch = query === '' || (card.dataset.search || '').toLowerCase().indexOf(query) !== -1;
+        var show = typeMatch && deptMatch && funcMatch && searchMatch;
         card.style.display = show ? '' : 'none';
-        if (show) visible++;
+        if (show) { visible++; visibleCount++; }
       });
       section.style.display = visible > 0 ? '' : 'none';
     });
+
+    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+
     document.querySelectorAll('.badge--tag').forEach(function(badge) {
-      badge.classList.toggle('badge--tag-active', selectedTags.has(badge.dataset.tag));
-    });
-    document.querySelectorAll('.project-card__license').forEach(function(btn) {
-      btn.classList.toggle('project-card__license--active', selectedLicenses.has(btn.dataset.license));
+      var tag = badge.dataset.tag;
+      var isActive = selectedDepts.has(tag) || selectedFuncs.has(tag);
+      badge.classList.toggle('badge--tag-active', isActive);
     });
   }
-  document.querySelectorAll('.badge--tag').forEach(function(badge) {
-    badge.addEventListener('click', function() {
-      var tag = this.dataset.tag;
-      if (selectedTags.has(tag)) {
-        selectedTags.delete(tag);
-      } else {
-        selectedTags.add(tag);
-      }
-      renderCapsules();
+
+  searchInput.addEventListener('input', function() {
+    searchQuery = this.value;
+    applyFilters();
+  });
+
+  document.querySelectorAll('input[name="dept"]').forEach(function(el) {
+    el.addEventListener('change', function() {
+      if (this.checked) selectedDepts.add(this.value);
+      else selectedDepts.delete(this.value);
+      renderSelectedTags();
       applyFilters();
     });
   });
-  document.querySelectorAll('.project-card__license').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var lic = this.dataset.license;
-      if (selectedLicenses.has(lic)) {
-        selectedLicenses.delete(lic);
-      } else {
-        selectedLicenses.add(lic);
-      }
-      renderLicenseCapsules();
+
+  document.querySelectorAll('input[name="func"]').forEach(function(el) {
+    el.addEventListener('change', function() {
+      if (this.checked) selectedFuncs.add(this.value);
+      else selectedFuncs.delete(this.value);
+      renderSelectedTags();
       applyFilters();
     });
   });
+
   document.querySelectorAll('input[name="type"], input[name="section"]').forEach(function(el) {
     el.addEventListener('change', applyFilters);
   });
-  renderCapsules();
-  renderLicenseCapsules();
+
+  document.querySelectorAll('.badge--tag').forEach(function(badge) {
+    badge.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var tag = this.dataset.tag;
+      var isDept = tag.indexOf('dept-') === 0;
+      var set = isDept ? selectedDepts : selectedFuncs;
+      if (set.has(tag)) {
+        set.delete(tag);
+        var checkbox = document.querySelector('input[name="' + (isDept ? 'dept' : 'func') + '"][value="' + tag + '"]');
+        if (checkbox) checkbox.checked = false;
+      } else {
+        set.add(tag);
+        var checkbox2 = document.querySelector('input[name="' + (isDept ? 'dept' : 'func') + '"][value="' + tag + '"]');
+        if (checkbox2) checkbox2.checked = true;
+      }
+      renderSelectedTags();
+      applyFilters();
+    });
+  });
+
+  document.querySelectorAll('.project-card').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
+      var link = this.querySelector('.project-card__name a');
+      if (link) window.location.href = link.href;
+    });
+  });
+
+  applyFilters();
 }());
 </script>
 {% endblock %}
