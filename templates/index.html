@@ -25,57 +25,76 @@
 {% set pinned_projects   = projects | selectattr("pinned")   | list %}
 {% set active_projects   = projects | rejectattr("pinned") | rejectattr("archived") | list %}
 {% set archived_projects = projects | rejectattr("pinned") | selectattr("archived") | list %}
-{% set section_count = (1 if pinned_projects else 0) + (1 if active_projects else 0) + (1 if archived_projects else 0) %}
 
 <style>
 .search-bar {
   max-width: 1400px;
   margin: 16px auto 0;
   padding: 0 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 .search-bar__input {
-  width: 100%;
-  padding: 12px 16px 12px 44px;
-  font-size: 15px;
-  border: 2px solid #d0d7de;
-  border-radius: 8px;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2357606a' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+  flex: 1;
+  padding: 10px 16px 10px 40px;
+  font-size: 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2357606a' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;
   transition: border-color 0.15s;
   box-sizing: border-box;
 }
 .search-bar__input:focus {
   outline: none;
-  border-color: #5D9C3C;
-  box-shadow: 0 0 0 3px rgba(93,156,60,0.15);
+  border-color: #0969da;
+  box-shadow: 0 0 0 3px rgba(9,105,218,0.15);
 }
-.filter-bar {
+.sort-select {
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  min-width: 140px;
+}
+.sort-select:focus { outline: none; border-color: #0969da; }
+
+.filter-panel {
   max-width: 1400px;
   margin: 12px auto 0;
-  padding: 12px 16px;
+  padding: 0 24px;
+}
+.filter-panel__inner {
   background: #fff;
   border: 1px solid #d0d7de;
   border-radius: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
+  padding: 14px 16px;
 }
-.filter-bar__group {
+.filter-group {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
 }
-.filter-bar__label {
+.filter-group:last-child { margin-bottom: 0; }
+.filter-group__label {
   font-size: 13px;
-  color: #57606a;
   font-weight: 600;
+  color: #57606a;
+  min-width: 64px;
+  padding-top: 5px;
+  flex-shrink: 0;
 }
-.filter-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
+.filter-group__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+}
+.tag-btn {
+  padding: 4px 12px;
   font-size: 13px;
   border: 1px solid #d0d7de;
   border-radius: 16px;
@@ -83,30 +102,34 @@
   cursor: pointer;
   transition: all 0.15s;
   user-select: none;
+  font-family: inherit;
 }
-.filter-chip:hover { border-color: #5D9C3C; }
-.filter-chip input { display: none; }
-.filter-chip:has(input:checked) {
-  background: #5D9C3C;
+.tag-btn:hover { border-color: #0969da; color: #0969da; }
+.tag-btn.active {
+  background: #0969da;
   color: #fff;
-  border-color: #5D9C3C;
+  border-color: #0969da;
 }
-.filter-bar__sep {
-  width: 1px;
-  height: 24px;
-  background: #d0d7de;
-}
-.tag-capsules {
+
+.selected-tags-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
   align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid #eaeef2;
+  margin-top: 4px;
+}
+.selected-tags-row__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #57606a;
 }
 .tag-capsule {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px 4px 12px;
+  padding: 3px 8px 3px 10px;
   font-size: 12px;
   background: #ddf4ff;
   color: #0969da;
@@ -123,44 +146,58 @@
   line-height: 1;
 }
 .tag-capsule__remove:hover { color: #cf222e; }
+.clear-all-btn {
+  background: none;
+  border: none;
+  color: #cf222e;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 6px;
+  font-family: inherit;
+}
+.clear-all-btn:hover { text-decoration: underline; }
+
+.project-grid {
+  max-width: 1400px;
+  margin: 16px auto 0;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
 .project-card {
-  position: relative;
-  padding: 16px;
   background: #fff;
   border: 1px solid #d0d7de;
   border-radius: 8px;
-  transition: all 0.2s;
+  padding: 16px;
   cursor: pointer;
+  transition: all 0.2s;
 }
 .project-card:hover {
-  border-color: #5D9C3C;
-  box-shadow: 0 4px 12px rgba(93,156,60,0.15);
+  border-color: #0969da;
+  box-shadow: 0 4px 12px rgba(9,105,218,0.1);
   transform: translateY(-2px);
-}
-.project-card--pinned {
-  border-color: #d4a72c;
-  background: linear-gradient(135deg, #fffbeb 0%, #fff 100%);
 }
 .project-card__header {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 .project-card__icon {
-  font-size: 32px;
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #f6f8fa;
   border-radius: 8px;
+  flex-shrink: 0;
 }
 .project-card__info { flex: 1; min-width: 0; }
 .project-card__name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   margin: 0;
   word-wrap: break-word;
@@ -170,9 +207,9 @@
   color: #1f2328;
   text-decoration: none;
 }
-.project-card__name a:hover { color: #5D9C3C; }
+.project-card__name a:hover { color: #0969da; }
 .project-card__desc {
-  font-size: 13px;
+  font-size: 12px;
   color: #57606a;
   margin: 4px 0 0;
   line-height: 1.5;
@@ -196,20 +233,16 @@
   color: #57606a;
   border: 1px solid #d0d7de;
 }
-.badge--type {
-  background: #ddf4ff;
-  color: #0969da;
-  border-color: #54aeff;
-}
 .badge--tag {
   cursor: pointer;
   transition: all 0.15s;
+  font-family: inherit;
 }
-.badge--tag:hover { border-color: #5D9C3C; }
+.badge--tag:hover { border-color: #0969da; }
 .badge--tag-active {
-  background: #5D9C3C;
+  background: #0969da;
   color: #fff;
-  border-color: #5D9C3C;
+  border-color: #0969da;
 }
 .project-card__links {
   margin-top: 10px;
@@ -225,131 +258,188 @@
   text-decoration: none;
 }
 .project-card__links a:hover { text-decoration: underline; }
-.pin-icon { color: #d4a72c; margin-right: 4px; }
-.no-results {
+
+.archived-toggle {
+  max-width: 1400px;
+  margin: 20px auto;
+  padding: 0 24px;
   text-align: center;
-  padding: 60px 20px;
+}
+.archived-toggle__btn {
+  padding: 10px 24px;
+  font-size: 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #fff;
+  color: #57606a;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.archived-toggle__btn:hover {
+  border-color: #0969da;
+  color: #0969da;
+}
+
+.no-results {
+  max-width: 1400px;
+  margin: 40px auto;
+  padding: 0 24px;
+  text-align: center;
   color: #8b949e;
 }
 .no-results .icon { font-size: 48px; margin-bottom: 12px; }
+
+.section-heading {
+  max-width: 1400px;
+  margin: 24px auto 12px;
+  padding: 0 24px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2328;
+}
+
 @media (max-width: 768px) {
-  .search-bar, .filter-bar { padding: 0 12px; }
-  .filter-bar { padding: 10px 12px; }
+  .search-bar, .filter-panel, .project-grid, .archived-toggle, .no-results, .section-heading {
+    padding: 0 12px;
+  }
 }
 </style>
 
+<!-- 搜索 + 排序 -->
 <div class="search-bar">
   <input type="text" class="search-bar__input" id="searchInput" placeholder="搜索工具名称、描述、标签..." autocomplete="off">
+  <select class="sort-select" id="sortSelect">
+    <option value="recent">最近更新</option>
+    <option value="name">按名称排序</option>
+    <option value="downloads">最多下载</option>
+  </select>
 </div>
 
-<div class="filter-bar">
-  <div class="filter-bar__group">
-    <span class="filter-bar__label">类型</span>
-    <label class="filter-chip"><input type="checkbox" name="type" value="repo" checked> 仓库</label>
-    <label class="filter-chip"><input type="checkbox" name="type" value="gist" checked> 代码片段</label>
-  </div>
-  <div class="filter-bar__sep"></div>
-  <div class="filter-bar__group">
-    <span class="filter-bar__label">状态</span>
-    {% if pinned_projects   %}<label class="filter-chip"><input type="checkbox" name="section" value="pinned"   checked> 置顶</label>{% endif %}
-    {% if active_projects   %}<label class="filter-chip"><input type="checkbox" name="section" value="active"   checked> 活跃</label>{% endif %}
-    {% if archived_projects %}<label class="filter-chip"><input type="checkbox" name="section" value="archived" checked> 归档</label>{% endif %}
-  </div>
-  <div class="filter-bar__sep"></div>
-  <div class="filter-bar__group">
-    <span class="filter-bar__label">部门</span>
-    <label class="filter-chip"><input type="checkbox" name="dept" value="dept-audit"> 审计部</label>
-    <label class="filter-chip"><input type="checkbox" name="dept" value="dept-tax"> 税务部</label>
-    <label class="filter-chip"><input type="checkbox" name="dept" value="dept-consulting"> 咨询部</label>
-  </div>
-  <div class="filter-bar__sep"></div>
-  <div class="filter-bar__group">
-    <span class="filter-bar__label">功能</span>
-    <label class="filter-chip"><input type="checkbox" name="func" value="func-data-analysis"> 数据分析</label>
-    <label class="filter-chip"><input type="checkbox" name="func" value="func-letter-gen"> 函证生成</label>
-    <label class="filter-chip"><input type="checkbox" name="func" value="func-workpaper-check"> 底稿检查</label>
-    <label class="filter-chip"><input type="checkbox" name="func" value="func-report-gen"> 报告生成</label>
-  </div>
-</div>
-
-<div class="tag-capsules" id="selectedTags" style="max-width:1400px;margin:8px auto 0;padding:0 24px;display:none;"></div>
-
-{% if section_count >= 2 and projects | length > 15 %}
-<nav class="toc" style="max-width:1400px;margin:16px auto 0;padding:0 24px;">
-  {% if pinned_projects   %}<a class="toc__link" href="#sec-pinned">置顶</a>{% endif %}
-  {% if active_projects   %}<a class="toc__link" href="#sec-active">活跃</a>{% endif %}
-  {% if archived_projects %}<a class="toc__link" href="#sec-archived">归档</a>{% endif %}
-</nav>
-{% endif %}
-
-{% macro project_card(project, section) %}
-<div class="project-card{% if project.pinned %} project-card--pinned{% endif %}"
-     data-type="{{ project.type }}" data-section="{{ section }}"
-     data-tags="{{ project.tags | join(' ') }}"
-     data-search="{{ (project.cn_name or project.name) }} {{ project.description or '' }} {{ project.tags | join(' ') }}">
-  <div class="project-card__header">
-    <div class="project-card__icon">
-      {% set ns = namespace(found=false) %}
-      {% for tag in project.tags %}
-        {% if tag in icon_map and not ns.found %}{{ icon_map[tag] }}{% set ns.found = true %}{% endif %}
-      {% endfor %}
-      {% if not ns.found %}📦{% endif %}
+<!-- 标签筛选 -->
+<div class="filter-panel">
+  <div class="filter-panel__inner">
+    <div class="filter-group">
+      <div class="filter-group__label">使用部门</div>
+      <div class="filter-group__tags" id="deptTags">
+        <button class="tag-btn" data-tag="dept-audit" type="button">审计部</button>
+        <button class="tag-btn" data-tag="dept-tax" type="button">税务部</button>
+        <button class="tag-btn" data-tag="dept-consulting" type="button">咨询部</button>
+      </div>
     </div>
-    <div class="project-card__info">
-      <h3 class="project-card__name">
-        {% if project.pinned %}<span class="pin-icon" title="置顶">&#9679;</span>{% endif %}
-        <a href="{{ project.slug }}/index.html">{{ project.cn_name or project.name }}</a>
-      </h3>
-      {% if project.description %}
-      <p class="project-card__desc">{{ project.description }}</p>
-      {% endif %}
+    <div class="filter-group">
+      <div class="filter-group__label">功能分类</div>
+      <div class="filter-group__tags" id="funcTags">
+        <button class="tag-btn" data-tag="func-data-analysis" type="button">数据分析</button>
+        <button class="tag-btn" data-tag="func-letter-gen" type="button">函证生成</button>
+        <button class="tag-btn" data-tag="func-workpaper-check" type="button">底稿检查</button>
+        <button class="tag-btn" data-tag="func-report-gen" type="button">报告生成</button>
+      </div>
+    </div>
+    <div class="selected-tags-row" id="selectedTagsRow" style="display:none;">
+      <span class="selected-tags-row__label">已选标签：</span>
+      <div id="selectedTagsContainer" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      <button class="clear-all-btn" id="clearAllBtn" type="button">清除全部</button>
     </div>
   </div>
-  <div class="project-card__meta">
-    <span class="badge badge--type">{{ topic_map.get(project.type, project.type) }}</span>
-    {% for tag in project.tags %}<button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ topic_map.get(tag, tag) }}</button>{% endfor %}
-  </div>
-  {% if project.live_url or project.homepage or project.docs_url or project.repo_url or project.gist_url or project.license %}
-  <div class="project-card__links">
-    {% if project.live_url %}<a href="{{ project.live_url }}">&#8599; 在线</a>
-    {% elif project.homepage %}<a href="{{ project.homepage }}">&#8599; 网站</a>{% endif %}
-    {% if project.docs_url %}<a href="{{ project.docs_url }}">&#8599; 文档</a>{% endif %}
-    {% if project.repo_url %}<a href="{{ project.repo_url }}">&#8599; 仓库</a>
-    {% elif project.gist_url %}<a href="{{ project.gist_url }}">&#8599; 代码片段</a>{% endif %}
-  </div>
-  {% endif %}
 </div>
-{% endmacro %}
 
-<div id="noResults" class="no-results" style="display:none;">
+<!-- 无结果提示 -->
+<div class="no-results" id="noResults" style="display:none;">
   <div class="icon">🔍</div>
   <p>没有找到匹配的工具</p>
   <p style="font-size:13px;">尝试调整搜索关键词或筛选条件</p>
 </div>
 
-{% if pinned_projects %}
-<section class="project-section" id="sec-pinned" data-section="pinned">
-  <h2 class="section-heading">📌 置顶</h2>
-  <div class="project-grid">
-    {% for p in pinned_projects %}{{ project_card(p, "pinned") }}{% endfor %}
+<!-- 活跃工具 -->
+<div id="activeSection">
+  <h2 class="section-heading">🔥 工具列表</h2>
+  <div class="project-grid" id="activeGrid">
+    {% for p in active_projects %}
+    <div class="project-card"
+         data-tags="{{ p.tags | join(' ') }}"
+         data-name="{{ p.cn_name or p.name }}"
+         data-search="{{ (p.cn_name or p.name) }} {{ p.description or '' }} {{ p.tags | join(' ') }}"
+         data-updated="{{ p.updated_at or '' }}">
+      <div class="project-card__header">
+        <div class="project-card__icon">
+          {% set ns = namespace(found=false) %}
+          {% for tag in p.tags %}
+            {% if tag in icon_map and not ns.found %}{{ icon_map[tag] }}{% set ns.found = true %}{% endif %}
+          {% endfor %}
+          {% if not ns.found %}📦{% endif %}
+        </div>
+        <div class="project-card__info">
+          <h3 class="project-card__name">
+            <a href="{{ p.slug }}/index.html">{{ p.cn_name or p.name }}</a>
+          </h3>
+          {% if p.description %}
+          <p class="project-card__desc">{{ p.description }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="project-card__meta">
+        {% for tag in p.tags %}
+          {% if tag in topic_map and tag not in ['repo', 'gist', 'language-python'] %}
+          <button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ topic_map[tag] }}</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="project-card__links">
+        {% if p.repo_url %}<a href="{{ p.repo_url }}" target="_blank" rel="noopener">↗ GitHub 仓库</a>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
   </div>
-</section>
-{% endif %}
-{% if active_projects %}
-<section class="project-section" id="sec-active" data-section="active">
-  <h2 class="section-heading">🔥 活跃</h2>
-  <div class="project-grid">
-    {% for p in active_projects %}{{ project_card(p, "active") }}{% endfor %}
-  </div>
-</section>
-{% endif %}
+</div>
+
+<!-- 归档工具（默认隐藏） -->
 {% if archived_projects %}
-<section class="project-section" id="sec-archived" data-section="archived">
-  <h2 class="section-heading">📦 归档</h2>
-  <div class="project-grid">
-    {% for p in archived_projects %}{{ project_card(p, "archived") }}{% endfor %}
+<div class="archived-toggle">
+  <button class="archived-toggle__btn" id="archivedToggleBtn" type="button">
+    📦 查看归档工具（{{ archived_projects | length }}个）
+  </button>
+</div>
+<div id="archivedSection" style="display:none;">
+  <h2 class="section-heading">📦 归档工具</h2>
+  <div class="project-grid" id="archivedGrid">
+    {% for p in archived_projects %}
+    <div class="project-card"
+         data-tags="{{ p.tags | join(' ') }}"
+         data-name="{{ p.cn_name or p.name }}"
+         data-search="{{ (p.cn_name or p.name) }} {{ p.description or '' }} {{ p.tags | join(' ') }}"
+         data-updated="{{ p.updated_at or '' }}">
+      <div class="project-card__header">
+        <div class="project-card__icon">
+          {% set ns = namespace(found=false) %}
+          {% for tag in p.tags %}
+            {% if tag in icon_map and not ns.found %}{{ icon_map[tag] }}{% set ns.found = true %}{% endif %}
+          {% endfor %}
+          {% if not ns.found %}📦{% endif %}
+        </div>
+        <div class="project-card__info">
+          <h3 class="project-card__name">
+            <a href="{{ p.slug }}/index.html">{{ p.cn_name or p.name }}</a>
+          </h3>
+          {% if p.description %}
+          <p class="project-card__desc">{{ p.description }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="project-card__meta">
+        {% for tag in p.tags %}
+          {% if tag in topic_map and tag not in ['repo', 'gist', 'language-python'] %}
+          <button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ topic_map[tag] }}</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="project-card__links">
+        {% if p.repo_url %}<a href="{{ p.repo_url }}" target="_blank" rel="noopener">↗ GitHub 仓库</a>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
   </div>
-</section>
+</div>
 {% endif %}
 
 <script>
@@ -358,73 +448,100 @@
   var selectedDepts = new Set();
   var selectedFuncs = new Set();
   var searchQuery = '';
+  var sortBy = 'recent';
+  var showArchived = false;
 
   var searchInput = document.getElementById('searchInput');
-  var selectedTagsContainer = document.getElementById('selectedTags');
+  var sortSelect = document.getElementById('sortSelect');
+  var selectedTagsContainer = document.getElementById('selectedTagsContainer');
+  var selectedTagsRow = document.getElementById('selectedTagsRow');
   var noResults = document.getElementById('noResults');
+  var archivedToggleBtn = document.getElementById('archivedToggleBtn');
+  var archivedSection = document.getElementById('archivedSection');
 
   function renderSelectedTags() {
     selectedTagsContainer.innerHTML = '';
-    var allSelected = [];
-    selectedDepts.forEach(function(t) { allSelected.push({tag: t, type: 'dept'}); });
-    selectedFuncs.forEach(function(t) { allSelected.push({tag: t, type: 'func'}); });
+    var all = [];
+    selectedDepts.forEach(function(t) {
+      var btn = document.querySelector('.tag-btn[data-tag="'+t+'"]');
+      all.push({tag: t, name: btn ? btn.textContent : t});
+    });
+    selectedFuncs.forEach(function(t) {
+      var btn = document.querySelector('.tag-btn[data-tag="'+t+'"]');
+      all.push({tag: t, name: btn ? btn.textContent : t});
+    });
 
-    if (allSelected.length > 0) {
-      selectedTagsContainer.style.display = 'flex';
-      allSelected.forEach(function(item) {
+    if (all.length > 0) {
+      selectedTagsRow.style.display = 'flex';
+      all.forEach(function(item) {
         var capsule = document.createElement('span');
         capsule.className = 'tag-capsule';
-        capsule.appendChild(document.createTextNode(tagMap[item.tag] || item.tag));
-        var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'tag-capsule__remove';
-        btn.setAttribute('aria-label', '移除 ' + (tagMap[item.tag] || item.tag));
-        btn.textContent = '\u00d7';
-        btn.addEventListener('click', function() {
-          if (item.type === 'dept') selectedDepts.delete(item.tag);
+        capsule.textContent = item.name;
+        var removeBtn = document.createElement('button');
+        removeBtn.className = 'tag-capsule__remove';
+        removeBtn.textContent = '×';
+        removeBtn.type = 'button';
+        removeBtn.onclick = function() {
+          if (selectedDepts.has(item.tag)) selectedDepts.delete(item.tag);
           else selectedFuncs.delete(item.tag);
-          var checkbox = document.querySelector('input[name="' + item.type + '"][value="' + item.tag + '"]');
-          if (checkbox) checkbox.checked = false;
+          var tagBtn = document.querySelector('.tag-btn[data-tag="'+item.tag+'"]');
+          if (tagBtn) tagBtn.classList.remove('active');
           renderSelectedTags();
           applyFilters();
-        });
-        capsule.appendChild(btn);
+        };
+        capsule.appendChild(removeBtn);
         selectedTagsContainer.appendChild(capsule);
       });
     } else {
-      selectedTagsContainer.style.display = 'none';
+      selectedTagsRow.style.display = 'none';
     }
   }
 
-  function applyFilters() {
-    var activeTypes = new Set(
-      Array.from(document.querySelectorAll('input[name="type"]:checked')).map(function(el){ return el.value; })
-    );
-    var activeSections = new Set(
-      Array.from(document.querySelectorAll('input[name="section"]:checked')).map(function(el){ return el.value; })
-    );
+  function sortCards(grid) {
+    var cards = Array.from(grid.children);
+    cards.sort(function(a, b) {
+      if (sortBy === 'name') {
+        return (a.dataset.name || '').localeCompare(b.dataset.name || '', 'zh-CN');
+      } else if (sortBy === 'downloads') {
+        return (b.dataset.downloads || 0) - (a.dataset.downloads || 0);
+      } else {
+        return (b.dataset.updated || '').localeCompare(a.dataset.updated || '');
+      }
+    });
+    cards.forEach(function(card) { grid.appendChild(card); });
+  }
 
+  function applyFilters() {
     var query = searchQuery.toLowerCase().trim();
     var visibleCount = 0;
 
-    document.querySelectorAll('.project-section').forEach(function(section) {
-      if (!activeSections.has(section.dataset.section)) {
-        section.style.display = 'none';
-        return;
-      }
+    function filterGrid(grid) {
       var visible = 0;
-      section.querySelectorAll('.project-card').forEach(function(card) {
+      Array.from(grid.children).forEach(function(card) {
         var tags = (card.dataset.tags || '').split(' ').filter(Boolean);
         var deptMatch = selectedDepts.size === 0 || tags.some(function(t) { return selectedDepts.has(t); });
         var funcMatch = selectedFuncs.size === 0 || tags.some(function(t) { return selectedFuncs.has(t); });
-        var typeMatch = activeTypes.has(card.dataset.type);
         var searchMatch = query === '' || (card.dataset.search || '').toLowerCase().indexOf(query) !== -1;
-        var show = typeMatch && deptMatch && funcMatch && searchMatch;
+        var show = deptMatch && funcMatch && searchMatch;
         card.style.display = show ? '' : 'none';
-        if (show) { visible++; visibleCount++; }
+        if (show) visible++;
       });
-      section.style.display = visible > 0 ? '' : 'none';
-    });
+      return visible;
+    }
+
+    var activeGrid = document.getElementById('activeGrid');
+    if (activeGrid) {
+      sortCards(activeGrid);
+      visibleCount += filterGrid(activeGrid);
+    }
+
+    if (showArchived) {
+      var archivedGrid = document.getElementById('archivedGrid');
+      if (archivedGrid) {
+        sortCards(archivedGrid);
+        visibleCount += filterGrid(archivedGrid);
+      }
+    }
 
     noResults.style.display = visibleCount === 0 ? 'block' : 'none';
 
@@ -440,55 +557,85 @@
     applyFilters();
   });
 
-  document.querySelectorAll('input[name="dept"]').forEach(function(el) {
-    el.addEventListener('change', function() {
-      if (this.checked) selectedDepts.add(this.value);
-      else selectedDepts.delete(this.value);
-      renderSelectedTags();
-      applyFilters();
-    });
+  sortSelect.addEventListener('change', function() {
+    sortBy = this.value;
+    applyFilters();
   });
 
-  document.querySelectorAll('input[name="func"]').forEach(function(el) {
-    el.addEventListener('change', function() {
-      if (this.checked) selectedFuncs.add(this.value);
-      else selectedFuncs.delete(this.value);
+  document.querySelectorAll('#deptTags .tag-btn').forEach(function(btn) {
+    btn.onclick = function() {
+      var tag = this.dataset.tag;
+      if (selectedDepts.has(tag)) {
+        selectedDepts.delete(tag);
+        this.classList.remove('active');
+      } else {
+        selectedDepts.add(tag);
+        this.classList.add('active');
+      }
       renderSelectedTags();
       applyFilters();
-    });
+    };
   });
 
-  document.querySelectorAll('input[name="type"], input[name="section"]').forEach(function(el) {
-    el.addEventListener('change', applyFilters);
+  document.querySelectorAll('#funcTags .tag-btn').forEach(function(btn) {
+    btn.onclick = function() {
+      var tag = this.dataset.tag;
+      if (selectedFuncs.has(tag)) {
+        selectedFuncs.delete(tag);
+        this.classList.remove('active');
+      } else {
+        selectedFuncs.add(tag);
+        this.classList.add('active');
+      }
+      renderSelectedTags();
+      applyFilters();
+    };
   });
+
+  document.getElementById('clearAllBtn').onclick = function() {
+    selectedDepts.clear();
+    selectedFuncs.clear();
+    document.querySelectorAll('.tag-btn.active').forEach(function(b) { b.classList.remove('active'); });
+    renderSelectedTags();
+    applyFilters();
+  };
 
   document.querySelectorAll('.badge--tag').forEach(function(badge) {
-    badge.addEventListener('click', function(e) {
+    badge.onclick = function(e) {
       e.stopPropagation();
       var tag = this.dataset.tag;
       var isDept = tag.indexOf('dept-') === 0;
       var set = isDept ? selectedDepts : selectedFuncs;
       if (set.has(tag)) {
         set.delete(tag);
-        var checkbox = document.querySelector('input[name="' + (isDept ? 'dept' : 'func') + '"][value="' + tag + '"]');
-        if (checkbox) checkbox.checked = false;
+        var tagBtn = document.querySelector('.tag-btn[data-tag="'+tag+'"]');
+        if (tagBtn) tagBtn.classList.remove('active');
       } else {
         set.add(tag);
-        var checkbox2 = document.querySelector('input[name="' + (isDept ? 'dept' : 'func') + '"][value="' + tag + '"]');
-        if (checkbox2) checkbox2.checked = true;
+        var tagBtn2 = document.querySelector('.tag-btn[data-tag="'+tag+'"]');
+        if (tagBtn2) tagBtn2.classList.add('active');
       }
       renderSelectedTags();
       applyFilters();
-    });
+    };
   });
 
   document.querySelectorAll('.project-card').forEach(function(card) {
-    card.addEventListener('click', function(e) {
+    card.onclick = function(e) {
       if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
       var link = this.querySelector('.project-card__name a');
       if (link) window.location.href = link.href;
-    });
+    };
   });
+
+  if (archivedToggleBtn) {
+    archivedToggleBtn.onclick = function() {
+      showArchived = !showArchived;
+      archivedSection.style.display = showArchived ? 'block' : 'none';
+      this.textContent = showArchived ? '📦 收起归档工具' : '📦 查看归档工具（' + (archivedSection ? archivedSection.querySelectorAll('.project-card').length : 0) + '个）';
+      applyFilters();
+    };
+  }
 
   applyFilters();
 }());
