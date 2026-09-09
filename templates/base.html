@@ -1,23 +1,82 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Portfolio{% endblock %}</title>
   {% block stylesheets %}<link rel="stylesheet" href="static/style.css">{% endblock %}
   {% block feed_link %}<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="feed.xml">{% endblock %}
+  <style>
+    .top-nav {
+      background: rgba(44, 54, 63, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .top-nav__inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .top-nav__brand {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .top-nav__brand:hover { opacity: 0.9; }
+    .top-nav__links {
+      display: flex;
+      gap: 4px;
+    }
+    .top-nav__link {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .top-nav__link:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    .top-nav__link--active {
+      background: rgba(93, 156, 60, 0.3);
+      color: #fff;
+    }
+    @media (max-width: 768px) {
+      .top-nav__inner { padding: 0 12px; }
+      .top-nav__link { padding: 6px 10px; font-size: 13px; }
+      .top-nav__link span { display: none; }
+    }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-header__inner">
-      <span class="site-header__name"><a href="{% block home_href %}index.html{% endblock %}">{{ site.title }}</a></span>
-      {% if site.navigation.back_link_url %}
-      <nav class="site-header__nav">
-        <a href="{{ site.navigation.back_link_url }}">&#8592; {{ site.navigation.back_link_label }}</a>
-      </nav>
-      {% endif %}
+  <nav class="top-nav">
+    <div class="top-nav__inner">
+      <a class="top-nav__brand" href="{% block home_href %}index.html{% endblock %}">🛠️ TAXLY WorkTools</a>
+      <div class="top-nav__links">
+        <a class="top-nav__link top-nav__link--active" href="index.html">🏠 <span>首页</span></a>
+        <a class="top-nav__link" href="pack.html">📦 <span>打包工具</span></a>
+        <a class="top-nav__link" href="upload.html">📤 <span>上传工具</span></a>
+        <a class="top-nav__link" href="admin.html">⚙️ <span>管理后台</span></a>
+      </div>
     </div>
-  </header>
+  </nav>
 
   <main>
     {% block content %}{% endblock %}
