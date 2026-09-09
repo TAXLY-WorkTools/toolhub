@@ -500,8 +500,9 @@
       <div class="section">
         <div class="section__title"><span class="num">1</span>基本信息</div>
         <div class="field">
-          <label class="field__label">中文显示名 <span class="hint">（展示页大标题，可填中文）</span></label>
+          <label class="field__label">中文显示名 <span class="required">*</span> <span class="hint">（展示页大标题，必填）</span></label>
           <input type="text" id="displayName" placeholder="如：函证批量生成器">
+          <div style="margin-top:4px; font-size:12px; color:#8b949e; font-style:italic;">打包时自动添加到描述开头：【中文名称】原始描述</div>
         </div>
         <div class="field">
           <label class="field__label">工具名称 <span class="required">*</span> <span class="hint">（GitHub 仓库名，仅限英文/拼音）</span></label>
@@ -1025,29 +1026,46 @@ function renderFileList() {
   const count = document.getElementById('fileCount');
   count.textContent = uploadedFiles.length;
   if (uploadedFiles.length === 0) { body.innerHTML = '<div class="file-list__empty">暂无文件</div>'; return; }
-  const dirMap = {};
+  // 构建目录树
+  const tree = { name: '/', children: {}, files: [] };
   uploadedFiles.forEach((f, i) => {
     const relPath = f.path.startsWith('src/') ? f.path.substring(4) : f.path;
-    const lastSlash = relPath.lastIndexOf('/');
-    const dir = lastSlash > 0 ? relPath.substring(0, lastSlash) : '(根目录)';
-    if (!dirMap[dir]) dirMap[dir] = [];
-    dirMap[dir].push({ ...f, index: i });
+    const parts = relPath.split('/');
+    let current = tree;
+    for (let j = 0; j < parts.length - 1; j++) {
+      const dir = parts[j];
+      if (!current.children[dir]) { current.children[dir] = { name: dir, children: {}, files: [] }; }
+      current = current.children[dir];
+    }
+    current.files.push({ ...f, index: i });
   });
+  const shouldCollapse = uploadedFiles.length > 50;
   let html = '';
-  if (uploadedFiles.length > 50) {
+  if (shouldCollapse) {
     html += '<div style="padding:8px 16px; background:#fff8c5; color:#9a6700; font-size:12px; border-bottom:1px solid #eaeef2;">📌 文件较多（' + uploadedFiles.length + '个），目录已默认折叠，点击文件夹可展开查看</div>';
   }
-  const shouldCollapse = uploadedFiles.length > 50;
-  Object.keys(dirMap).sort().forEach((dir, dirIdx) => {
-    const dirId = 'dirbody_' + dirIdx;
-    const collapsedClass = shouldCollapse ? ' hidden' : '';
-    const arrow = shouldCollapse ? '▶' : '▼';
-    html += `<div class="file-dir"><div class="file-dir__header" onclick="var b=document.getElementById('${dirId}');b.classList.toggle('hidden');this.querySelector('.dir-arrow').textContent=b.classList.contains('hidden')?'▶':'▼';"><span class="dir-arrow">${arrow}</span> 📁 ${dir} (${dirMap[dir].length}个文件)</div><div class="file-dir__body${collapsedClass}" id="${dirId}">`;
-    dirMap[dir].forEach(f => {
-      html += `<div class="file-item"><div class="file-item__name">📄 <span>${escapeHtml(f.name)}</span> <span class="path">${f.path}</span></div><span class="file-item__remove" onclick="removeFile(${f.index})" title="移除">×</span></div>`;
+  function countFilesInDir(node) {
+    let c = node.files.length;
+    Object.keys(node.children).forEach(d => { c += countFilesInDir(node.children[d]); });
+    return c;
+  }
+  function renderNode(node, level) {
+    const dirs = Object.keys(node.children).sort();
+    dirs.forEach((dirName, idx) => {
+      const dirNode = node.children[dirName];
+      const totalFiles = countFilesInDir(dirNode);
+      const dirId = 'dirbody_' + level + '_' + idx + '_' + Math.random().toString(36).substr(2, 6);
+      const collapsed = shouldCollapse && level === 0;
+      const arrow = collapsed ? '▶' : '▼';
+      html += '<div class="file-dir"><div class="file-dir__header" onclick="var b=document.getElementById(\'' + dirId + '\');b.classList.toggle(\'hidden\');this.querySelector(\'.dir-arrow\').textContent=b.classList.contains(\'hidden\')?\'▶\':\'▼\';"><span class="dir-arrow">' + arrow + '</span> 📁 ' + dirName + ' <span style="font-weight:normal;font-size:12px;color:#8b949e;">(' + totalFiles + '个文件)</span></div><div class="file-dir__body' + (collapsed ? ' hidden' : '') + '" id="' + dirId + '">';
+      renderNode(dirNode, level + 1);
+      html += '</div></div>';
     });
-    html += '</div></div>';
-  });
+    node.files.forEach(f => {
+      html += '<div class="file-item" style="padding-left:' + (level * 16 + 8) + 'px;"><div class="file-item__name">📄 <span>' + escapeHtml(f.name) + '</span> <span class="path">' + f.path + '</span></div><span class="file-item__remove" onclick="removeFile(' + f.index + ')" title="移除">×</span></div>';
+    });
+  }
+  renderNode(tree, 0);
   body.innerHTML = html;
 }
 function generateReadme() {
@@ -1108,7 +1126,8 @@ function goToUploadPage() {
   const description = document.getElementById('description').value.trim();
   const displayName = document.getElementById('displayName').value.trim();
   let firstError = null;
-  if (!toolName) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; showToast('请填写工具名称', 'error'); }
+  if (!displayName) { const el = document.getElementById('displayName'); el.classList.add('error'); firstError = firstError || el; showToast('请填写中文显示名', 'error'); }
+  if (!toolName) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; if (!firstError || firstError === el) showToast('请填写工具名称', 'error'); }
   else if (!/^[a-z0-9][a-z0-9._-]*$/.test(toolName)) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; showToast('工具名称只能用小写英文、数字、下划线、连字符、点', 'error'); }
   if (!description) { const el = document.getElementById('description'); el.classList.add('error'); firstError = firstError || el; if (!firstError || firstError === el) showToast('请填写工具描述', 'error'); }
   if (currentMode === 'custom' && !customReadmeContent) { showToast('请上传自定义 README.md 文件', 'error'); return; }
@@ -1118,9 +1137,10 @@ function goToUploadPage() {
   }
   if (uploadedFiles.length === 0) { showToast('请先添加代码文件', 'error'); return; }
   if (firstError) { scrollToError(firstError); return; }
+  const fullDescription = '【' + displayName + '】' + description;
   const params = new URLSearchParams();
-  params.set('tool_name', toolName); params.set('description', description);
-  if (displayName) params.set('display_name', displayName);
+  params.set('tool_name', toolName); params.set('description', fullDescription);
+  params.set('display_name', displayName);
   params.set('from_pack', '1');
   window.open('upload.html?' + params.toString(), '_blank');
   showToast('已在新标签页打开上传页面', 'success');
@@ -1131,7 +1151,8 @@ async function generatePackage() {
   const description = document.getElementById('description').value.trim();
   const displayName = document.getElementById('displayName').value.trim();
   let firstError = null;
-  if (!toolName) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; showToast('请填写工具名称', 'error'); }
+  if (!displayName) { const el = document.getElementById('displayName'); el.classList.add('error'); firstError = firstError || el; showToast('请填写中文显示名', 'error'); }
+  if (!toolName) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; if (!firstError || firstError === el) showToast('请填写工具名称', 'error'); }
   else if (!/^[a-z0-9][a-z0-9._-]*$/.test(toolName)) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; showToast('工具名称只能用小写英文、数字、下划线、连字符、点', 'error'); }
   if (!description) { const el = document.getElementById('description'); el.classList.add('error'); firstError = firstError || el; if (!firstError || firstError === el) showToast('请填写工具描述', 'error'); }
   if (currentMode === 'custom' && !customReadmeContent) { showToast('请上传自定义 README.md 文件', 'error'); return; }
@@ -1141,6 +1162,7 @@ async function generatePackage() {
   }
   if (uploadedFiles.length === 0) { showToast('请至少添加一个代码文件', 'error'); return; }
   if (firstError) { scrollToError(firstError); return; }
+  const fullDescription = '【' + displayName + '】' + description;
   const btn = document.getElementById('generateBtn');
   btn.disabled = true; btn.textContent = '⏳ 正在生成...';
   try {
@@ -1191,8 +1213,8 @@ async function generatePackage() {
     showToast('打包成功！正在跳转上传页面...', 'success');
     setTimeout(() => {
       const params = new URLSearchParams();
-      params.set('tool_name', toolName); params.set('description', description);
-      if (displayName) params.set('display_name', displayName);
+      params.set('tool_name', toolName); params.set('description', fullDescription);
+      params.set('display_name', displayName);
       params.set('from_pack', '1');
       window.open('upload.html?' + params.toString(), '_blank');
     }, 1500);
