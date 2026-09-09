@@ -11,6 +11,15 @@
     'repo': '仓库',
     'gist': '代码片段',
 } %}
+{% set cn_icon_map = {
+    '审计部': '🔍',
+    '税务部': '💰',
+    '咨询部': '💡',
+    '数据分析': '📊',
+    '函证生成': '📋',
+    '底稿检查': '📑',
+    '报告生成': '📝',
+} %}
 {% block stylesheets %}<link rel="stylesheet" href="../static/style.css">{% endblock %}
 {% block feed_link %}<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="../feed.xml">{% endblock %}
 {% block home_href %}../index.html{% endblock %}
@@ -25,48 +34,98 @@ h1 {
   overflow-wrap: break-word;
   white-space: normal;
 }
-.project-header__subtitle {
+
+/* 左右两栏布局 */
+.project-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 24px;
+  align-items: start;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.project-main { min-width: 0; }
+.project-sidebar {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 工具标题区 */
+.tool-header {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.tool-header__top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.tool-header__icon {
+  font-size: 40px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f8fa;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.tool-header__titles { flex: 1; min-width: 0; }
+.tool-header__cn-name {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  word-wrap: break-word;
+}
+.tool-header__en-name {
   font-size: 14px;
   color: #8b949e;
   font-family: monospace;
-  margin-top: -8px;
-  margin-bottom: 12px;
-  word-wrap: break-word;
-  word-break: break-word;
-  overflow-wrap: break-word;
+  margin-top: 2px;
 }
-.download-quick {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-.download-quick .btn--large {
-  padding: 12px 24px;
-  font-size: 15px;
-  font-weight: 600;
-}
-.btn--program { background: #28a745; color: #fff; border-color: #28a745; }
-.btn--program:hover { background: #218838; }
-.btn--full { background: #007bff; color: #fff; border-color: #007bff; }
-.btn--full:hover { background: #0056b3; }
-.btn--edit {
-  background: #fff;
+.tool-header__repo-link {
+  font-size: 13px;
   color: #0969da;
-  border: 1px solid #0969da;
+  text-decoration: none;
+  white-space: nowrap;
 }
-.btn--edit:hover {
-  background: #ddf4ff;
+.tool-header__repo-link:hover { text-decoration: underline; }
+.tool-header__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.tool-header__desc {
+  font-size: 14px;
+  color: #57606a;
+  line-height: 1.6;
+}
+
+/* 标签页 */
+.tabs-wrapper {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
 }
 .tabs {
   display: flex;
   gap: 0;
   border-bottom: 2px solid #d0d7de;
-  margin-bottom: 20px;
+  padding: 0 16px;
 }
 .tab-btn {
-  padding: 10px 20px;
+  padding: 12px 20px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -85,37 +144,59 @@ h1 {
 }
 .tab-content {
   display: none;
+  padding: 24px;
 }
-.tab-content.active {
-  display: block;
+.tab-content.active { display: block; }
+
+/* 下载快捷区（移到下载标签页内） */
+.download-quick {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
-.download-section { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; }
+.download-quick .btn--large {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.btn--program { background: #28a745; color: #fff; border-color: #28a745; }
+.btn--program:hover { background: #218838; }
+.btn--full { background: #007bff; color: #fff; border-color: #007bff; }
+.btn--full:hover { background: #0056b3; }
+
+/* 下载文件树 */
 .download-section__title { margin: 0 0 16px 0; font-size: 18px; }
-.file-group { margin-bottom: 16px; }
-.file-group__title { font-size: 14px; font-weight: 600; color: #555; margin: 0 0 8px 0; padding-bottom: 4px; border-bottom: 1px solid #e0e0e0; }
-.file-item { display: flex; align-items: center; padding: 6px 0; gap: 8px; font-size: 14px; }
-.file-item__icon { width: 20px; text-align: center; flex-shrink: 0; }
-.file-item__name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.file-item__src { color: #999; font-style: italic; font-size: 12px; margin-left: 4px; }
 .file-tree-dir { margin-bottom: 0; }
 .file-tree-dir__header {
-  padding: 6px 8px;
+  padding: 8px 12px;
   background: #f6f8fa;
   font-size: 13px;
   font-weight: 600;
   color: #57606a;
   cursor: pointer;
   user-select: none;
-  border-bottom: 1px solid #eaeef2;
   border-radius: 4px;
   margin: 2px 0;
 }
 .file-tree-dir__header:hover { background: #eaeef2; }
 .file-tree-dir__count { font-weight: normal; font-size: 12px; color: #8b949e; }
 .file-tree-dir__body.hidden { display: none; }
-.file-tree-dir .file-item { padding-left: 24px !important; }
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px 6px 32px;
+  gap: 8px;
+  font-size: 13px;
+}
+.file-item__icon { width: 20px; text-align: center; flex-shrink: 0; }
+.file-item__name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-item__src { color: #999; font-style: italic; font-size: 12px; margin-left: 4px; }
 .file-item__size { color: #888; font-size: 12px; flex-shrink: 0; min-width: 60px; text-align: right; }
 .file-item__download { flex-shrink: 0; }
+
+/* AI 提示词 */
 .ai-prompt-box {
   background: #f6f8fa;
   border: 1px solid #d0d7de;
@@ -134,114 +215,248 @@ h1 {
   white-space: pre-wrap;
   word-break: break-word;
 }
-.ai-prompt-empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: #8b949e;
+
+/* 右侧栏卡片 */
+.sidebar-card {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
 }
-.ai-prompt-empty .icon { font-size: 48px; margin-bottom: 12px; }
+.sidebar-card__title {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2328;
+  border-bottom: 1px solid #d0d7de;
+  background: #f6f8fa;
+}
+.sidebar-card__body { padding: 16px; }
+
+/* 关于卡 */
+.about-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.about-item__label {
+  color: #8b949e;
+  min-width: 48px;
+}
+.about-item__value {
+  color: #1f2328;
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.about-item__value a {
+  color: #0969da;
+  text-decoration: none;
+}
+.about-item__value a:hover { text-decoration: underline; }
+
+/* 快捷操作卡 */
+.quick-action {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #fff;
+  color: #1f2328;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  font-family: inherit;
+  margin-bottom: 8px;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+.quick-action:last-child { margin-bottom: 0; }
+.quick-action:hover {
+  background: #f6f8fa;
+  border-color: #0969da;
+  color: #0969da;
+}
+.quick-action--primary {
+  background: #0969da;
+  color: #fff;
+  border-color: #0969da;
+}
+.quick-action--primary:hover {
+  background: #0860c7;
+  color: #fff;
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .project-layout {
+    grid-template-columns: 1fr;
+    padding: 0 12px;
+  }
+  .project-sidebar {
+    position: static;
+  }
+}
 </style>
 
-<div class="project-header">
-  <a class="project-header__back" href="../index.html">&#8592; {{ sections.back_link }}</a>
+<div class="project-layout">
 
-  {% if project.cn_name %}
-  <h1>{{ project.cn_name }}</h1>
-  <div class="project-header__subtitle">{{ project.name }}</div>
-  {% else %}
-  <h1>{{ project.name }}</h1>
-  {% endif %}
+  <!-- 左侧主内容 -->
+  <div class="project-main">
 
-  {% if project.description %}
-  <div class="project-header__desc">{{ project.description }}</div>
-  {% endif %}
+    <!-- 工具标题区 -->
+    <div class="tool-header">
+      <div class="tool-header__top">
+        <div class="tool-header__icon">
+          {% set ns = namespace(found=false) %}
+          {% for tag in project.tags %}
+            {% if tag in cn_icon_map and not ns.found %}{{ cn_icon_map[tag] }}{% set ns.found = true %}{% endif %}
+          {% endfor %}
+          {% if not ns.found %}📦{% endif %}
+        </div>
+        <div class="tool-header__titles">
+          {% if project.cn_name %}
+          <h1 class="tool-header__cn-name">{{ project.cn_name }}</h1>
+          <div class="tool-header__en-name">{{ project.name }}</div>
+          {% else %}
+          <h1 class="tool-header__cn-name">{{ project.name }}</h1>
+          {% endif %}
+        </div>
+        {% if project.repo_url %}
+        <a href="{{ project.repo_url }}" class="tool-header__repo-link" target="_blank" rel="noopener">↗ GitHub 仓库</a>
+        {% elif project.gist_url %}
+        <a href="{{ project.gist_url }}" class="tool-header__repo-link" target="_blank" rel="noopener">↗ Gist</a>
+        {% endif %}
+      </div>
+      <div class="tool-header__tags">
+        {% if project.type == 'gist' %}
+        <span class="badge">代码片段</span>
+        {% endif %}
+        {% for tag in project.tags %}
+        <span class="badge">{{ topic_map.get(tag, tag) }}</span>
+        {% endfor %}
+        {% if project.license %}
+        <span class="badge">{{ project.license }}</span>
+        {% endif %}
+      </div>
+      {% if project.description %}
+      <p class="tool-header__desc">{{ project.description }}</p>
+      {% endif %}
+    </div>
 
-  <div class="project-header__meta">
-    {% if project.type == 'gist' %}
-    <span class="badge badge--type">代码片段</span>
-    {% endif %}
-    {% for tag in project.tags %}
-    <span class="badge">{{ topic_map.get(tag, tag) }}</span>
-    {% endfor %}
-    {% if project.license %}
-    <span class="badge">{{ project.license }}</span>
-    {% endif %}
+    <!-- 标签页 -->
+    <div class="tabs-wrapper">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('readme')">📖 使用说明</button>
+        {% if project.ai_prompt %}
+        <button class="tab-btn" onclick="switchTab('ai')">🤖 AI 提示词</button>
+        {% endif %}
+        {% if project.download_url or project.files %}
+        <button class="tab-btn" onclick="switchTab('download')">📥 下载</button>
+        {% endif %}
+      </div>
+
+      <!-- 使用说明 -->
+      <div class="tab-content active" id="tab-readme">
+        <div class="readme">
+          {{ readme_html | safe }}
+        </div>
+      </div>
+
+      <!-- AI 提示词 -->
+      {% if project.ai_prompt %}
+      <div class="tab-content" id="tab-ai">
+        <div class="ai-prompt-box">
+          <pre>{{ project.ai_prompt }}</pre>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- 下载 -->
+      {% if project.download_url or project.files %}
+      <div class="tab-content" id="tab-download">
+        {% if project.download_url or project.program_download_url %}
+        <div class="download-quick">
+          {% if project.program_download_url %}
+          <a class="btn btn--large btn--program" href="{{ project.program_download_url }}">📦 下载程序（源码）</a>
+          {% endif %}
+          {% if project.download_url %}
+          <a class="btn btn--large btn--full" href="{{ project.download_url }}">📥 下载全部文件（整包）</a>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <h2 class="download-section__title">📥 下载文件列表</h2>
+        {% if project.files %}
+        <script id="fileTreeData" type="application/json">
+        [
+        {% for file in project.files %}
+        {"name": "{{ file.name | e }}", "path": "{{ (file.path or file.name) | e }}", "size": {{ file.size or 0 }}, "url": "{{ (file.download_url or file.raw_url or '') | e }}"}
+        {% if not loop.last %},{% endif %}
+        {% endfor %}
+        ]
+        </script>
+        <div id="fileTreeContainer"></div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+    </div>
   </div>
 
-  <div class="project-header__actions">
-    {% if project.name and project.type == 'repo' %}
-    <a class="btn btn--edit" href="https://github.com/TAXLY-WorkTools/{{ project.name }}/edit/main/README.md" target="_blank" title="在 GitHub 在线编辑 README">✏️ 编辑此工具</a>
-    {% endif %}
-    {% if project.live_url %}
-    <a class="btn btn--primary" href="{{ project.live_url }}">&#8599; Live site</a>
-    {% elif project.homepage %}
-    <a class="btn btn--primary" href="{{ project.homepage }}">&#8599; Website</a>
-    {% endif %}
-    {% if project.docs_url %}
-    <a class="btn" href="{{ project.docs_url }}">&#8599; Docs</a>
-    {% endif %}
-    {% if project.repo_url %}
-    <a class="btn" href="{{ project.repo_url }}">&#8599; GitHub</a>
-    {% elif project.gist_url %}
-    <a class="btn" href="{{ project.gist_url }}">&#8599; Gist</a>
-    {% endif %}
+  <!-- 右侧栏（固定显示） -->
+  <div class="project-sidebar">
+
+    <!-- 关于 -->
+    <div class="sidebar-card">
+      <div class="sidebar-card__title">关于</div>
+      <div class="sidebar-card__body">
+        <div class="about-item">
+          <span class="about-item__label">仓库</span>
+          <span class="about-item__value">
+            {% if project.repo_url %}
+            <a href="{{ project.repo_url }}" target="_blank" rel="noopener">{{ project.name }}</a>
+            {% elif project.gist_url %}
+            <a href="{{ project.gist_url }}" target="_blank" rel="noopener">{{ project.name }}</a>
+            {% else %}
+            {{ project.name }}
+            {% endif %}
+          </span>
+        </div>
+        <div class="about-item">
+          <span class="about-item__label">类型</span>
+          <span class="about-item__value">{{ topic_map.get(project.type, project.type) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 快捷操作 -->
+    <div class="sidebar-card">
+      <div class="sidebar-card__title">快捷操作</div>
+      <div class="sidebar-card__body">
+        {% if project.name and project.type == 'repo' %}
+        <a class="quick-action" href="https://github.com/TAXLY-WorkTools/{{ project.name }}/edit/main/README.md" target="_blank" rel="noopener" title="在 GitHub 在线编辑 README">
+          ✏️ 编辑此工具
+        </a>
+        {% endif %}
+        {% if project.download_url or project.files %}
+        <button class="quick-action quick-action--primary" onclick="switchTab('download')" type="button">
+          📦 关联程序
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
   </div>
-</div>
 
-{% if project.download_url or project.files %}
-<div class="download-quick">
-  {% if project.program_download_url %}
-  <a class="btn btn--large btn--program" href="{{ project.program_download_url }}">📦 下载程序（源码）</a>
-  {% endif %}
-  {% if project.download_url %}
-  <a class="btn btn--large btn--full" href="{{ project.download_url }}">📥 下载全部文件（整包）</a>
-  {% endif %}
 </div>
-{% endif %}
-
-<div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('readme')">📖 使用说明</button>
-  {% if project.ai_prompt %}
-  <button class="tab-btn" onclick="switchTab('ai')">🤖 AI 提示词</button>
-  {% endif %}
-  {% if project.download_url or project.files %}
-  <button class="tab-btn" onclick="switchTab('download')">📥 下载</button>
-  {% endif %}
-</div>
-
-<div class="tab-content active" id="tab-readme">
-  <div class="readme">
-    {{ readme_html | safe }}
-  </div>
-</div>
-
-{% if project.ai_prompt %}
-<div class="tab-content" id="tab-ai">
-  <div class="ai-prompt-box">
-    <pre>{{ project.ai_prompt }}</pre>
-  </div>
-</div>
-{% endif %}
-
-{% if project.download_url or project.files %}
-<div class="tab-content" id="tab-download">
-  <div class="download-section">
-    <h2 class="download-section__title">📥 下载文件列表</h2>
-
-    {% if project.files %}
-    <script id="fileTreeData" type="application/json">
-    [
-    {% for file in project.files %}
-    {"name": "{{ file.name | e }}", "path": "{{ (file.path or file.name) | e }}", "size": {{ file.size or 0 }}, "url": "{{ (file.download_url or file.raw_url or '') | e }}"}
-    {% if not loop.last %},{% endif %}
-    {% endfor %}
-    ]
-    </script>
-    <div id="fileTreeContainer"></div>
-    {% endif %}
-  </div>
-</div>
-{% endif %}
 
 <script>
 function switchTab(tab) {
@@ -311,19 +526,21 @@ function buildFileTree(files) {
   return tree;
 }
 
-function renderFileTree(node, level, container) {
+function renderFileTree(node, level, container, parentIsSrc) {
   var dirs = Object.keys(node.children).sort();
   dirs.forEach(function(dirName) {
     var dirNode = node.children[dirName];
     var totalFiles = countFilesInDir(dirNode);
     var dirId = 'dir_' + Math.random().toString(36).substr(2, 9);
+    var isSrc = parentIsSrc || dirName === 'src';
+    var isExpanded = isSrc;
     var dirEl = document.createElement('div');
     dirEl.className = 'file-tree-dir';
     dirEl.style.paddingLeft = (level * 16) + 'px';
-    dirEl.innerHTML = '<div class="file-tree-dir__header" onclick="var b=document.getElementById(\'' + dirId + '\');b.classList.toggle(\'hidden\');this.querySelector(\'.dir-arrow\').textContent=b.classList.contains(\'hidden\')?\'▶\':\'▼\';"><span class="dir-arrow">▼</span> 📁 ' + dirName + ' <span class="file-tree-dir__count">(' + totalFiles + '个文件)</span></div><div class="file-tree-dir__body" id="' + dirId + '">';
+    dirEl.innerHTML = '<div class="file-tree-dir__header" onclick="var b=document.getElementById(\'' + dirId + '\');b.classList.toggle(\'hidden\');this.querySelector(\'.dir-arrow\').textContent=b.classList.contains(\'hidden\')?\'▶\':\'▼\';"><span class="dir-arrow">' + (isExpanded ? '▼' : '▶') + '</span> 📁 ' + dirName + ' <span class="file-tree-dir__count">(' + totalFiles + '个文件)</span></div><div class="file-tree-dir__body' + (isExpanded ? '' : ' hidden') + '" id="' + dirId + '">';
     container.appendChild(dirEl);
     var dirBody = dirEl.querySelector('.file-tree-dir__body');
-    renderFileTree(dirNode, level + 1, dirBody);
+    renderFileTree(dirNode, level + 1, dirBody, isSrc);
     dirBody.innerHTML += '</div>';
   });
   node.files.forEach(function(file) {
@@ -357,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     var tree = buildFileTree(files);
-    renderFileTree(tree, 0, container);
+    renderFileTree(tree, 0, container, false);
   } catch(e) {
     container.innerHTML = '<div style="padding:16px; text-align:center; color:#cf222e;">文件列表加载失败：' + e.message + '</div>';
   }
