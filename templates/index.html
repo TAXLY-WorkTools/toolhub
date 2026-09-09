@@ -117,7 +117,7 @@ try {
      data-type="{{ project.type }}" data-section="{{ section }}" data-tags="{{ project.tags | join(' ') }}" data-license="{{ project.license or '' }}">
   <div class="project-card__name">
     {% if project.pinned %}<span class="pin-icon" title="置顶">&#9679;</span>{% endif %}
-    <a href="{{ project.slug }}/index.html">{{ project.name }}</a>
+    <a href="{{ project.slug }}/index.html">{{ project.cn_name or project.name }}</a>
   </div>
   {% if project.description %}
   <div class="project-card__desc">{{ project.description }}</div>
