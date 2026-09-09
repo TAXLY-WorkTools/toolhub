@@ -1,0 +1,7 @@
+# 平台内部运行库，不在展示站显示
+toolhub
+upload-portal
+
+# 测试/模板库，不在展示站显示
+tool-template
+test_audit_demo
