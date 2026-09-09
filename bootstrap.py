@@ -22,6 +22,7 @@ Output:
 """
 
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -81,6 +82,48 @@ def load_exclusions() -> set[str]:
 
 
 # --------------------------------------------------------------------------- #
+# Label mapping and Chinese name extraction
+# --------------------------------------------------------------------------- #
+
+def load_label_map() -> dict[str, str]:
+    """Load labels.json and build a key -> Chinese name mapping."""
+    label_map = {}
+    labels_file = Path("labels.json")
+    if not labels_file.exists():
+        print("  ⚠️ labels.json not found, tags will remain in English")
+        return label_map
+    try:
+        import json
+        data = json.loads(labels_file.read_text(encoding="utf-8"))
+        for l in data.get("departments", []):
+            label_map[l["id"]] = l["name"]
+        for l in data.get("categories", []):
+            label_map[l["id"]] = l["name"]
+        for ct in data.get("custom_types", []):
+            for l in ct.get("labels", []):
+                label_map[l["id"]] = l["name"]
+        print(f"  📋 Loaded {len(label_map)} label mappings from labels.json")
+    except Exception as e:
+        print(f"  ⚠️ Failed to load labels.json: {e}")
+    return label_map
+
+
+def extract_cn_name(description: str) -> tuple[str, str]:
+    """Extract Chinese name from description prefix 【...】.
+    Returns (cn_name, clean_description).
+    If no 【...】 prefix found, returns ("", original_description).
+    """
+    if not description:
+        return "", description
+    m = re.match(r"^【(.+?)】", description)
+    if m:
+        cn_name = m.group(1).strip()
+        clean_desc = description[m.end():].strip()
+        return cn_name, clean_desc
+    return "", description
+
+
+# --------------------------------------------------------------------------- #
 # Fetch repos and gists
 # --------------------------------------------------------------------------- #
 
@@ -118,10 +161,12 @@ def fetch_gists(client: httpx.Client) -> list[dict]:
 # Shape into projects.yaml entries
 # --------------------------------------------------------------------------- #
 
-def repo_to_entry(client: httpx.Client, repo: dict) -> dict:
+def repo_to_entry(client: httpx.Client, repo: dict, label_map: dict[str, str]) -> dict:
     """
     Convert a repo API response to a projects.yaml entry.
     Fetches portfolio.toml and GitHub topics automatically.
+    Extracts Chinese name from 【...】 prefix in description.
+    Converts tag IDs to Chinese names using label_map.
     """
     name = repo["name"]
     print(f"  [repo] {name}")
@@ -131,17 +176,28 @@ def repo_to_entry(client: httpx.Client, repo: dict) -> dict:
 
     latest_release_at = fetch_latest_release_date(client, USERNAME, name)
 
+    # Extract Chinese name from description 【...】 prefix
+    raw_desc = repo["description"] or ""
+    cn_name, clean_desc = extract_cn_name(raw_desc)
+    if cn_name:
+        print(f"    📝 Chinese name: {cn_name}")
+
+    # Convert tag IDs to Chinese names
+    cn_tags = [label_map.get(t, t) for t in topics]
+
     entry = {
         "name": name,
         "type": "repo",
         "repo_url": repo["html_url"],
-        "description": repo["description"] or "",
-        "tags": topics,
+        "description": clean_desc,
+        "tags": cn_tags,
         "created_at": repo.get("created_at", ""),
         "updated_at": repo.get("pushed_at") or repo.get("updated_at", ""),
         "archived": bool(repo.get("archived")),
         "license": license_id,
     }
+    if cn_name:
+        entry["cn_name"] = cn_name
     if latest_release_at:
         entry["latest_release_at"] = latest_release_at
     if repo.get("homepage"):
@@ -208,6 +264,9 @@ def main() -> None:
         print(f"Exclusions loaded from {EXCLUDE_FILE}: {len(exclusions)} entries\n")
 
     with make_client(TOKEN) as client:
+        print("Loading label mappings...")
+        label_map = load_label_map()
+
         print("Fetching public repos...")
         repos = fetch_repos(client)
         repos = [r for r in repos if r["name"] not in exclusions]
@@ -219,7 +278,7 @@ def main() -> None:
         print(f"  Found {len(gists)} gists with .md files\n")
 
         print("Building entries (fetching portfolio.toml where present)...")
-        repo_entries = [repo_to_entry(client, r) for r in repos]
+        repo_entries = [repo_to_entry(client, r, label_map) for r in repos]
         gist_entries = [gist_to_entry(client, g) for g in gists]
 
     write_yaml(repo_entries + gist_entries)
