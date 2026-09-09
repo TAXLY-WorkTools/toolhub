@@ -11,14 +11,14 @@
     'repo': '仓库',
     'gist': '代码片段',
 } %}
-{% set icon_map = {
-    'func-data-analysis': '📊',
-    'func-letter-gen': '📋',
-    'func-workpaper-check': '📑',
-    'func-report-gen': '📝',
-    'dept-audit': '🔍',
-    'dept-tax': '💰',
-    'dept-consulting': '💡',
+{% set cn_icon_map = {
+    '审计部': '🔍',
+    '税务部': '💰',
+    '咨询部': '💡',
+    '数据分析': '📊',
+    '函证生成': '📋',
+    '底稿检查': '📑',
+    '报告生成': '📝',
 } %}
 {% block title %}{{ site.description }}{% endblock %}
 {% block content %}
@@ -322,18 +322,18 @@
     <div class="filter-group">
       <div class="filter-group__label">使用部门</div>
       <div class="filter-group__tags" id="deptTags">
-        <button class="tag-btn" data-tag="dept-audit" type="button">审计部</button>
-        <button class="tag-btn" data-tag="dept-tax" type="button">税务部</button>
-        <button class="tag-btn" data-tag="dept-consulting" type="button">咨询部</button>
+        <button class="tag-btn" data-tag="审计部" type="button">审计部</button>
+        <button class="tag-btn" data-tag="税务部" type="button">税务部</button>
+        <button class="tag-btn" data-tag="咨询部" type="button">咨询部</button>
       </div>
     </div>
     <div class="filter-group">
       <div class="filter-group__label">功能分类</div>
       <div class="filter-group__tags" id="funcTags">
-        <button class="tag-btn" data-tag="func-data-analysis" type="button">数据分析</button>
-        <button class="tag-btn" data-tag="func-letter-gen" type="button">函证生成</button>
-        <button class="tag-btn" data-tag="func-workpaper-check" type="button">底稿检查</button>
-        <button class="tag-btn" data-tag="func-report-gen" type="button">报告生成</button>
+        <button class="tag-btn" data-tag="数据分析" type="button">数据分析</button>
+        <button class="tag-btn" data-tag="函证生成" type="button">函证生成</button>
+        <button class="tag-btn" data-tag="底稿检查" type="button">底稿检查</button>
+        <button class="tag-btn" data-tag="报告生成" type="button">报告生成</button>
       </div>
     </div>
     <div class="selected-tags-row" id="selectedTagsRow" style="display:none;">
@@ -365,7 +365,7 @@
         <div class="project-card__icon">
           {% set ns = namespace(found=false) %}
           {% for tag in p.tags %}
-            {% if tag in icon_map and not ns.found %}{{ icon_map[tag] }}{% set ns.found = true %}{% endif %}
+            {% if tag in cn_icon_map and not ns.found %}{{ cn_icon_map[tag] }}{% set ns.found = true %}{% endif %}
           {% endfor %}
           {% if not ns.found %}📦{% endif %}
         </div>
@@ -380,8 +380,8 @@
       </div>
       <div class="project-card__meta">
         {% for tag in p.tags %}
-          {% if tag in topic_map and tag not in ['repo', 'gist', 'language-python'] %}
-          <button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ topic_map[tag] }}</button>
+          {% if tag not in ['仓库', '代码片段', 'Python'] %}
+          <button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ tag }}</button>
           {% endif %}
         {% endfor %}
       </div>
@@ -413,7 +413,7 @@
         <div class="project-card__icon">
           {% set ns = namespace(found=false) %}
           {% for tag in p.tags %}
-            {% if tag in icon_map and not ns.found %}{{ icon_map[tag] }}{% set ns.found = true %}{% endif %}
+            {% if tag in cn_icon_map and not ns.found %}{{ cn_icon_map[tag] }}{% set ns.found = true %}{% endif %}
           {% endfor %}
           {% if not ns.found %}📦{% endif %}
         </div>
@@ -428,8 +428,8 @@
       </div>
       <div class="project-card__meta">
         {% for tag in p.tags %}
-          {% if tag in topic_map and tag not in ['repo', 'gist', 'language-python'] %}
-          <button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ topic_map[tag] }}</button>
+          {% if tag not in ['仓库', '代码片段', 'Python'] %}
+          <button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ tag }}</button>
           {% endif %}
         {% endfor %}
       </div>
@@ -444,7 +444,6 @@
 
 <script>
 (function () {
-  var tagMap = {{ topic_map | tojson }};
   var selectedDepts = new Set();
   var selectedFuncs = new Set();
   var searchQuery = '';
@@ -462,27 +461,21 @@
   function renderSelectedTags() {
     selectedTagsContainer.innerHTML = '';
     var all = [];
-    selectedDepts.forEach(function(t) {
-      var btn = document.querySelector('.tag-btn[data-tag="'+t+'"]');
-      all.push({tag: t, name: btn ? btn.textContent : t});
-    });
-    selectedFuncs.forEach(function(t) {
-      var btn = document.querySelector('.tag-btn[data-tag="'+t+'"]');
-      all.push({tag: t, name: btn ? btn.textContent : t});
-    });
+    selectedDepts.forEach(function(t) { all.push({tag: t, type: 'dept'}); });
+    selectedFuncs.forEach(function(t) { all.push({tag: t, type: 'func'}); });
 
     if (all.length > 0) {
       selectedTagsRow.style.display = 'flex';
       all.forEach(function(item) {
         var capsule = document.createElement('span');
         capsule.className = 'tag-capsule';
-        capsule.textContent = item.name;
+        capsule.textContent = item.tag;
         var removeBtn = document.createElement('button');
         removeBtn.className = 'tag-capsule__remove';
         removeBtn.textContent = '×';
         removeBtn.type = 'button';
         removeBtn.onclick = function() {
-          if (selectedDepts.has(item.tag)) selectedDepts.delete(item.tag);
+          if (item.type === 'dept') selectedDepts.delete(item.tag);
           else selectedFuncs.delete(item.tag);
           var tagBtn = document.querySelector('.tag-btn[data-tag="'+item.tag+'"]');
           if (tagBtn) tagBtn.classList.remove('active');
@@ -604,7 +597,7 @@
     badge.onclick = function(e) {
       e.stopPropagation();
       var tag = this.dataset.tag;
-      var isDept = tag.indexOf('dept-') === 0;
+      var isDept = ['审计部', '税务部', '咨询部'].indexOf(tag) !== -1;
       var set = isDept ? selectedDepts : selectedFuncs;
       if (set.has(tag)) {
         set.delete(tag);
