@@ -60,6 +60,32 @@
   min-width: 140px;
 }
 .sort-select:focus { outline: none; border-color: #0969da; }
+.view-toggle {
+  display: flex;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  flex-shrink: 0;
+}
+.view-toggle__btn {
+  padding: 9px 14px;
+  font-size: 13px;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  color: #57606a;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.view-toggle__btn:hover { background: #f6f8fa; }
+.view-toggle__btn.active {
+  background: #0969da;
+  color: #fff;
+}
 
 .filter-panel {
   max-width: 1400px;
@@ -201,7 +227,6 @@
   font-weight: 700;
   margin: 0;
   word-wrap: break-word;
-  word-break: break-word;
 }
 .project-card__name a {
   color: #1f2328;
@@ -259,6 +284,75 @@
 }
 .project-card__links a:hover { text-decoration: underline; }
 
+/* 列表视图 */
+.project-list {
+  max-width: 1400px;
+  margin: 16px auto 0;
+  padding: 0 24px;
+  display: none;
+}
+.project-list.show { display: block; }
+.project-list__table {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
+  border-collapse: collapse;
+}
+.project-list__table th {
+  background: #f6f8fa;
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #57606a;
+  border-bottom: 1px solid #d0d7de;
+}
+.project-list__table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eaeef2;
+  font-size: 13px;
+  vertical-align: middle;
+}
+.project-list__table tr:last-child td { border-bottom: none; }
+.project-list__table tr:hover { background: #f6f8fa; }
+.project-list__icon {
+  font-size: 22px;
+  width: 36px;
+  text-align: center;
+}
+.project-list__name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2328;
+}
+.project-list__name a {
+  color: #1f2328;
+  text-decoration: none;
+}
+.project-list__name a:hover { color: #0969da; }
+.project-list__desc {
+  font-size: 12px;
+  color: #57606a;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 400px;
+}
+.project-list__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 200px;
+}
+.project-list__updated {
+  font-size: 12px;
+  color: #8b949e;
+  white-space: nowrap;
+}
+
 .archived-toggle {
   max-width: 1400px;
   margin: 20px auto;
@@ -300,13 +394,19 @@
 }
 
 @media (max-width: 768px) {
-  .search-bar, .filter-panel, .project-grid, .archived-toggle, .no-results, .section-heading {
+  .search-bar, .filter-panel, .project-grid, .project-list, .archived-toggle, .no-results, .section-heading {
     padding: 0 12px;
+  }
+  .project-list__table th:nth-child(3),
+  .project-list__table td:nth-child(3),
+  .project-list__table th:nth-child(4),
+  .project-list__table td:nth-child(4) {
+    display: none;
   }
 }
 </style>
 
-<!-- 搜索 + 排序 -->
+<!-- 搜索 + 排序 + 视图切换 -->
 <div class="search-bar">
   <input type="text" class="search-bar__input" id="searchInput" placeholder="搜索工具名称、描述、标签..." autocomplete="off">
   <select class="sort-select" id="sortSelect">
@@ -314,6 +414,14 @@
     <option value="name">按名称排序</option>
     <option value="downloads">最多下载</option>
   </select>
+  <div class="view-toggle">
+    <button class="view-toggle__btn active" onclick="switchView('card')" id="btnCard" type="button">
+      🗂️ 卡片
+    </button>
+    <button class="view-toggle__btn" onclick="switchView('list')" id="btnList" type="button">
+      📋 列表
+    </button>
+  </div>
 </div>
 
 <!-- 标签筛选 -->
@@ -354,6 +462,7 @@
 <!-- 活跃工具 -->
 <div id="activeSection">
   <h2 class="section-heading">🔥 工具列表</h2>
+  <!-- 卡片视图 -->
   <div class="project-grid" id="activeGrid">
     {% for p in active_projects %}
     <div class="project-card"
@@ -391,6 +500,20 @@
     </div>
     {% endfor %}
   </div>
+  <!-- 列表视图 -->
+  <div class="project-list" id="activeList">
+    <table class="project-list__table">
+      <thead>
+        <tr>
+          <th style="width:50px;"></th>
+          <th>工具名称</th>
+          <th style="width:220px;">标签</th>
+          <th style="width:120px;">更新时间</th>
+        </tr>
+      </thead>
+      <tbody id="activeListBody"></tbody>
+    </table>
+  </div>
 </div>
 
 <!-- 归档工具（默认隐藏） -->
@@ -402,6 +525,7 @@
 </div>
 <div id="archivedSection" style="display:none;">
   <h2 class="section-heading">📦 归档工具</h2>
+  <!-- 卡片视图 -->
   <div class="project-grid" id="archivedGrid">
     {% for p in archived_projects %}
     <div class="project-card"
@@ -439,6 +563,20 @@
     </div>
     {% endfor %}
   </div>
+  <!-- 列表视图 -->
+  <div class="project-list" id="archivedList">
+    <table class="project-list__table">
+      <thead>
+        <tr>
+          <th style="width:50px;"></th>
+          <th>工具名称</th>
+          <th style="width:220px;">标签</th>
+          <th style="width:120px;">更新时间</th>
+        </tr>
+      </thead>
+      <tbody id="archivedListBody"></tbody>
+    </table>
+  </div>
 </div>
 {% endif %}
 
@@ -449,6 +587,7 @@
   var searchQuery = '';
   var sortBy = 'recent';
   var showArchived = false;
+  var currentView = 'card';
 
   var searchInput = document.getElementById('searchInput');
   var sortSelect = document.getElementById('sortSelect');
@@ -457,6 +596,75 @@
   var noResults = document.getElementById('noResults');
   var archivedToggleBtn = document.getElementById('archivedToggleBtn');
   var archivedSection = document.getElementById('archivedSection');
+
+  // 视图切换
+  function switchView(view) {
+    currentView = view;
+    var btnCard = document.getElementById('btnCard');
+    var btnList = document.getElementById('btnList');
+    var activeGrid = document.getElementById('activeGrid');
+    var activeList = document.getElementById('activeList');
+    var archivedGrid = document.getElementById('archivedGrid');
+    var archivedList = document.getElementById('archivedList');
+
+    if (view === 'card') {
+      if (activeGrid) activeGrid.style.display = 'grid';
+      if (activeList) activeList.classList.remove('show');
+      if (archivedGrid) archivedGrid.style.display = 'grid';
+      if (archivedList) archivedList.classList.remove('show');
+      btnCard.classList.add('active');
+      btnList.classList.remove('active');
+    } else {
+      if (activeGrid) activeGrid.style.display = 'none';
+      if (activeList) activeList.classList.add('show');
+      if (archivedGrid) archivedGrid.style.display = 'none';
+      if (archivedList) archivedList.classList.add('show');
+      btnCard.classList.remove('active');
+      btnList.classList.add('active');
+      renderListViews();
+    }
+  }
+  window.switchView = switchView;
+
+  // 从卡片数据渲染列表
+  function renderListFromGrid(gridId, listBodyId) {
+    var grid = document.getElementById(gridId);
+    var body = document.getElementById(listBodyId);
+    if (!grid || !body) return;
+    var cards = Array.from(grid.children);
+    var html = '';
+    cards.forEach(function(card) {
+      if (card.style.display === 'none') return;
+      var icon = card.querySelector('.project-card__icon')?.textContent || '📦';
+      var nameEl = card.querySelector('.project-card__name a');
+      var name = nameEl?.textContent || '';
+      var href = nameEl?.getAttribute('href') || '#';
+      var desc = card.querySelector('.project-card__desc')?.textContent || '';
+      var updated = card.dataset.updated || '';
+      if (updated) {
+        try { updated = new Date(updated).toLocaleDateString('zh-CN'); } catch(e) {}
+      }
+      var tags = '';
+      card.querySelectorAll('.project-card__meta .badge--tag').forEach(function(b) {
+        tags += '<span class="badge">' + b.textContent + '</span>';
+      });
+      html += '<tr onclick="window.location.href=\'' + href + '\'" style="cursor:pointer;">' +
+        '<td class="project-list__icon">' + icon + '</td>' +
+        '<td><div class="project-list__name"><a href="' + href + '">' + name + '</a></div>' +
+        (desc ? '<div class="project-list__desc">' + desc + '</div>' : '') + '</td>' +
+        '<td><div class="project-list__tags">' + (tags || '<span style="color:#8b949e;font-size:11px;">无标签</span>') + '</div></td>' +
+        '<td class="project-list__updated">' + (updated || '-') + '</td>' +
+        '</tr>';
+    });
+    body.innerHTML = html;
+  }
+
+  function renderListViews() {
+    renderListFromGrid('activeGrid', 'activeListBody');
+    if (showArchived) {
+      renderListFromGrid('archivedGrid', 'archivedListBody');
+    }
+  }
 
   function renderSelectedTags() {
     selectedTagsContainer.innerHTML = '';
@@ -543,6 +751,11 @@
       var isActive = selectedDepts.has(tag) || selectedFuncs.has(tag);
       badge.classList.toggle('badge--tag-active', isActive);
     });
+
+    // 如果当前是列表视图，重新渲染
+    if (currentView === 'list') {
+      renderListViews();
+    }
   }
 
   searchInput.addEventListener('input', function() {
