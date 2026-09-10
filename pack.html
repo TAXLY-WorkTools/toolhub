@@ -28,6 +28,18 @@
   }
   .topbar__title { font-size: 18px; font-weight: 600; }
   .topbar__title span { color: #0969da; }
+  .topbar__back {
+    color: #0969da;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  .topbar__back:hover { background: #ddf4ff; }
   .topbar__actions { display: flex; gap: 12px; }
   .topbar__btn {
     padding: 6px 14px;
@@ -485,7 +497,10 @@
 </head>
 <body>
 <div class="topbar">
-  <div class="topbar__title">📦 <span>TAXLY WorkTools</span> · 工具上传打包器</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <a class="topbar__back" href="index.html">← 返回主页</a>
+    <div class="topbar__title">📦 <span>TAXLY WorkTools</span> · 工具上传打包器</div>
+  </div>
   <div class="topbar__actions">
     <button class="topbar__btn topbar__btn--primary" onclick="goToUploadPage()">→ 去上传页面</button>
   </div>
@@ -1026,7 +1041,6 @@ function renderFileList() {
   const count = document.getElementById('fileCount');
   count.textContent = uploadedFiles.length;
   if (uploadedFiles.length === 0) { body.innerHTML = '<div class="file-list__empty">暂无文件</div>'; return; }
-  // 构建目录树
   const tree = { name: '/', children: {}, files: [] };
   uploadedFiles.forEach((f, i) => {
     const relPath = f.path.startsWith('src/') ? f.path.substring(4) : f.path;
