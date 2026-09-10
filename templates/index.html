@@ -310,17 +310,18 @@
   border-bottom: 1px solid #d0d7de;
 }
 .project-list__table td {
-  padding: 12px 16px;
+  padding: 14px 16px;
   border-bottom: 1px solid #eaeef2;
   font-size: 13px;
-  vertical-align: middle;
+  vertical-align: top;
 }
 .project-list__table tr:last-child td { border-bottom: none; }
 .project-list__table tr:hover { background: #f6f8fa; }
 .project-list__icon {
-  font-size: 22px;
-  width: 36px;
+  font-size: 24px;
+  width: 48px;
   text-align: center;
+  vertical-align: middle !important;
 }
 .project-list__name {
   font-weight: 600;
@@ -336,21 +337,32 @@
   font-size: 12px;
   color: #57606a;
   margin-top: 2px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 400px;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .project-list__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  max-width: 200px;
+  justify-content: flex-start;
+}
+.project-list__name-cell {
+  min-width: 0;
+}
+.project-list__tags-cell {
+  vertical-align: middle !important;
 }
 .project-list__updated {
   font-size: 12px;
   color: #8b949e;
   white-space: nowrap;
+  text-align: right;
 }
 
 .archived-toggle {
@@ -461,8 +473,7 @@
 
 <!-- 活跃工具 -->
 <div id="activeSection">
-  <h2 class="section-heading">🔥 工具列表</h2>
-  <!-- 卡片视图 -->
+    <!-- 卡片视图 -->
   <div class="project-grid" id="activeGrid">
     {% for p in active_projects %}
     <div class="project-card"
@@ -505,10 +516,10 @@
     <table class="project-list__table">
       <thead>
         <tr>
-          <th style="width:50px;"></th>
+          <th style="width:48px;"></th>
           <th>工具名称</th>
-          <th style="width:220px;">标签</th>
-          <th style="width:120px;">更新时间</th>
+          <th style="width:280px;">标签</th>
+          <th style="width:100px;text-align:right;">更新时间</th>
         </tr>
       </thead>
       <tbody id="activeListBody"></tbody>
@@ -568,10 +579,10 @@
     <table class="project-list__table">
       <thead>
         <tr>
-          <th style="width:50px;"></th>
+          <th style="width:48px;"></th>
           <th>工具名称</th>
-          <th style="width:220px;">标签</th>
-          <th style="width:120px;">更新时间</th>
+          <th style="width:280px;">标签</th>
+          <th style="width:100px;text-align:right;">更新时间</th>
         </tr>
       </thead>
       <tbody id="archivedListBody"></tbody>
@@ -650,9 +661,9 @@
       });
       html += '<tr onclick="window.location.href=\'' + href + '\'" style="cursor:pointer;">' +
         '<td class="project-list__icon">' + icon + '</td>' +
-        '<td><div class="project-list__name"><a href="' + href + '">' + name + '</a></div>' +
+        '<td class="project-list__name-cell"><div class="project-list__name"><a href="' + href + '">' + name + '</a></div>' +
         (desc ? '<div class="project-list__desc">' + desc + '</div>' : '') + '</td>' +
-        '<td><div class="project-list__tags">' + (tags || '<span style="color:#8b949e;font-size:11px;">无标签</span>') + '</div></td>' +
+        '<td class="project-list__tags-cell"><div class="project-list__tags">' + (tags || '<span style="color:#8b949e;font-size:11px;">无标签</span>') + '</div></td>' +
         '<td class="project-list__updated">' + (updated || '-') + '</td>' +
         '</tr>';
     });
