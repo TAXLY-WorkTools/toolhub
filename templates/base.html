@@ -7,6 +7,25 @@
   {% block stylesheets %}<link rel="stylesheet" href="static/style.css">{% endblock %}
   {% block feed_link %}<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="feed.xml">{% endblock %}
   <style>
+    .site-header__nav {
+      background: rgba(44, 54, 63, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 8px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .site-header__nav .back-link {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s;
+    }
+    .site-header__nav .back-link:hover {
+      color: #fff;
+    }
     .top-nav {
       background: rgba(44, 54, 63, 0.92);
       backdrop-filter: blur(12px);
@@ -66,6 +85,12 @@
   </style>
 </head>
 <body>
+  {% if site.navigation.back_link_url %}
+  <nav class="site-header__nav">
+    <a href="{{ site.navigation.back_link_url }}" class="back-link">&#8592; {{ site.navigation.back_link_label }}</a>
+  </nav>
+  {% endif %}
+
   <nav class="top-nav">
     <div class="top-nav__inner">
       <a class="top-nav__brand" href="{% block home_href %}index.html{% endblock %}">🛠️ TAXLY WorkTools</a>
