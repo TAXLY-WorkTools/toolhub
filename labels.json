@@ -1,14 +1,31 @@
 {
-  "version": 3,
+  "version": 4,
   "description": "TAXLY WorkTools 标签集中配置。修改此文件后，上传脚本和展示站会自动读取最新标签。",
   "type_config": {
     "dept": {
       "display_name": "使用部门",
-      "description": "工具所属的使用部门"
+      "description": "工具所属的使用部门",
+      "user_selectable": true
     },
     "func": {
       "display_name": "功能分类",
-      "description": "工具的功能分类"
+      "description": "工具的功能分类",
+      "user_selectable": true
+    },
+    "tech": {
+      "display_name": "技术栈",
+      "description": "工具的技术栈",
+      "user_selectable": false
+    },
+    "tutorial": {
+      "display_name": "是否有教程",
+      "description": "工具是否有使用教程",
+      "user_selectable": false
+    },
+    "size": {
+      "display_name": "文件大小",
+      "description": "工具的文件大小",
+      "user_selectable": false
     }
   },
   "departments": [
@@ -53,6 +70,52 @@
     {
       "id": "func-efficiency-tools",
       "name": "效率工具"
+    }
+  ],
+  "tech_stacks": [
+    {
+      "id": "tech-python",
+      "name": "Python"
+    },
+    {
+      "id": "tech-web",
+      "name": "Web"
+    },
+    {
+      "id": "tech-excel",
+      "name": "Excel"
+    },
+    {
+      "id": "tech-exe",
+      "name": "exe"
+    }
+  ],
+  "tutorial_status": [
+    {
+      "id": "tutorial-yes",
+      "name": "有教程"
+    },
+    {
+      "id": "tutorial-no",
+      "name": "无教程"
+    }
+  ],
+  "file_sizes": [
+    {
+      "id": "size-small",
+      "name": "<1MB"
+    },
+    {
+      "id": "size-medium",
+      "name": "1MB-10MB"
+    },
+    {
+      "id": "size-large",
+      "name": "10MB-50MB"
+    },
+    {
+      "id": "size-xlarge",
+      "name": ">50MB"
     }
   ],
   "custom_types": []
