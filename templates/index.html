@@ -1,24 +1,30 @@
 {% extends "base.html" %}
 {% set topic_map = {
-    'dept-audit': '审计部',
-    'dept-tax': '税务部',
-    'dept-consulting': '咨询部',
+    'dept-tax-audit': '税审',
+    'dept-engineering': '工程',
+    'dept-bidding': '招标',
+    'dept-general': '综合',
+    'dept-universal': '通用',
+    'func-check-proofread': '检查校对',
     'func-data-analysis': '数据分析',
-    'func-letter-gen': '函证生成',
-    'func-workpaper-check': '底稿检查',
-    'func-report-gen': '报告生成',
+    'func-file-management': '文件管理',
+    'func-text-generation': '文本生成',
+    'func-efficiency-tools': '效率工具',
     'language-python': 'Python',
     'repo': '仓库',
     'gist': '代码片段',
 } %}
 {% set cn_icon_map = {
-    '审计部': '🔍',
-    '税务部': '💰',
-    '咨询部': '💡',
+    '税审': '🔍',
+    '工程': '🏗️',
+    '招标': '📋',
+    '综合': '💼',
+    '通用': '🔧',
+    '检查校对': '✅',
     '数据分析': '📊',
-    '函证生成': '📋',
-    '底稿检查': '📑',
-    '报告生成': '📝',
+    '文件管理': '📁',
+    '文本生成': '📝',
+    '效率工具': '⚡',
 } %}
 {% block title %}{{ site.description }}{% endblock %}
 {% block content %}
@@ -442,18 +448,21 @@
     <div class="filter-group">
       <div class="filter-group__label">使用部门</div>
       <div class="filter-group__tags" id="deptTags">
-        <button class="tag-btn" data-tag="审计部" type="button">审计部</button>
-        <button class="tag-btn" data-tag="税务部" type="button">税务部</button>
-        <button class="tag-btn" data-tag="咨询部" type="button">咨询部</button>
+        <button class="tag-btn" data-tag="税审" type="button">税审</button>
+        <button class="tag-btn" data-tag="工程" type="button">工程</button>
+        <button class="tag-btn" data-tag="招标" type="button">招标</button>
+        <button class="tag-btn" data-tag="综合" type="button">综合</button>
+        <button class="tag-btn" data-tag="通用" type="button">通用</button>
       </div>
     </div>
     <div class="filter-group">
       <div class="filter-group__label">功能分类</div>
       <div class="filter-group__tags" id="funcTags">
+        <button class="tag-btn" data-tag="检查校对" type="button">检查校对</button>
         <button class="tag-btn" data-tag="数据分析" type="button">数据分析</button>
-        <button class="tag-btn" data-tag="函证生成" type="button">函证生成</button>
-        <button class="tag-btn" data-tag="底稿检查" type="button">底稿检查</button>
-        <button class="tag-btn" data-tag="报告生成" type="button">报告生成</button>
+        <button class="tag-btn" data-tag="文件管理" type="button">文件管理</button>
+        <button class="tag-btn" data-tag="文本生成" type="button">文本生成</button>
+        <button class="tag-btn" data-tag="效率工具" type="button">效率工具</button>
       </div>
     </div>
     <div class="selected-tags-row" id="selectedTagsRow" style="display:none;">
@@ -821,7 +830,7 @@
     badge.onclick = function(e) {
       e.stopPropagation();
       var tag = this.dataset.tag;
-      var isDept = ['审计部', '税务部', '咨询部'].indexOf(tag) !== -1;
+      var isDept = ['税审', '工程', '招标', '综合', '通用'].indexOf(tag) !== -1;
       var set = isDept ? selectedDepts : selectedFuncs;
       if (set.has(tag)) {
         set.delete(tag);
