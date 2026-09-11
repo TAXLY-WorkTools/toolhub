@@ -10,6 +10,16 @@
     'func-file-management': '文件管理',
     'func-text-generation': '文本生成',
     'func-efficiency-tools': '效率工具',
+    'tech-python': 'Python',
+    'tech-web': 'Web',
+    'tech-excel': 'Excel',
+    'tech-exe': 'exe',
+    'tutorial-yes': '有教程',
+    'tutorial-no': '无教程',
+    'size-small': '<1MB',
+    'size-medium': '1MB-10MB',
+    'size-large': '10MB-50MB',
+    'size-xlarge': '>50MB',
     'language-python': 'Python',
     'repo': '仓库',
     'gist': '代码片段',
@@ -25,6 +35,16 @@
     '文件管理': '📁',
     '文本生成': '📝',
     '效率工具': '⚡',
+    'Python': '🐍',
+    'Web': '🌐',
+    'Excel': '📊',
+    'exe': '⚙️',
+    '有教程': '📖',
+    '无教程': '📕',
+    '<1MB': '📄',
+    '1MB-10MB': '📁',
+    '10MB-50MB': '📦',
+    '>50MB': '🗄️',
 } %}
 {% block title %}{{ site.description }}{% endblock %}
 {% block content %}
@@ -239,6 +259,11 @@
   text-decoration: none;
 }
 .project-card__name a:hover { color: #0969da; }
+.project-card__author {
+  font-size: 11px;
+  color: #8b949e;
+  margin-top: 2px;
+}
 .project-card__desc {
   font-size: 12px;
   color: #57606a;
@@ -339,6 +364,11 @@
   text-decoration: none;
 }
 .project-list__name a:hover { color: #0969da; }
+.project-list__author {
+  font-size: 11px;
+  color: #8b949e;
+  margin-top: 2px;
+}
 .project-list__desc {
   font-size: 12px;
   color: #57606a;
@@ -465,6 +495,31 @@
         <button class="tag-btn" data-tag="效率工具" type="button">效率工具</button>
       </div>
     </div>
+    <div class="filter-group">
+      <div class="filter-group__label">技术栈</div>
+      <div class="filter-group__tags" id="techTags">
+        <button class="tag-btn" data-tag="Python" type="button">Python</button>
+        <button class="tag-btn" data-tag="Web" type="button">Web</button>
+        <button class="tag-btn" data-tag="Excel" type="button">Excel</button>
+        <button class="tag-btn" data-tag="exe" type="button">exe</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-group__label">是否有教程</div>
+      <div class="filter-group__tags" id="tutorialTags">
+        <button class="tag-btn" data-tag="有教程" type="button">有教程</button>
+        <button class="tag-btn" data-tag="无教程" type="button">无教程</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-group__label">文件大小</div>
+      <div class="filter-group__tags" id="sizeTags">
+        <button class="tag-btn" data-tag="<1MB" type="button"><1MB</button>
+        <button class="tag-btn" data-tag="1MB-10MB" type="button">1MB-10MB</button>
+        <button class="tag-btn" data-tag="10MB-50MB" type="button">10MB-50MB</button>
+        <button class="tag-btn" data-tag=">50MB" type="button">>50MB</button>
+      </div>
+    </div>
     <div class="selected-tags-row" id="selectedTagsRow" style="display:none;">
       <span class="selected-tags-row__label">已选标签：</span>
       <div id="selectedTagsContainer" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
@@ -502,6 +557,11 @@
           <h3 class="project-card__name">
             <a href="{{ p.slug }}/index.html">{{ p.cn_name or p.name }}</a>
           </h3>
+          {% if p.author %}
+          <div class="project-card__author">作者：{{ p.author }}</div>
+          {% else %}
+          <div class="project-card__author">作者：未知</div>
+          {% endif %}
           {% if p.description %}
           <p class="project-card__desc">{{ p.description }}</p>
           {% endif %}
@@ -565,6 +625,11 @@
           <h3 class="project-card__name">
             <a href="{{ p.slug }}/index.html">{{ p.cn_name or p.name }}</a>
           </h3>
+          {% if p.author %}
+          <div class="project-card__author">作者：{{ p.author }}</div>
+          {% else %}
+          <div class="project-card__author">作者：未知</div>
+          {% endif %}
           {% if p.description %}
           <p class="project-card__desc">{{ p.description }}</p>
           {% endif %}
@@ -604,6 +669,9 @@
 (function () {
   var selectedDepts = new Set();
   var selectedFuncs = new Set();
+  var selectedTechs = new Set();
+  var selectedTutorials = new Set();
+  var selectedSizes = new Set();
   var searchQuery = '';
   var sortBy = 'recent';
   var showArchived = false;
@@ -659,6 +727,8 @@
       var nameEl = card.querySelector('.project-card__name a');
       var name = nameEl?.textContent || '';
       var href = nameEl?.getAttribute('href') || '#';
+      var authorEl = card.querySelector('.project-card__author');
+      var author = authorEl?.textContent || '';
       var desc = card.querySelector('.project-card__desc')?.textContent || '';
       var updated = card.dataset.updated || '';
       if (updated) {
@@ -671,6 +741,7 @@
       html += '<tr onclick="window.location.href=\'' + href + '\'" style="cursor:pointer;">' +
         '<td class="project-list__icon">' + icon + '</td>' +
         '<td class="project-list__name-cell"><div class="project-list__name"><a href="' + href + '">' + name + '</a></div>' +
+        (author ? '<div class="project-list__author">' + author + '</div>' : '') +
         (desc ? '<div class="project-list__desc">' + desc + '</div>' : '') + '</td>' +
         '<td class="project-list__tags-cell"><div class="project-list__tags">' + (tags || '<span style="color:#8b949e;font-size:11px;">无标签</span>') + '</div></td>' +
         '<td class="project-list__updated">' + (updated || '-') + '</td>' +
@@ -691,6 +762,9 @@
     var all = [];
     selectedDepts.forEach(function(t) { all.push({tag: t, type: 'dept'}); });
     selectedFuncs.forEach(function(t) { all.push({tag: t, type: 'func'}); });
+    selectedTechs.forEach(function(t) { all.push({tag: t, type: 'tech'}); });
+    selectedTutorials.forEach(function(t) { all.push({tag: t, type: 'tutorial'}); });
+    selectedSizes.forEach(function(t) { all.push({tag: t, type: 'size'}); });
 
     if (all.length > 0) {
       selectedTagsRow.style.display = 'flex';
@@ -704,7 +778,10 @@
         removeBtn.type = 'button';
         removeBtn.onclick = function() {
           if (item.type === 'dept') selectedDepts.delete(item.tag);
-          else selectedFuncs.delete(item.tag);
+          else if (item.type === 'func') selectedFuncs.delete(item.tag);
+          else if (item.type === 'tech') selectedTechs.delete(item.tag);
+          else if (item.type === 'tutorial') selectedTutorials.delete(item.tag);
+          else if (item.type === 'size') selectedSizes.delete(item.tag);
           var tagBtn = document.querySelector('.tag-btn[data-tag="'+item.tag+'"]');
           if (tagBtn) tagBtn.classList.remove('active');
           renderSelectedTags();
@@ -742,8 +819,11 @@
         var tags = (card.dataset.tags || '').split(' ').filter(Boolean);
         var deptMatch = selectedDepts.size === 0 || tags.some(function(t) { return selectedDepts.has(t); });
         var funcMatch = selectedFuncs.size === 0 || tags.some(function(t) { return selectedFuncs.has(t); });
+        var techMatch = selectedTechs.size === 0 || tags.some(function(t) { return selectedTechs.has(t); });
+        var tutorialMatch = selectedTutorials.size === 0 || tags.some(function(t) { return selectedTutorials.has(t); });
+        var sizeMatch = selectedSizes.size === 0 || tags.some(function(t) { return selectedSizes.has(t); });
         var searchMatch = query === '' || (card.dataset.search || '').toLowerCase().indexOf(query) !== -1;
-        var show = deptMatch && funcMatch && searchMatch;
+        var show = deptMatch && funcMatch && techMatch && tutorialMatch && sizeMatch && searchMatch;
         card.style.display = show ? '' : 'none';
         if (show) visible++;
       });
@@ -768,7 +848,7 @@
 
     document.querySelectorAll('.badge--tag').forEach(function(badge) {
       var tag = badge.dataset.tag;
-      var isActive = selectedDepts.has(tag) || selectedFuncs.has(tag);
+      var isActive = selectedDepts.has(tag) || selectedFuncs.has(tag) || selectedTechs.has(tag) || selectedTutorials.has(tag) || selectedSizes.has(tag);
       badge.classList.toggle('badge--tag-active', isActive);
     });
 
@@ -818,9 +898,57 @@
     };
   });
 
+  document.querySelectorAll('#techTags .tag-btn').forEach(function(btn) {
+    btn.onclick = function() {
+      var tag = this.dataset.tag;
+      if (selectedTechs.has(tag)) {
+        selectedTechs.delete(tag);
+        this.classList.remove('active');
+      } else {
+        selectedTechs.add(tag);
+        this.classList.add('active');
+      }
+      renderSelectedTags();
+      applyFilters();
+    };
+  });
+
+  document.querySelectorAll('#tutorialTags .tag-btn').forEach(function(btn) {
+    btn.onclick = function() {
+      var tag = this.dataset.tag;
+      if (selectedTutorials.has(tag)) {
+        selectedTutorials.delete(tag);
+        this.classList.remove('active');
+      } else {
+        selectedTutorials.add(tag);
+        this.classList.add('active');
+      }
+      renderSelectedTags();
+      applyFilters();
+    };
+  });
+
+  document.querySelectorAll('#sizeTags .tag-btn').forEach(function(btn) {
+    btn.onclick = function() {
+      var tag = this.dataset.tag;
+      if (selectedSizes.has(tag)) {
+        selectedSizes.delete(tag);
+        this.classList.remove('active');
+      } else {
+        selectedSizes.add(tag);
+        this.classList.add('active');
+      }
+      renderSelectedTags();
+      applyFilters();
+    };
+  });
+
   document.getElementById('clearAllBtn').onclick = function() {
     selectedDepts.clear();
     selectedFuncs.clear();
+    selectedTechs.clear();
+    selectedTutorials.clear();
+    selectedSizes.clear();
     document.querySelectorAll('.tag-btn.active').forEach(function(b) { b.classList.remove('active'); });
     renderSelectedTags();
     applyFilters();
@@ -831,7 +959,15 @@
       e.stopPropagation();
       var tag = this.dataset.tag;
       var isDept = ['税审', '工程', '招标', '综合', '通用'].indexOf(tag) !== -1;
-      var set = isDept ? selectedDepts : selectedFuncs;
+      var isTech = ['Python', 'Web', 'Excel', 'exe'].indexOf(tag) !== -1;
+      var isTutorial = ['有教程', '无教程'].indexOf(tag) !== -1;
+      var isSize = ['<1MB', '1MB-10MB', '10MB-50MB', '>50MB'].indexOf(tag) !== -1;
+      var set;
+      if (isDept) set = selectedDepts;
+      else if (isTech) set = selectedTechs;
+      else if (isTutorial) set = selectedTutorials;
+      else if (isSize) set = selectedSizes;
+      else set = selectedFuncs;
       if (set.has(tag)) {
         set.delete(tag);
         var tagBtn = document.querySelector('.tag-btn[data-tag="'+tag+'"]');
