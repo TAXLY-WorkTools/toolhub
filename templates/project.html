@@ -1,12 +1,25 @@
 {% extends "base.html" %}
 {% set topic_map = {
-    'dept-audit': '审计部',
-    'dept-tax': '税务部',
-    'dept-consulting': '咨询部',
+    'dept-tax-audit': '税审',
+    'dept-engineering': '工程',
+    'dept-bidding': '招标',
+    'dept-general': '综合',
+    'dept-universal': '通用',
+    'func-check-proofread': '检查校对',
     'func-data-analysis': '数据分析',
-    'func-letter-gen': '函证生成',
-    'func-workpaper-check': '底稿检查',
-    'func-report-gen': '报告生成',
+    'func-file-management': '文件管理',
+    'func-text-generation': '文本生成',
+    'func-efficiency-tools': '效率工具',
+    'tech-python': 'Python',
+    'tech-web': 'Web',
+    'tech-excel': 'Excel',
+    'tech-exe': 'exe',
+    'tutorial-yes': '有教程',
+    'tutorial-no': '无教程',
+    'size-small': '<1MB',
+    'size-medium': '1MB-10MB',
+    'size-large': '10MB-50MB',
+    'size-xlarge': '>50MB',
     'language-python': 'Python',
     'repo': '仓库',
     'gist': '代码片段',
@@ -34,6 +47,14 @@ h1 {
   word-wrap: break-word;
   word-break: break-word;
   overflow-wrap: break-word;
+}
+.project-header__author {
+  font-size: 13px;
+  color: #57606a;
+  margin-bottom: 12px;
+}
+.project-header__author strong {
+  color: #24292f;
 }
 .download-quick {
   display: flex;
@@ -150,6 +171,12 @@ h1 {
   <div class="project-header__subtitle">{{ project.name }}</div>
   {% else %}
   <h1>{{ project.name }}</h1>
+  {% endif %}
+
+  {% if project.author %}
+  <div class="project-header__author">👤 作者：<strong>{{ project.author }}</strong></div>
+  {% else %}
+  <div class="project-header__author">👤 作者：<strong>未知</strong></div>
   {% endif %}
 
   {% if project.description %}
