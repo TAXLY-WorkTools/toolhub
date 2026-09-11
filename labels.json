@@ -23,17 +23,17 @@
     {
       "id": "dept-bidding",
       "name": "招标"
-    }
+    },
     {
       "id": "dept-general",
       "name": "综合"
-    }
+    },
     {
       "id": "dept-universal",
       "name": "通用"
     }
   ],
- "categories": [
+  "categories": [
     {
       "id": "func-check-proofread",
       "name": "检查校对"
