@@ -205,6 +205,10 @@ input.error, select.error {
         <input type="text" id="toolDesc" placeholder="自动生成银行函证工具" required>
       </div>
       <div class="field">
+        <label class="field__label">作者 <span class="hint">（选填，不填显示为"作者：未知"）</span></label>
+        <input type="text" id="author" placeholder="张三">
+      </div>
+      <div class="field">
         <label class="field__label">所属部门 <span class="required">*</span></label>
         <select id="department" required>
           <option value="">请选择</option>
@@ -329,10 +333,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   const fromPack = params.get('from_pack') === '1';
   const toolName = params.get('tool_name');
   const description = params.get('description');
+  const author = params.get('author');
   const displayName = params.get('display_name');
 
   if (toolName) document.getElementById('toolName').value = toolName;
   if (description) document.getElementById('toolDesc').value = description;
+  if (author) document.getElementById('author').value = author;
 
   if (fromPack) {
     document.getElementById('autoLoadNotice').classList.add('show');
@@ -378,6 +384,7 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
 
   const toolName = document.getElementById('toolName').value.trim();
   const toolDesc = document.getElementById('toolDesc').value.trim();
+  const author = document.getElementById('author').value.trim();
   const department = document.getElementById('department').value;
   const category = document.getElementById('category').value;
 
@@ -406,6 +413,7 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
   const url = 'https://github.com/TAXLY-WorkTools/upload-portal/issues/new?template=upload.yml' +
     '&tool_name=' + encodeURIComponent(toolName) +
     '&description=' + encodeURIComponent(toolDesc) +
+    '&author=' + encodeURIComponent(author) +
     '&department=' + encodeURIComponent(department) +
     '&category=' + encodeURIComponent(category);
 
