@@ -332,9 +332,16 @@ document.addEventListener('DOMContentLoaded', async function() {
   const params = new URLSearchParams(window.location.search);
   const fromPack = params.get('from_pack') === '1';
   const toolName = params.get('tool_name');
-  const description = params.get('description');
-  const author = params.get('author');
+  let description = params.get('description') || '';
+  let author = params.get('author') || '';
   const displayName = params.get('display_name');
+
+  // 从描述中提取作者信息（格式：【作者：xxx】）
+  const authorMatch = description.match(/【作者：([^】]+)】/);
+  if (authorMatch && !author) {
+    author = authorMatch[1];
+    description = description.replace(/【作者：[^】]+】/, '').trim();
+  }
 
   if (toolName) document.getElementById('toolName').value = toolName;
   if (description) document.getElementById('toolDesc').value = description;
@@ -383,10 +390,15 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
   document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
 
   const toolName = document.getElementById('toolName').value.trim();
-  const toolDesc = document.getElementById('toolDesc').value.trim();
+  let toolDesc = document.getElementById('toolDesc').value.trim();
   const author = document.getElementById('author').value.trim();
   const department = document.getElementById('department').value;
   const category = document.getElementById('category').value;
+
+  // 将作者信息添加到描述末尾
+  if (author) {
+    toolDesc += '【作者：' + author + '】';
+  }
 
   let firstError = null;
   if (!toolName) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; }
