@@ -530,6 +530,11 @@
           <label class="field__label">工具描述 <span class="required">*</span></label>
           <textarea id="description" rows="2" placeholder="一句话说明这个工具解决什么问题，如：自动从 Excel 读取客户信息并生成审计函证"></textarea>
         </div>
+        <div class="field">
+          <label class="field__label">作者 <span class="hint">（选填，不填不显示）</span></label>
+          <input type="text" id="author" placeholder="如：张三">
+          <div style="margin-top:4px; font-size:12px; color:#8b949e; font-style:italic;">打包时自动添加到描述末尾：原始描述【作者：张三】</div>
+        </div>
       </div>
       <div class="section">
         <div class="section__title"><span class="num">2</span>主要功能</div>
@@ -1128,7 +1133,7 @@ function updatePreview() {
   if (!fullMd.trim() || fullMd === '# 未命名工具\n\n') { body.innerHTML = '<div class="preview-empty">填写左侧信息后，这里会实时显示 README 效果</div>'; return; }
   try { body.innerHTML = marked.parse(fullMd); } catch (e) { body.innerHTML = '<pre>' + escapeHtml(fullMd) + '</pre>'; }
 }
-['displayName', 'toolName', 'description', 'aiPrompt'].forEach(id => {
+['displayName', 'toolName', 'description', 'author', 'aiPrompt'].forEach(id => {
   const el = document.getElementById(id);
   if (el) { el.addEventListener('input', function() { updatePreview(); this.classList.remove('error'); }); }
 });
@@ -1139,6 +1144,7 @@ function goToUploadPage() {
   const toolName = document.getElementById('toolName').value.trim();
   const description = document.getElementById('description').value.trim();
   const displayName = document.getElementById('displayName').value.trim();
+  const author = document.getElementById('author').value.trim();
   let firstError = null;
   if (!displayName) { const el = document.getElementById('displayName'); el.classList.add('error'); firstError = firstError || el; showToast('请填写中文显示名', 'error'); }
   if (!toolName) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; if (!firstError || firstError === el) showToast('请填写工具名称', 'error'); }
@@ -1151,10 +1157,13 @@ function goToUploadPage() {
   }
   if (uploadedFiles.length === 0) { showToast('请先添加代码文件', 'error'); return; }
   if (firstError) { scrollToError(firstError); return; }
-  const fullDescription = '【' + displayName + '】' + description;
+  let fullDescription = '【' + displayName + '】' + description;
+  if (author) fullDescription += '【作者：' + author + '】';
   const params = new URLSearchParams();
-  params.set('tool_name', toolName); params.set('description', fullDescription);
+  params.set('tool_name', toolName);
+  params.set('description', fullDescription);
   params.set('display_name', displayName);
+  if (author) params.set('author', author);
   params.set('from_pack', '1');
   window.open('upload.html?' + params.toString(), '_blank');
   showToast('已在新标签页打开上传页面', 'success');
@@ -1164,6 +1173,7 @@ async function generatePackage() {
   const toolName = document.getElementById('toolName').value.trim();
   const description = document.getElementById('description').value.trim();
   const displayName = document.getElementById('displayName').value.trim();
+  const author = document.getElementById('author').value.trim();
   let firstError = null;
   if (!displayName) { const el = document.getElementById('displayName'); el.classList.add('error'); firstError = firstError || el; showToast('请填写中文显示名', 'error'); }
   if (!toolName) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; if (!firstError || firstError === el) showToast('请填写工具名称', 'error'); }
@@ -1176,7 +1186,8 @@ async function generatePackage() {
   }
   if (uploadedFiles.length === 0) { showToast('请至少添加一个代码文件', 'error'); return; }
   if (firstError) { scrollToError(firstError); return; }
-  const fullDescription = '【' + displayName + '】' + description;
+  let fullDescription = '【' + displayName + '】' + description;
+  if (author) fullDescription += '【作者：' + author + '】';
   const btn = document.getElementById('generateBtn');
   btn.disabled = true; btn.textContent = '⏳ 正在生成...';
   try {
@@ -1188,6 +1199,7 @@ async function generatePackage() {
     const isSingleFile = uploadedFiles.length === 1;
     let portfolio = '# 工具下载配置（由上传打包器自动生成，请勿手动修改）\n';
     if (displayName) portfolio += 'display_name = "' + displayName.replace(/"/g, '\\"') + '"\n';
+    if (author) portfolio += 'author = "' + author.replace(/"/g, '\\"') + '"\n';
     if (aiPrompt) {
       const escapedPrompt = aiPrompt.replace(/"""/g, '\\"\\"\\"');
       portfolio += 'ai_prompt = """\n' + escapedPrompt + '\n"""\n';
@@ -1229,6 +1241,7 @@ async function generatePackage() {
       const params = new URLSearchParams();
       params.set('tool_name', toolName); params.set('description', fullDescription);
       params.set('display_name', displayName);
+      if (author) params.set('author', author);
       params.set('from_pack', '1');
       window.open('upload.html?' + params.toString(), '_blank');
     }, 1500);
