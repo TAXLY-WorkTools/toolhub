@@ -323,39 +323,6 @@ def render_markdown(md_text: str, raw_base: str = "") -> str:
 
 
 # --------------------------------------------------------------------------- #
-# Author extraction
-# --------------------------------------------------------------------------- #
-
-def extract_author(readme_md: str) -> str:
-    """
-    从 README 中提取作者信息。
-
-    支持的格式：
-    - "作者：张三"
-    - "作者: 张三"
-    - "Author: 张三"
-    - "Author：张三"
-
-    如果没有找到作者信息，返回空字符串。
-    """
-    # 匹配 "作者：xxx" 或 "作者: xxx" 或 "Author: xxx" 或 "Author：xxx"
-    patterns = [
-        r'作者[：:]\s*(.+)',
-        r'Author[：:]\s*(.+)',
-    ]
-    for pattern in patterns:
-        match = re.search(pattern, readme_md, re.IGNORECASE)
-        if match:
-            author = match.group(1).strip()
-            # 去掉可能的 Markdown 格式（如 **张三**）
-            author = re.sub(r'[*_`]', '', author).strip()
-            # 只取第一行（避免匹配到多行内容）
-            author = author.split('\n')[0].strip()
-            return author
-    return ""
-
-
-# --------------------------------------------------------------------------- #
 # Load projects
 # --------------------------------------------------------------------------- #
 
@@ -476,11 +443,7 @@ def build(
         enriched_projects.append(enriched)
 
         readme_md = get_readme(client, project)
-        # 从 README 中提取作者信息
-        author = extract_author(readme_md)
-        if author:
-            enriched["author"] = author
-            print(f"  [author] {project['name']}: {author}")
+        # 作者信息已经从描述中提取到 projects.yaml 中了，不需要再从 README 中提取
         # 构造仓库 raw 基础 URL，用于把 README 中的相对路径图片转为绝对路径
         raw_base = f"https://raw.githubusercontent.com/{USERNAME}/{project['name']}/main/"
         readme_html = render_markdown(readme_md, raw_base)
