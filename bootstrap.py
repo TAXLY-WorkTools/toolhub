@@ -102,6 +102,13 @@ def load_label_map() -> dict[str, str]:
         for ct in data.get("custom_types", []):
             for l in ct.get("labels", []):
                 label_map[l["id"]] = l["name"]
+        # 加载新增的标签类型
+        for l in data.get("tech_stacks", []):
+            label_map[l["id"]] = l["name"]
+        for l in data.get("tutorial_status", []):
+            label_map[l["id"]] = l["name"]
+        for l in data.get("file_sizes", []):
+            label_map[l["id"]] = l["name"]
         print(f"  📋 Loaded {len(label_map)} label mappings from labels.json")
     except Exception as e:
         print(f"  ⚠️ Failed to load labels.json: {e}")
@@ -120,6 +127,22 @@ def extract_cn_name(description: str) -> tuple[str, str]:
         cn_name = m.group(1).strip()
         clean_desc = description[m.end():].strip()
         return cn_name, clean_desc
+    return "", description
+
+
+def extract_author(description: str) -> tuple[str, str]:
+    """Extract author from description suffix 【作者：xxx】.
+    Returns (author, clean_description).
+    If no 【作者：xxx】 suffix found, returns ("", original_description).
+    """
+    if not description:
+        return "", description
+    # 匹配描述末尾的 【作者：xxx】
+    m = re.search(r"【作者：(.+?)】\s*$", description)
+    if m:
+        author = m.group(1).strip()
+        clean_desc = description[:m.start()].strip()
+        return author, clean_desc
     return "", description
 
 
@@ -166,6 +189,7 @@ def repo_to_entry(client: httpx.Client, repo: dict, label_map: dict[str, str]) -
     Convert a repo API response to a projects.yaml entry.
     Fetches portfolio.toml and GitHub topics automatically.
     Extracts Chinese name from 【...】 prefix in description.
+    Extracts author from 【作者：xxx】 suffix in description.
     Converts tag IDs to Chinese names using label_map.
     """
     name = repo["name"]
@@ -181,6 +205,11 @@ def repo_to_entry(client: httpx.Client, repo: dict, label_map: dict[str, str]) -
     cn_name, clean_desc = extract_cn_name(raw_desc)
     if cn_name:
         print(f"    📝 Chinese name: {cn_name}")
+
+    # Extract author from description 【作者：xxx】 suffix
+    author, clean_desc = extract_author(clean_desc)
+    if author:
+        print(f"    👤 Author: {author}")
 
     # Convert tag IDs to Chinese names
     cn_tags = [label_map.get(t, t) for t in topics]
@@ -198,6 +227,8 @@ def repo_to_entry(client: httpx.Client, repo: dict, label_map: dict[str, str]) -
     }
     if cn_name:
         entry["cn_name"] = cn_name
+    if author:
+        entry["author"] = author
     if latest_release_at:
         entry["latest_release_at"] = latest_release_at
     if repo.get("homepage"):
