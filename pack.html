@@ -60,6 +60,86 @@
     font-weight: 500;
   }
   .topbar__btn--primary:hover { background: #22863a; }
+
+  /* ===== 新增：流程状态图 ===== */
+  .flow-steps {
+    background: #fff;
+    border-bottom: 1px solid #d0d7de;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+  }
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .flow-step:hover {
+    background: #f6f8fa;
+  }
+  .flow-step__num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #d0d7de;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .flow-step.active .flow-step__num {
+    background: #0969da;
+  }
+  .flow-step.done .flow-step__num {
+    background: #2da44e;
+  }
+  .flow-step__text {
+    font-size: 13px;
+    color: #57606a;
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+  .flow-step.active .flow-step__text {
+    color: #0969da;
+    font-weight: 600;
+  }
+  .flow-step.done .flow-step__text {
+    color: #2da44e;
+  }
+  .flow-step__arrow {
+    color: #d0d7de;
+    font-size: 14px;
+    margin: 0 4px;
+    flex-shrink: 0;
+  }
+  @media (max-width: 768px) {
+    .flow-steps {
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 8px 16px;
+    }
+    .flow-step {
+      padding: 4px 8px;
+    }
+    .flow-step__text {
+      font-size: 12px;
+    }
+    .flow-step__arrow {
+      display: none;
+    }
+  }
+
   .mode-switch {
     display: flex;
     gap: 0;
@@ -505,6 +585,35 @@
     <button class="topbar__btn topbar__btn--primary" onclick="goToUploadPage()">→ 去上传页面</button>
   </div>
 </div>
+
+<!-- ===== 新增：流程状态图 ===== -->
+<div class="flow-steps" id="flowSteps">
+  <div class="flow-step active" onclick="setFlowStep(0)">
+    <div class="flow-step__num">1</div>
+    <div class="flow-step__text">填写基本信息</div>
+  </div>
+  <div class="flow-step__arrow">→</div>
+  <div class="flow-step" onclick="setFlowStep(1)">
+    <div class="flow-step__num">2</div>
+    <div class="flow-step__text">上传代码文件</div>
+  </div>
+  <div class="flow-step__arrow">→</div>
+  <div class="flow-step" onclick="setFlowStep(2)">
+    <div class="flow-step__num">3</div>
+    <div class="flow-step__text">编写使用说明</div>
+  </div>
+  <div class="flow-step__arrow">→</div>
+  <div class="flow-step" onclick="setFlowStep(3)">
+    <div class="flow-step__num">4</div>
+    <div class="flow-step__text">打包下载</div>
+  </div>
+  <div class="flow-step__arrow">→</div>
+  <div class="flow-step" onclick="setFlowStep(4)">
+    <div class="flow-step__num">5</div>
+    <div class="flow-step__text">前往上传页面提交</div>
+  </div>
+</div>
+
 <div class="mode-switch">
   <button class="mode-switch__btn active" onclick="switchMode('form')">📝 表单生成 README</button>
   <button class="mode-switch__btn" onclick="switchMode('custom')">📂 上传自定义 README.md</button>
@@ -1139,6 +1248,17 @@ function updatePreview() {
 });
 function clearErrors() { document.querySelectorAll('.error').forEach(el => el.classList.remove('error')); }
 function scrollToError(element) { element.scrollIntoView({ behavior: 'smooth', block: 'center' }); element.focus(); }
+
+/* ===== 新增：流程状态图交互 ===== */
+function setFlowStep(index) {
+  const steps = document.querySelectorAll('#flowSteps .flow-step');
+  steps.forEach((step, i) => {
+    step.classList.remove('active', 'done');
+    if (i < index) step.classList.add('done');
+    if (i === index) step.classList.add('active');
+  });
+}
+
 function goToUploadPage() {
   clearErrors();
   const toolName = document.getElementById('toolName').value.trim();
