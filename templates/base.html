@@ -27,13 +27,13 @@
       color: #fff;
     }
     .top-nav {
-      background: rgba(44, 54, 63, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
       position: sticky;
       top: 0;
       z-index: 100;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 2px solid #3A4758;
     }
     .top-nav__inner {
       max-width: 1400px;
@@ -45,7 +45,7 @@
       justify-content: space-between;
     }
     .top-nav__brand {
-      color: #fff;
+      color: #3A4758;
       font-size: 18px;
       font-weight: 700;
       text-decoration: none;
@@ -59,7 +59,7 @@
       gap: 4px;
     }
     .top-nav__link {
-      color: rgba(255,255,255,0.85);
+      color: #5A6878;
       text-decoration: none;
       padding: 8px 16px;
       border-radius: 6px;
@@ -70,12 +70,21 @@
       gap: 6px;
     }
     .top-nav__link:hover {
-      background: rgba(255,255,255,0.1);
-      color: #fff;
+      background: rgba(90, 104, 120, 0.1);
+      color: #3A4758;
     }
     .top-nav__link--active {
-      background: rgba(93, 156, 60, 0.3);
-      color: #fff;
+      background: rgba(90, 104, 120, 0.15);
+      color: #3A4758;
+    }
+    .mc-icon {
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+    }
+    .mc-icon--sm {
+      width: 20px;
+      height: 20px;
     }
     @media (max-width: 768px) {
       .top-nav__inner { padding: 0 12px; }
