@@ -25,16 +25,16 @@
     'gist': '代码片段',
 } %}
 {% set cn_icon_map = {
-    '税审': '<div class=\"tool-icon icon-check\"></div>',
-    '工程': '<div class=\"tool-icon icon-data\"></div>',
-    '招标': '<div class=\"tool-icon icon-file\"></div>',
-    '综合': '<div class=\"tool-icon icon-text\"></div>',
-    '通用': '<div class=\"tool-icon icon-efficiency\"></div>',
-    '检查校对': '<div class=\"tool-icon icon-check\"></div>',
-    '数据分析': '<div class=\"tool-icon icon-data\"></div>',
-    '文件管理': '<div class=\"tool-icon icon-file\"></div>',
-    '文本生成': '<div class=\"tool-icon icon-text\"></div>',
-    '效率工具': '<div class=\"tool-icon icon-efficiency\"></div>',
+    '税审': '<img src=\"static/icons/spyglass.png\" alt=\"\">',
+    '工程': '<img src=\"static/icons/redstone_comparator.png\" alt=\"\">',
+    '招标': '<img src=\"static/icons/chest.png\" alt=\"\">',
+    '综合': '<img src=\"static/icons/book_and_quill.png\" alt=\"\">',
+    '通用': '<img src=\"static/icons/diamond_pickaxe.png\" alt=\"\">',
+    '检查校对': '<img src=\"static/icons/spyglass.png\" alt=\"\">',
+    '数据分析': '<img src=\"static/icons/redstone_comparator.png\" alt=\"\">',
+    '文件管理': '<img src=\"static/icons/chest.png\" alt=\"\">',
+    '文本生成': '<img src=\"static/icons/book_and_quill.png\" alt=\"\">',
+    '效率工具': '<img src=\"static/icons/diamond_pickaxe.png\" alt=\"\">',
     'Python': '🐍',
     'Web': '🌐',
     'Excel': '📊',
@@ -530,7 +530,7 @@ body {
 <!-- 搜索 + 排序 + 视图切换 -->
 <div class="search-bar">
   <div class="search-bar__wrapper">
-    <span class="search-bar__icon"><div class="search-icon"></div></span>
+    <span class="search-bar__icon"><img src="static/icons/engineer_goggles.png" alt="" style="width:20px;height:20px;image-rendering:pixelated;"></span>
     <input type="text" class="search-bar__input" id="searchInput" placeholder="搜索工具名称、描述、标签..." autocomplete="off">
   </div>
   <select class="sort-select" id="sortSelect">
@@ -540,10 +540,10 @@ body {
   </select>
   <div class="view-toggle">
     <button class="view-toggle__btn active" onclick="switchView('card')" id="btnCard" type="button">
-      <div class="view-icon icon-card"></div>卡片
+      <img src="static/icons/book.png" alt="" style="width:22px;height:22px;image-rendering:pixelated;">卡片
     </button>
     <button class="view-toggle__btn" onclick="switchView('list')" id="btnList" type="button">
-      <div class="view-icon icon-list"></div>列表
+      <img src="static/icons/paper.png" alt="" style="width:22px;height:22px;image-rendering:pixelated;">列表
     </button>
   </div>
 </div>
@@ -624,9 +624,15 @@ body {
       <div class="project-card__header">
         <div class="project-card__icon">
           {% set ns = namespace(found=false) %}
-          {% for tag in p.tags %}
-            {% if tag in cn_icon_map and not ns.found %}{{ cn_icon_map[tag] | safe }}{% set ns.found = true %}{% endif %}
+          {% set func_tags = ['检查校对', '数据分析', '文件管理', '文本生成', '效率工具'] %}
+          {% for tag in func_tags %}
+            {% if tag in p.tags and not ns.found %}{{ cn_icon_map[tag] | safe }}{% set ns.found = true %}{% endif %}
           {% endfor %}
+          {% if not ns.found %}
+            {% for tag in p.tags %}
+              {% if tag in cn_icon_map and not ns.found %}{{ cn_icon_map[tag] | safe }}{% set ns.found = true %}{% endif %}
+            {% endfor %}
+          {% endif %}
           {% if not ns.found %}📦{% endif %}
         </div>
         <div class="project-card__info">
@@ -692,9 +698,15 @@ body {
       <div class="project-card__header">
         <div class="project-card__icon">
           {% set ns = namespace(found=false) %}
-          {% for tag in p.tags %}
-            {% if tag in cn_icon_map and not ns.found %}{{ cn_icon_map[tag] | safe }}{% set ns.found = true %}{% endif %}
+          {% set func_tags = ['检查校对', '数据分析', '文件管理', '文本生成', '效率工具'] %}
+          {% for tag in func_tags %}
+            {% if tag in p.tags and not ns.found %}{{ cn_icon_map[tag] | safe }}{% set ns.found = true %}{% endif %}
           {% endfor %}
+          {% if not ns.found %}
+            {% for tag in p.tags %}
+              {% if tag in cn_icon_map and not ns.found %}{{ cn_icon_map[tag] | safe }}{% set ns.found = true %}{% endif %}
+            {% endfor %}
+          {% endif %}
           {% if not ns.found %}📦{% endif %}
         </div>
         <div class="project-card__info">
