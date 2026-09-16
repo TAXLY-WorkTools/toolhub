@@ -27,11 +27,24 @@
 {% block stylesheets %}<link rel="stylesheet" href="../static/style.css">{% endblock %}
 {% block feed_link %}<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="../feed.xml">{% endblock %}
 {% block home_href %}../index.html{% endblock %}
+{% block icon_prefix %}../static/icons/{% endblock %}
+{% block icon_prefix_2 %}../static/icons/{% endblock %}
+{% block icon_prefix_3 %}../static/icons/{% endblock %}
+{% block icon_prefix_4 %}../static/icons/{% endblock %}
+{% block icon_prefix_5 %}../static/icons/{% endblock %}
+{% block icon_prefix_6 %}../static/icons/{% endblock %}
 
 {% block title %}{{ project.name }}{% endblock %}
 
 {% block content %}
 <style>
+/* 内容居中容器 */
+.project-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
 h1 {
   word-wrap: break-word;
   word-break: break-word;
@@ -163,6 +176,7 @@ h1 {
 .ai-prompt-empty .icon { font-size: 48px; margin-bottom: 12px; }
 </style>
 
+<div class="project-container">
 <div class="project-header">
   <a class="project-header__back" href="../index.html">&#8592; {{ sections.back_link }}</a>
 
@@ -390,4 +404,5 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+</div>
 {% endblock %}
