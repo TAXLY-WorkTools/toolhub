@@ -48,6 +48,9 @@
 } %}
 {% set dept_tag_list = ['税审', '工程', '招标', '综合', '通用'] %}
 {% set func_tag_list = ['检查校对', '数据分析', '文件管理', '文本生成', '效率工具'] %}
+{% set tech_tag_list = ['Python', 'Web', 'Excel', 'exe'] %}
+{% set tutorial_tag_list = ['有教程', '无教程'] %}
+{% set size_tag_list = ['<1MB', '1MB-10MB', '10MB-50MB', '>50MB'] %}
 {% block title %}{{ site.description }}{% endblock %}
 {% block content %}
 {% set pinned_projects   = projects | selectattr("pinned")   | list %}
@@ -55,7 +58,6 @@
 {% set archived_projects = projects | rejectattr("pinned") | selectattr("archived") | list %}
 
 <style>
-/* MC主题商务风 - 全局变量 */
 :root {
   --bg: #F7F8FA;
   --card: rgba(255, 255, 255, 0.5);
@@ -73,9 +75,10 @@
   --success-bg: #F0F4F1;
   --info: #5E7488;
   --info-bg: #F0F2F5;
+  --warning: #8A7860;
+  --warning-bg: #F4F1EC;
 }
 
-/* 页面背景 - 工作台图标纹理 */
 body {
   background-color: var(--bg);
   background-image: 
@@ -280,11 +283,11 @@ body {
   padding: 0 2px;
   line-height: 1;
 }
-.tag-capsule__remove:hover { color: var(--danger); }
+.tag-capsule__remove:hover { color: #8A6262; }
 .clear-all-btn {
   background: none;
   border: none;
-  color: var(--danger);
+  color: #8A6262;
   cursor: pointer;
   font-size: 12px;
   padding: 2px 6px;
@@ -389,8 +392,15 @@ body {
   font-weight: 500;
   letter-spacing: 0.3px;
 }
-.badge--dept { background: #5E7488; color: #fff; }
-.badge--func { background: #5E7868; color: #fff; }
+.badge--dept { background: var(--info); color: #fff; }
+.badge--func { background: var(--success); color: #fff; }
+.badge--tech { background: var(--accent); color: #fff; }
+.badge--tutorial { background: var(--warning); color: #fff; }
+.badge--size {
+  background: var(--border-lt);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
 .badge--tag {
   cursor: pointer;
   transition: all 0.15s;
@@ -566,7 +576,6 @@ body {
 }
 </style>
 
-<!-- 搜索 + 排序 + 视图切换 -->
 <div class="search-bar">
   <div class="search-bar__inner">
     <div class="search-bar__wrapper">
@@ -589,7 +598,6 @@ body {
   </div>
 </div>
 
-<!-- 标签筛选 -->
 <div class="filter-panel">
   <div class="filter-panel__inner">
     <div class="filter-group">
@@ -645,16 +653,13 @@ body {
   </div>
 </div>
 
-<!-- 无结果提示 -->
 <div class="no-results" id="noResults" style="display:none;">
   <div class="icon">🔍</div>
   <p>没有找到匹配的工具</p>
   <p style="font-size:13px;">尝试调整搜索关键词或筛选条件</p>
 </div>
 
-<!-- 活跃工具 -->
 <div id="activeSection">
-    <!-- 卡片视图 -->
   <div class="project-grid" id="activeGrid">
     {% for p in active_projects %}
     <div class="project-card"
@@ -697,6 +702,12 @@ body {
           <button class="badge badge--tag badge--dept" data-tag="{{ tag }}" type="button">{{ tag }}</button>
             {% elif tag in func_tag_list %}
           <button class="badge badge--tag badge--func" data-tag="{{ tag }}" type="button">{{ tag }}</button>
+            {% elif tag in tech_tag_list %}
+          <button class="badge badge--tag badge--tech" data-tag="{{ tag }}" type="button">{{ tag }}</button>
+            {% elif tag in tutorial_tag_list %}
+          <button class="badge badge--tag badge--tutorial" data-tag="{{ tag }}" type="button">{{ tag }}</button>
+            {% elif tag in size_tag_list %}
+          <button class="badge badge--tag badge--size" data-tag="{{ tag }}" type="button">{{ tag }}</button>
             {% else %}
           <button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ tag }}</button>
             {% endif %}
@@ -709,7 +720,6 @@ body {
     </div>
     {% endfor %}
   </div>
-  <!-- 列表视图 -->
   <div class="project-list" id="activeList">
     <table class="project-list__table">
       <thead>
@@ -725,7 +735,6 @@ body {
   </div>
 </div>
 
-<!-- 归档工具（默认隐藏） -->
 {% if archived_projects %}
 <div class="archived-toggle">
   <button class="archived-toggle__btn" id="archivedToggleBtn" type="button">
@@ -734,7 +743,6 @@ body {
 </div>
 <div id="archivedSection" style="display:none;">
   <h2 class="section-heading">📦 归档工具</h2>
-  <!-- 卡片视图 -->
   <div class="project-grid" id="archivedGrid">
     {% for p in archived_projects %}
     <div class="project-card"
@@ -777,6 +785,12 @@ body {
           <button class="badge badge--tag badge--dept" data-tag="{{ tag }}" type="button">{{ tag }}</button>
             {% elif tag in func_tag_list %}
           <button class="badge badge--tag badge--func" data-tag="{{ tag }}" type="button">{{ tag }}</button>
+            {% elif tag in tech_tag_list %}
+          <button class="badge badge--tag badge--tech" data-tag="{{ tag }}" type="button">{{ tag }}</button>
+            {% elif tag in tutorial_tag_list %}
+          <button class="badge badge--tag badge--tutorial" data-tag="{{ tag }}" type="button">{{ tag }}</button>
+            {% elif tag in size_tag_list %}
+          <button class="badge badge--tag badge--size" data-tag="{{ tag }}" type="button">{{ tag }}</button>
             {% else %}
           <button class="badge badge--tag" data-tag="{{ tag }}" type="button">{{ tag }}</button>
             {% endif %}
@@ -789,7 +803,6 @@ body {
     </div>
     {% endfor %}
   </div>
-  <!-- 列表视图 -->
   <div class="project-list" id="archivedList">
     <table class="project-list__table">
       <thead>
@@ -826,7 +839,6 @@ body {
   var archivedToggleBtn = document.getElementById('archivedToggleBtn');
   var archivedSection = document.getElementById('archivedSection');
 
-  // 视图切换
   function switchView(view) {
     currentView = view;
     var btnCard = document.getElementById('btnCard');
@@ -835,7 +847,6 @@ body {
     var activeList = document.getElementById('activeList');
     var archivedGrid = document.getElementById('archivedGrid');
     var archivedList = document.getElementById('archivedList');
-
     if (view === 'card') {
       if (activeGrid) activeGrid.style.display = 'grid';
       if (activeList) activeList.classList.remove('show');
@@ -855,7 +866,6 @@ body {
   }
   window.switchView = switchView;
 
-  // 从卡片数据渲染列表
   function renderListFromGrid(gridId, listBodyId) {
     var grid = document.getElementById(gridId);
     var body = document.getElementById(listBodyId);
@@ -907,7 +917,6 @@ body {
     selectedTechs.forEach(function(t) { all.push({tag: t, type: 'tech'}); });
     selectedTutorials.forEach(function(t) { all.push({tag: t, type: 'tutorial'}); });
     selectedSizes.forEach(function(t) { all.push({tag: t, type: 'size'}); });
-
     if (all.length > 0) {
       selectedTagsRow.style.display = 'flex';
       all.forEach(function(item) {
@@ -954,7 +963,6 @@ body {
   function applyFilters() {
     var query = searchQuery.toLowerCase().trim();
     var visibleCount = 0;
-
     function filterGrid(grid) {
       var visible = 0;
       Array.from(grid.children).forEach(function(card) {
@@ -971,13 +979,11 @@ body {
       });
       return visible;
     }
-
     var activeGrid = document.getElementById('activeGrid');
     if (activeGrid) {
       sortCards(activeGrid);
       visibleCount += filterGrid(activeGrid);
     }
-
     if (showArchived) {
       var archivedGrid = document.getElementById('archivedGrid');
       if (archivedGrid) {
@@ -985,117 +991,68 @@ body {
         visibleCount += filterGrid(archivedGrid);
       }
     }
-
     noResults.style.display = visibleCount === 0 ? 'block' : 'none';
-
     document.querySelectorAll('.badge--tag').forEach(function(badge) {
       var tag = badge.dataset.tag;
       var isActive = selectedDepts.has(tag) || selectedFuncs.has(tag) || selectedTechs.has(tag) || selectedTutorials.has(tag) || selectedSizes.has(tag);
       badge.classList.toggle('badge--tag-active', isActive);
     });
-
-    // 如果当前是列表视图，重新渲染
-    if (currentView === 'list') {
-      renderListViews();
-    }
+    if (currentView === 'list') { renderListViews(); }
   }
 
   searchInput.addEventListener('input', function() {
     searchQuery = this.value;
     applyFilters();
   });
-
   sortSelect.addEventListener('change', function() {
     sortBy = this.value;
     applyFilters();
   });
-
   document.querySelectorAll('#deptTags .tag-btn').forEach(function(btn) {
     btn.onclick = function() {
       var tag = this.dataset.tag;
-      if (selectedDepts.has(tag)) {
-        selectedDepts.delete(tag);
-        this.classList.remove('active');
-      } else {
-        selectedDepts.add(tag);
-        this.classList.add('active');
-      }
-      renderSelectedTags();
-      applyFilters();
+      if (selectedDepts.has(tag)) { selectedDepts.delete(tag); this.classList.remove('active'); }
+      else { selectedDepts.add(tag); this.classList.add('active'); }
+      renderSelectedTags(); applyFilters();
     };
   });
-
   document.querySelectorAll('#funcTags .tag-btn').forEach(function(btn) {
     btn.onclick = function() {
       var tag = this.dataset.tag;
-      if (selectedFuncs.has(tag)) {
-        selectedFuncs.delete(tag);
-        this.classList.remove('active');
-      } else {
-        selectedFuncs.add(tag);
-        this.classList.add('active');
-      }
-      renderSelectedTags();
-      applyFilters();
+      if (selectedFuncs.has(tag)) { selectedFuncs.delete(tag); this.classList.remove('active'); }
+      else { selectedFuncs.add(tag); this.classList.add('active'); }
+      renderSelectedTags(); applyFilters();
     };
   });
-
   document.querySelectorAll('#techTags .tag-btn').forEach(function(btn) {
     btn.onclick = function() {
       var tag = this.dataset.tag;
-      if (selectedTechs.has(tag)) {
-        selectedTechs.delete(tag);
-        this.classList.remove('active');
-      } else {
-        selectedTechs.add(tag);
-        this.classList.add('active');
-      }
-      renderSelectedTags();
-      applyFilters();
+      if (selectedTechs.has(tag)) { selectedTechs.delete(tag); this.classList.remove('active'); }
+      else { selectedTechs.add(tag); this.classList.add('active'); }
+      renderSelectedTags(); applyFilters();
     };
   });
-
   document.querySelectorAll('#tutorialTags .tag-btn').forEach(function(btn) {
     btn.onclick = function() {
       var tag = this.dataset.tag;
-      if (selectedTutorials.has(tag)) {
-        selectedTutorials.delete(tag);
-        this.classList.remove('active');
-      } else {
-        selectedTutorials.add(tag);
-        this.classList.add('active');
-      }
-      renderSelectedTags();
-      applyFilters();
+      if (selectedTutorials.has(tag)) { selectedTutorials.delete(tag); this.classList.remove('active'); }
+      else { selectedTutorials.add(tag); this.classList.add('active'); }
+      renderSelectedTags(); applyFilters();
     };
   });
-
   document.querySelectorAll('#sizeTags .tag-btn').forEach(function(btn) {
     btn.onclick = function() {
       var tag = this.dataset.tag;
-      if (selectedSizes.has(tag)) {
-        selectedSizes.delete(tag);
-        this.classList.remove('active');
-      } else {
-        selectedSizes.add(tag);
-        this.classList.add('active');
-      }
-      renderSelectedTags();
-      applyFilters();
+      if (selectedSizes.has(tag)) { selectedSizes.delete(tag); this.classList.remove('active'); }
+      else { selectedSizes.add(tag); this.classList.add('active'); }
+      renderSelectedTags(); applyFilters();
     };
   });
-
   document.getElementById('clearAllBtn').onclick = function() {
-    selectedDepts.clear();
-    selectedFuncs.clear();
-    selectedTechs.clear();
-    selectedTutorials.clear();
-    selectedSizes.clear();
+    selectedDepts.clear(); selectedFuncs.clear(); selectedTechs.clear(); selectedTutorials.clear(); selectedSizes.clear();
     document.querySelectorAll('.tag-btn.active').forEach(function(b) { b.classList.remove('active'); });
-    renderSelectedTags();
-    applyFilters();
+    renderSelectedTags(); applyFilters();
   };
-
   document.querySelectorAll('.badge--tag').forEach(function(badge) {
     badge.onclick = function(e) {
       e.stopPropagation();
@@ -1119,11 +1076,9 @@ body {
         var tagBtn2 = document.querySelector('.tag-btn[data-tag="'+tag+'"]');
         if (tagBtn2) tagBtn2.classList.add('active');
       }
-      renderSelectedTags();
-      applyFilters();
+      renderSelectedTags(); applyFilters();
     };
   });
-
   document.querySelectorAll('.project-card').forEach(function(card) {
     card.onclick = function(e) {
       if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
@@ -1131,7 +1086,6 @@ body {
       if (link) window.location.href = link.href;
     };
   });
-
   if (archivedToggleBtn) {
     archivedToggleBtn.onclick = function() {
       showArchived = !showArchived;
@@ -1140,7 +1094,6 @@ body {
       applyFilters();
     };
   }
-
   applyFilters();
 }());
 </script>
