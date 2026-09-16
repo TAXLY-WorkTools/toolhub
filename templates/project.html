@@ -24,6 +24,24 @@
     'repo': '仓库',
     'gist': '代码片段',
 } %}
+{% set icon_map = {
+    'func-check-proofread': 'spyglass.png',
+    'func-data-analysis': 'redstone_comparator.png',
+    'func-file-management': 'chest.png',
+    'func-text-generation': 'book_and_quill.png',
+    'func-efficiency-tools': 'diamond_pickaxe.png',
+    'dept-tax-audit': 'spyglass.png',
+    'dept-engineering': 'redstone_comparator.png',
+    'dept-bidding': 'chest.png',
+    'dept-general': 'book_and_quill.png',
+    'dept-universal': 'diamond_pickaxe.png',
+} %}
+{% set project_icon = 'logo.png' %}
+{% for tag in project.tags %}
+  {% if icon_map.get(tag) %}
+    {% set project_icon = icon_map.get(tag) %}
+  {% endif %}
+{% endfor %}
 {% block stylesheets %}<link rel="stylesheet" href="../static/style.css">{% endblock %}
 {% block feed_link %}<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="../feed.xml">{% endblock %}
 {% block home_href %}../index.html{% endblock %}
@@ -38,6 +56,9 @@
 
 {% block content %}
 <style>
+:root {
+  --bg-icon-url: url("../static/icons/logo.png");
+}
 /* 内容居中容器 */
 .project-container {
   max-width: 1200px;
@@ -51,114 +72,286 @@ h1 {
   overflow-wrap: break-word;
   white-space: normal;
 }
+.project-header__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #7A8899;
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 16px;
+  transition: color 0.15s;
+}
+.project-header__back:hover { color: #3A4758; }
+
+.project-header {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E4E9EF;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.project-header__top {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.project-header__icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(228, 233, 239, 0.5);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.project-header__icon img {
+  width: 56px;
+  height: 56px;
+  image-rendering: pixelated;
+}
+.project-header__info { flex: 1; min-width: 0; }
 .project-header__subtitle {
   font-size: 14px;
-  color: #8b949e;
+  color: #7A8899;
   font-family: monospace;
-  margin-top: -8px;
-  margin-bottom: 12px;
+  margin-top: -4px;
+  margin-bottom: 8px;
   word-wrap: break-word;
-  word-break: break-word;
-  overflow-wrap: break-word;
 }
 .project-header__author {
   font-size: 13px;
-  color: #57606a;
-  margin-bottom: 12px;
+  color: #7A8899;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-.project-header__author strong {
-  color: #24292f;
+.project-header__author img {
+  width: 18px;
+  height: 18px;
+  image-rendering: pixelated;
 }
-.download-quick {
+.project-header__author strong { color: #3A4758; }
+.project-header__desc {
+  font-size: 14px;
+  color: #5A6878;
+  margin: 0;
+  line-height: 1.6;
+}
+.project-header__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #EEF1F5;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: none;
+  font-weight: 500;
+}
+.badge--dept { background: #5E7488; color: #fff; }
+.badge--func { background: #5E7868; color: #fff; }
+.badge--default { background: rgba(90, 104, 120, 0.1); color: #5A6878; }
+
+.project-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #E4E9EF;
+  background: rgba(255, 255, 255, 0.7);
+  color: #5A6878;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.btn img {
+  width: 18px;
+  height: 18px;
+  image-rendering: pixelated;
+}
+.btn:hover { border-color: #7A8899; color: #3A4758; background: rgba(255, 255, 255, 0.9); }
+.btn--edit {
+  background: rgba(90, 104, 120, 0.06);
+  color: #3A4758;
+  border-color: rgba(90, 104, 120, 0.25);
+}
+.btn--edit:hover { background: rgba(90, 104, 120, 0.12); }
+.btn--github {
+  background: #5A6878;
+  color: #fff;
+  border-color: #5A6878;
+}
+.btn--github:hover { background: #4E5C6C; color: #fff; border-color: #4E5C6C; }
+
+.download-bar {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
-.download-quick .btn--large {
-  padding: 12px 24px;
-  font-size: 15px;
+.btn--large {
+  padding: 12px 28px;
+  font-size: 14px;
   font-weight: 600;
 }
-.btn--program { background: #28a745; color: #fff; border-color: #28a745; }
-.btn--program:hover { background: #218838; }
-.btn--full { background: #007bff; color: #fff; border-color: #007bff; }
-.btn--full:hover { background: #0056b3; }
-.btn--edit {
-  background: #fff;
-  color: #0969da;
-  border: 1px solid #0969da;
+.btn--large img {
+  width: 22px;
+  height: 22px;
 }
-.btn--edit:hover {
-  background: #ddf4ff;
+.btn--program {
+  background: #5E7868;
+  color: #fff;
+  border-color: #5E7868;
 }
+.btn--program:hover { background: #4E6458; color: #fff; border-color: #4E6458; }
+.btn--full {
+  background: #5E7488;
+  color: #fff;
+  border-color: #5E7488;
+}
+.btn--full:hover { background: #4E6070; color: #fff; border-color: #4E6070; }
+
 .tabs {
   display: flex;
   gap: 0;
-  border-bottom: 2px solid #d0d7de;
-  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid #E4E9EF;
+  border-radius: 8px 8px 0 0;
+  padding: 0 8px;
+  margin-bottom: 0;
 }
 .tab-btn {
-  padding: 10px 20px;
+  padding: 12px 24px;
   border: none;
   background: transparent;
   cursor: pointer;
   font-size: 14px;
-  color: #57606a;
+  color: #5A6878;
   border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
+  margin-bottom: -1px;
   transition: all 0.15s;
   font-family: inherit;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-.tab-btn:hover { color: #0969da; }
+.tab-btn img {
+  width: 20px;
+  height: 20px;
+  image-rendering: pixelated;
+}
+.tab-btn:hover { color: #3A4758; }
 .tab-btn.active {
-  color: #0969da;
-  border-bottom-color: #fd8c73;
+  color: #3A4758;
+  border-bottom-color: #5A6878;
   font-weight: 600;
 }
-.tab-content {
-  display: none;
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.readme-card, .download-card {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E4E9EF;
+  border-radius: 0 0 8px 8px;
+  padding: 24px;
+  margin-bottom: 24px;
 }
-.tab-content.active {
-  display: block;
+.download-section__title {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #3A4758;
 }
-.download-section { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; }
-.download-section__title { margin: 0 0 16px 0; font-size: 18px; }
-.file-group { margin-bottom: 16px; }
-.file-group__title { font-size: 14px; font-weight: 600; color: #555; margin: 0 0 8px 0; padding-bottom: 4px; border-bottom: 1px solid #e0e0e0; }
-.file-item { display: flex; align-items: center; padding: 6px 0; gap: 8px; font-size: 14px; }
-.file-item__icon { width: 20px; text-align: center; flex-shrink: 0; }
-.file-item__name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.file-item__src { color: #999; font-style: italic; font-size: 12px; margin-left: 4px; }
-.file-tree-dir { margin-bottom: 0; }
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  gap: 10px;
+  font-size: 14px;
+  border-bottom: 1px solid #EEF1F5;
+}
+.file-item:last-child { border-bottom: none; }
+.file-item__icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.file-item__icon img {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+}
+.file-item__name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #3A4758;
+}
+.file-item__size {
+  color: #A8B4C0;
+  font-size: 12px;
+  flex-shrink: 0;
+  min-width: 60px;
+  text-align: right;
+}
+.file-item__download { flex-shrink: 0; }
 .file-tree-dir__header {
-  padding: 6px 8px;
-  background: #f6f8fa;
+  padding: 8px 12px;
+  background: rgba(90, 104, 120, 0.04);
   font-size: 13px;
   font-weight: 600;
-  color: #57606a;
+  color: #5A6878;
   cursor: pointer;
   user-select: none;
-  border-bottom: 1px solid #eaeef2;
   border-radius: 4px;
-  margin: 2px 0;
+  margin: 4px 0;
 }
-.file-tree-dir__header:hover { background: #eaeef2; }
-.file-tree-dir__count { font-weight: normal; font-size: 12px; color: #8b949e; }
+.file-tree-dir__header:hover { background: rgba(90, 104, 120, 0.08); }
+.file-tree-dir__count { font-weight: normal; font-size: 12px; color: #A8B4C0; }
 .file-tree-dir__body.hidden { display: none; }
-.file-tree-dir .file-item { padding-left: 24px !important; }
-.file-item__size { color: #888; font-size: 12px; flex-shrink: 0; min-width: 60px; text-align: right; }
-.file-item__download { flex-shrink: 0; }
+
 .ai-prompt-box {
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
-  border-radius: 8px;
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E4E9EF;
+  border-radius: 0 0 8px 8px;
+  padding: 24px;
+  margin-bottom: 24px;
 }
 .ai-prompt-box pre {
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #E4E9EF;
   border-radius: 6px;
   padding: 16px;
   overflow-x: auto;
@@ -167,122 +360,149 @@ h1 {
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
+  color: #3A4758;
 }
-.ai-prompt-empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: #8b949e;
+
+@media (max-width: 768px) {
+  .project-container { padding: 12px; }
+  .project-header__top { flex-direction: column; }
+  .project-header__icon { width: 56px; height: 56px; }
+  .project-header__icon img { width: 44px; height: 44px; }
+  .tab-btn { padding: 10px 14px; font-size: 13px; }
+  .download-bar { justify-content: stretch; }
+  .download-bar .btn { flex: 1; justify-content: center; }
 }
-.ai-prompt-empty .icon { font-size: 48px; margin-bottom: 12px; }
 </style>
 
 <div class="project-container">
-<div class="project-header">
-  <a class="project-header__back" href="../index.html">&#8592; {{ sections.back_link }}</a>
+  <a class="project-header__back" href="../index.html">&#8592; 返回工具列表</a>
 
-  {% if project.cn_name %}
-  <h1>{{ project.cn_name }}</h1>
-  <div class="project-header__subtitle">{{ project.name }}</div>
-  {% else %}
-  <h1>{{ project.name }}</h1>
-  {% endif %}
+  <div class="project-header">
+    <div class="project-header__top">
+      <div class="project-header__icon">
+        <img src="../static/icons/{{ project_icon }}" alt="">
+      </div>
+      <div class="project-header__info">
+        {% if project.cn_name %}
+        <h1>{{ project.cn_name }}</h1>
+        <div class="project-header__subtitle">{{ project.name }}</div>
+        {% else %}
+        <h1>{{ project.name }}</h1>
+        {% endif %}
 
-  {% if project.author %}
-  <div class="project-header__author">👤 作者：<strong>{{ project.author }}</strong></div>
-  {% else %}
-  <div class="project-header__author">👤 作者：<strong>未知</strong></div>
-  {% endif %}
+        <div class="project-header__author">
+          <img src="../static/icons/village_hero.png" alt="">
+          作者：<strong>{{ project.author or '未知' }}</strong>
+        </div>
 
-  {% if project.description %}
-  <div class="project-header__desc">{{ project.description }}</div>
-  {% endif %}
+        {% if project.description %}
+        <p class="project-header__desc">{{ project.description }}</p>
+        {% endif %}
+      </div>
+    </div>
 
-  <div class="project-header__meta">
-    {% if project.type == 'gist' %}
-    <span class="badge badge--type">代码片段</span>
-    {% endif %}
-    {% for tag in project.tags %}
-    <span class="badge">{{ topic_map.get(tag, tag) }}</span>
-    {% endfor %}
-    {% if project.license %}
-    <span class="badge">{{ project.license }}</span>
-    {% endif %}
+    <div class="project-header__meta">
+      {% if project.type == 'gist' %}
+      <span class="badge badge--default">代码片段</span>
+      {% endif %}
+      {% for tag in project.tags %}
+        {% if tag.startswith('dept-') %}
+        <span class="badge badge--dept">{{ topic_map.get(tag, tag) }}</span>
+        {% elif tag.startswith('func-') %}
+        <span class="badge badge--func">{{ topic_map.get(tag, tag) }}</span>
+        {% else %}
+        <span class="badge badge--default">{{ topic_map.get(tag, tag) }}</span>
+        {% endif %}
+      {% endfor %}
+      {% if project.license %}
+      <span class="badge badge--default">{{ project.license }}</span>
+      {% endif %}
+    </div>
+
+    <div class="project-header__actions">
+      {% if project.name and project.type == 'repo' %}
+      <a class="btn btn--edit" href="https://github.com/TAXLY-WorkTools/{{ project.name }}/edit/main/README.md" target="_blank" title="在 GitHub 在线编辑 README">
+        <img src="../static/icons/book_and_quill.png" alt=""> 编辑此工具
+      </a>
+      {% endif %}
+      {% if project.repo_url %}
+      <a class="btn btn--github" href="{{ project.repo_url }}" target="_blank" rel="noopener">
+        &#8599; GitHub 仓库
+      </a>
+      {% elif project.gist_url %}
+      <a class="btn btn--github" href="{{ project.gist_url }}" target="_blank" rel="noopener">
+        &#8599; Gist
+      </a>
+      {% endif %}
+    </div>
   </div>
 
-  <div class="project-header__actions">
-    {% if project.name and project.type == 'repo' %}
-    <a class="btn btn--edit" href="https://github.com/TAXLY-WorkTools/{{ project.name }}/edit/main/README.md" target="_blank" title="在 GitHub 在线编辑 README">✏️ 编辑此工具</a>
-    {% endif %}
-    {% if project.live_url %}
-    <a class="btn btn--primary" href="{{ project.live_url }}">&#8599; Live site</a>
-    {% elif project.homepage %}
-    <a class="btn btn--primary" href="{{ project.homepage }}">&#8599; Website</a>
-    {% endif %}
-    {% if project.docs_url %}
-    <a class="btn" href="{{ project.docs_url }}">&#8599; Docs</a>
-    {% endif %}
-    {% if project.repo_url %}
-    <a class="btn" href="{{ project.repo_url }}">&#8599; GitHub</a>
-    {% elif project.gist_url %}
-    <a class="btn" href="{{ project.gist_url }}">&#8599; Gist</a>
-    {% endif %}
-  </div>
-</div>
-
-{% if project.download_url or project.files %}
-<div class="download-quick">
-  {% if project.program_download_url %}
-  <a class="btn btn--large btn--program" href="{{ project.program_download_url }}">📦 下载程序（源码）</a>
-  {% endif %}
-  {% if project.download_url %}
-  <a class="btn btn--large btn--full" href="{{ project.download_url }}">📥 下载全部文件（整包）</a>
-  {% endif %}
-</div>
-{% endif %}
-
-<div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('readme')">📖 使用说明</button>
-  {% if project.ai_prompt %}
-  <button class="tab-btn" onclick="switchTab('ai')">🤖 AI 提示词</button>
-  {% endif %}
   {% if project.download_url or project.files %}
-  <button class="tab-btn" onclick="switchTab('download')">📥 下载</button>
-  {% endif %}
-</div>
-
-<div class="tab-content active" id="tab-readme">
-  <div class="readme">
-    {{ readme_html | safe }}
-  </div>
-</div>
-
-{% if project.ai_prompt %}
-<div class="tab-content" id="tab-ai">
-  <div class="ai-prompt-box">
-    <pre>{{ project.ai_prompt }}</pre>
-  </div>
-</div>
-{% endif %}
-
-{% if project.download_url or project.files %}
-<div class="tab-content" id="tab-download">
-  <div class="download-section">
-    <h2 class="download-section__title">📥 下载文件列表</h2>
-
-    {% if project.files %}
-    <script id="fileTreeData" type="application/json">
-    [
-    {% for file in project.files %}
-    {"name": "{{ file.name | e }}", "path": "{{ (file.path or file.name) | e }}", "size": {{ file.size or 0 }}, "url": "{{ (file.download_url or file.raw_url or '') | e }}"}
-    {% if not loop.last %},{% endif %}
-    {% endfor %}
-    ]
-    </script>
-    <div id="fileTreeContainer"></div>
+  <div class="download-bar">
+    {% if project.program_download_url %}
+    <a class="btn btn--large btn--program" href="{{ project.program_download_url }}">
+      <img src="../static/icons/deposit_upgrade.png" alt=""> 下载程序（源码）
+    </a>
+    {% endif %}
+    {% if project.download_url %}
+    <a class="btn btn--large btn--full" href="{{ project.download_url }}">
+      <img src="../static/icons/pickup_upgrade.png" alt=""> 下载全部文件
+    </a>
     {% endif %}
   </div>
-</div>
-{% endif %}
+  {% endif %}
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('readme')">
+      <img src="../static/icons/recipe_book.png" alt=""> 使用说明
+    </button>
+    {% if project.ai_prompt %}
+    <button class="tab-btn" onclick="switchTab('ai')">
+      <img src="../static/icons/enchanted_book.png" alt=""> AI 提示词
+    </button>
+    {% endif %}
+    {% if project.download_url or project.files %}
+    <button class="tab-btn" onclick="switchTab('download')">
+      <img src="../static/icons/stack_downgrade_t3.png" alt=""> 下载
+    </button>
+    {% endif %}
+  </div>
+
+  <div class="tab-content active" id="tab-readme">
+    <div class="readme-card">
+      <div class="readme">
+        {{ readme_html | safe }}
+      </div>
+    </div>
+  </div>
+
+  {% if project.ai_prompt %}
+  <div class="tab-content" id="tab-ai">
+    <div class="ai-prompt-box">
+      <pre>{{ project.ai_prompt }}</pre>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if project.download_url or project.files %}
+  <div class="tab-content" id="tab-download">
+    <div class="download-card">
+      <h2 class="download-section__title">下载文件列表</h2>
+
+      {% if project.files %}
+      <script id="fileTreeData" type="application/json">
+      [
+      {% for file in project.files %}
+      {"name": "{{ file.name | e }}", "path": "{{ (file.path or file.name) | e }}", "size": {{ file.size or 0 }}, "url": "{{ (file.download_url or file.raw_url or '') | e }}"}
+      {% if not loop.last %},{% endif %}
+      {% endfor %}
+      ]
+      </script>
+      <div id="fileTreeContainer"></div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
 
 <script>
 function switchTab(tab) {
@@ -326,12 +546,13 @@ function formatFileSize(size) {
 
 function getFileIcon(name) {
   var ext = name.split('.').pop().toLowerCase();
-  if (['py', 'pyw', 'js', 'ts', 'html', 'htm', 'css', 'java', 'cpp', 'c', 'cs', 'go', 'r', 'php', 'ipynb', 'bat', 'cmd', 'sh', 'ps1', 'vbs', 'jar'].indexOf(ext) !== -1) return '📄';
-  if (['md', 'markdown', 'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'rtf'].indexOf(ext) !== -1) return '📝';
-  if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp', 'ico', 'tiff'].indexOf(ext) !== -1) return '🖼';
-  if (['zip', 'rar', '7z'].indexOf(ext) !== -1) return '📦';
-  if (ext === 'exe') return '⚙️';
-  return '📎';
+  var icon = 'paper.png';
+  if (['py', 'pyw', 'js', 'ts', 'html', 'htm', 'css', 'java', 'cpp', 'c', 'cs', 'go', 'r', 'php', 'ipynb', 'bat', 'cmd', 'sh', 'ps1', 'vbs', 'jar'].indexOf(ext) !== -1) icon = 'empty_schematic.png';
+  else if (['md', 'markdown', 'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'rtf'].indexOf(ext) !== -1) icon = 'paper.png';
+  else if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp', 'ico', 'tiff'].indexOf(ext) !== -1) icon = 'painting.png';
+  else if (['zip', 'rar', '7z'].indexOf(ext) !== -1) icon = 'compacting_upgrade.png';
+  else if (ext === 'exe') icon = 'precision_mechanism.png';
+  return '<img src="../static/icons/' + icon + '" alt="">';
 }
 
 function buildFileTree(files) {
@@ -369,12 +590,10 @@ function renderFileTree(node, level, container) {
   });
   node.files.forEach(function(file) {
     var fileName = file.name;
-    var filePath = file.path || file.name;
-    var isSrc = filePath.indexOf('src/') === 0;
     var fileEl = document.createElement('div');
     fileEl.className = 'file-item';
     fileEl.style.paddingLeft = (level * 16 + 8) + 'px';
-    fileEl.innerHTML = '<span class="file-item__icon">' + getFileIcon(fileName) + '</span><span class="file-item__name">' + fileName + (isSrc ? '<span class="file-item__src">（程序文件）</span>' : '') + '</span>' + (file.size ? '<span class="file-item__size">' + formatFileSize(file.size) + '</span>' : '') + '<a class="btn btn--small file-item__download" href="' + (file.url || '') + '" target="_blank">下载</a>';
+    fileEl.innerHTML = '<span class="file-item__icon">' + getFileIcon(fileName) + '</span><span class="file-item__name">' + fileName + '</span>' + (file.size ? '<span class="file-item__size">' + formatFileSize(file.size) + '</span>' : '') + '<a class="btn file-item__download" href="' + (file.url || '') + '" target="_blank">下载</a>';
     container.appendChild(fileEl);
   });
 }
@@ -394,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
   try {
     var files = JSON.parse(dataEl.textContent);
     if (!files || files.length === 0) {
-      container.innerHTML = '<div style="padding:16px; text-align:center; color:#8b949e; font-style:italic;">暂无文件</div>';
+      container.innerHTML = '<div style="padding:16px; text-align:center; color:#A8B4C0; font-style:italic;">暂无文件</div>';
       return;
     }
     var tree = buildFileTree(files);
