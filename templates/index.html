@@ -89,9 +89,9 @@ body {
 }
 
 .search-bar {
-  max-width: 1400px;
+  max-width: 1680px;
   margin: 16px auto 0;
-  padding: 0 24px;
+  padding: 0 32px;
   position: relative;
   z-index: 1;
 }
@@ -183,9 +183,9 @@ body {
 }
 
 .filter-panel {
-  max-width: 1400px;
+  max-width: 1680px;
   margin: 12px auto 0;
-  padding: 0 24px;
+  padding: 0 32px;
   position: relative;
   z-index: 1;
 }
@@ -293,14 +293,14 @@ body {
 .clear-all-btn:hover { text-decoration: underline; }
 
 .project-grid {
-  max-width: 1400px;
+  max-width: 1680px;
   margin: 16px auto 0;
-  padding: 0 24px;
+  padding: 0 32px;
   display: grid;
   position: relative;
   z-index: 1;
-  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 16px;
 }
 .project-card {
   background: rgba(255, 255, 255, 0.5);
@@ -308,10 +308,13 @@ body {
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 16px;
+  padding: 18px;
+  min-height: 220px;
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 2px 8px rgba(94, 116, 136, 0.08);
+  display: flex;
+  flex-direction: column;
 }
 .project-card:hover {
   border-color: var(--accent-lt);
@@ -321,12 +324,12 @@ body {
 .project-card__header {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 14px;
+  margin-bottom: 12px;
 }
 .project-card__icon {
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -344,7 +347,7 @@ body {
 }
 .project-card__info { flex: 1; min-width: 0; }
 .project-card__name {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   margin: 0 0 2px;
   word-wrap: break-word;
@@ -361,10 +364,10 @@ body {
   margin-top: 2px;
 }
 .project-card__desc {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-2);
-  margin: 6px 0 0;
-  line-height: 1.6;
+  margin: 8px 0 0;
+  line-height: 1.7;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -373,8 +376,9 @@ body {
 .project-card__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 10px;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
 }
 .badge {
   display: inline-block;
@@ -398,7 +402,7 @@ body {
   color: #fff;
 }
 .project-card__links {
-  margin-top: 12px;
+  margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid var(--border-lt);
   display: flex;
@@ -414,9 +418,9 @@ body {
 
 /* 列表视图 */
 .project-list {
-  max-width: 1400px;
+  max-width: 1680px;
   margin: 16px auto 0;
-  padding: 0 24px;
+  padding: 0 32px;
   display: none;
   position: relative;
   z-index: 1;
@@ -451,13 +455,13 @@ body {
 .project-list__table tr:last-child td { border-bottom: none; }
 .project-list__table tr:hover { background: rgba(255, 255, 255, 0.2); }
 .project-list__icon {
-  width: 56px;
+  width: 80px;
   text-align: center;
   vertical-align: middle !important;
 }
 .project-list__icon img {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   image-rendering: pixelated;
 }
 .project-list__name {
@@ -508,9 +512,9 @@ body {
 }
 
 .archived-toggle {
-  max-width: 1400px;
+  max-width: 1680px;
   margin: 20px auto;
-  padding: 0 24px;
+  padding: 0 32px;
   text-align: center;
 }
 .archived-toggle__btn {
@@ -530,18 +534,18 @@ body {
 }
 
 .no-results {
-  max-width: 1400px;
+  max-width: 1680px;
   margin: 40px auto;
-  padding: 0 24px;
+  padding: 0 32px;
   text-align: center;
   color: var(--text-3);
 }
 .no-results .icon { font-size: 48px; margin-bottom: 12px; }
 
 .section-heading {
-  max-width: 1400px;
+  max-width: 1680px;
   margin: 24px auto 12px;
-  padding: 0 24px;
+  padding: 0 32px;
   font-size: 18px;
   font-weight: 700;
   color: var(--text);
@@ -710,7 +714,7 @@ body {
     <table class="project-list__table">
       <thead>
         <tr>
-          <th style="width:56px;"></th>
+          <th style="width:80px;"></th>
           <th>工具名称</th>
           <th style="width:280px;">标签</th>
           <th style="width:100px;text-align:right;">更新时间</th>
@@ -790,7 +794,7 @@ body {
     <table class="project-list__table">
       <thead>
         <tr>
-          <th style="width:56px;"></th>
+          <th style="width:80px;"></th>
           <th>工具名称</th>
           <th style="width:280px;">标签</th>
           <th style="width:100px;text-align:right;">更新时间</th>
