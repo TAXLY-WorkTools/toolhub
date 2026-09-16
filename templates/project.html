@@ -29,12 +29,14 @@
 {% set tech_tag_list = ['Python', 'Web', 'Excel', 'exe'] %}
 {% set tutorial_tag_list = ['有教程', '无教程'] %}
 {% set size_tag_list = ['<1MB', '1MB-10MB', '10MB-50MB', '>50MB'] %}
-{% set cn_icon_map = {
+{% set dept_icon_map = {
     '税审': 'spyglass.png',
     '工程': 'redstone_comparator.png',
     '招标': 'chest.png',
     '综合': 'book_and_quill.png',
     '通用': 'diamond_pickaxe.png',
+} %}
+{% set func_icon_map = {
     '检查校对': 'spyglass.png',
     '数据分析': 'redstone_comparator.png',
     '文件管理': 'chest.png',
@@ -42,11 +44,21 @@
     '效率工具': 'diamond_pickaxe.png',
 } %}
 {% set project_icon = 'logo.png' %}
+{% set ns = namespace(found=false) %}
 {% for tag in project.tags %}
-  {% if tag in cn_icon_map %}
-    {% set project_icon = cn_icon_map[tag] %}
+  {% if tag in func_tag_list and not ns.found %}
+    {% set project_icon = func_icon_map[tag] %}
+    {% set ns.found = true %}
   {% endif %}
 {% endfor %}
+{% if not ns.found %}
+  {% for tag in project.tags %}
+    {% if tag in dept_tag_list and not ns.found %}
+      {% set project_icon = dept_icon_map[tag] %}
+      {% set ns.found = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
 {% block stylesheets %}<link rel="stylesheet" href="../static/style.css">{% endblock %}
 {% block feed_link %}<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="../feed.xml">{% endblock %}
 {% block home_href %}../index.html{% endblock %}
