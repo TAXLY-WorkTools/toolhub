@@ -55,6 +55,19 @@
       gap: 8px;
     }
     .top-nav__brand:hover { opacity: 0.9; }
+    .top-nav__brand-text {
+      font-family: monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: #3A4758;
+      letter-spacing: 0.5px;
+    }
+    .top-nav__brand-sub {
+      font-size: 12px;
+      color: #7A8899;
+      margin-left: 6px;
+      font-weight: 400;
+    }
     .top-nav__links {
       display: flex;
       gap: 4px;
@@ -95,6 +108,7 @@
       .top-nav__inner { padding: 0 12px; }
       .top-nav__link { padding: 6px 10px; font-size: 13px; }
       .top-nav__link span { display: none; }
+      .top-nav__brand-sub { display: none; }
     }
 
     /* 背景logo斜向图案（20°倾斜，6%透明度） */
@@ -129,7 +143,8 @@
     <div class="top-nav__inner">
       <a class="top-nav__brand" href="{% block home_href %}index.html{% endblock %}">
         <img class="mc-icon mc-icon--logo" src="static/icons/logo.png" alt="logo">
-        TAXLY WorkTools
+        <span class="top-nav__brand-text">TAXLY WorkTools</span>
+        <span class="top-nav__brand-sub">工具仓库</span>
       </a>
       <div class="top-nav__links">
         <a class="top-nav__link top-nav__link--active" href="index.html">
