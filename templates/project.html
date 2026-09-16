@@ -57,6 +57,47 @@
 {% block content %}
 <style>
 :root {
+  /* ===== 中性 —— 主色 75% ===== */
+  --card:      #FFFFFF;
+  --bg:        #F7F8FA;
+  --border-lt: #EEF1F5;
+  --border:    #E4E9EF;
+  --text-3:    #A8B4C0;
+  --text-2:    #7A8899;
+  --text:      #3A4758;
+  /* ===== 强调 —— 深灰蓝 15% ===== */
+  --accent-lt:    #7A8899;
+  --accent:       #5A6878;
+  --accent-hover: #4E5C6C;
+  --accent-dark:  #3A4758;
+  /* ===== 点缀 —— 成功 ===== */
+  --success-lt: #B4C0B8;
+  --success:    #5E7868;
+  --success-bg: #F0F4F1;
+  /* ===== 点缀 —— 信息 ===== */
+  --info-lt:    #B4BEC8;
+  --info:       #5E7488;
+  --info-bg:    #F0F2F5;
+  /* ===== 点缀 —— 警告 ===== */
+  --warning-lt: #D0C8B0;
+  --warning:    #8A7860;
+  --warning-bg: #F4F1EC;
+  /* ===== 点缀 —— 危险 ===== */
+  --danger-lt:  #D0B8B8;
+  --danger:     #8A6262;
+  --danger-bg:  #F4F0F0;
+  /* ===== MC 结构辅助 ===== */
+  --slot-light:  #FFFFFF;
+  --slot-bg:     #EAEDF1;
+  --slot-dark:   #CCD2D8;
+  --exp-bar:     #7AA870;
+  --exp-dark:    #5A7A54;
+  --hp-red:      #B86A5E;
+  --hp-dark:     #8A5648;
+  --food-orange: #B88A64;
+  --armor-blue:  #7A8EA4;
+  --enchant:     #9E90C4;
+  /* 背景图案 */
   --bg-icon-url: url("../static/icons/logo.png");
 }
 /* 内容居中容器 */
@@ -76,19 +117,19 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #7A8899;
+  color: var(--text-2);
   text-decoration: none;
   font-size: 13px;
   margin-bottom: 16px;
   transition: color 0.15s;
 }
-.project-header__back:hover { color: #3A4758; }
+.project-header__back:hover { color: var(--text); }
 
 .project-header {
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #E4E9EF;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 24px;
   margin-bottom: 16px;
@@ -117,7 +158,7 @@ h1 {
 .project-header__info { flex: 1; min-width: 0; }
 .project-header__subtitle {
   font-size: 14px;
-  color: #7A8899;
+  color: var(--text-3);
   font-family: monospace;
   margin-top: -4px;
   margin-bottom: 8px;
@@ -125,7 +166,7 @@ h1 {
 }
 .project-header__author {
   font-size: 13px;
-  color: #7A8899;
+  color: var(--text-2);
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -136,10 +177,10 @@ h1 {
   height: 18px;
   image-rendering: pixelated;
 }
-.project-header__author strong { color: #3A4758; }
+.project-header__author strong { color: var(--text); }
 .project-header__desc {
   font-size: 14px;
-  color: #5A6878;
+  color: var(--text-2);
   margin: 0;
   line-height: 1.6;
 }
@@ -149,7 +190,7 @@ h1 {
   gap: 8px;
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid #EEF1F5;
+  border-top: 1px solid var(--border-lt);
 }
 .badge {
   display: inline-block;
@@ -158,10 +199,24 @@ h1 {
   border-radius: 4px;
   border: none;
   font-weight: 500;
+  letter-spacing: 0.3px;
 }
-.badge--dept { background: #5E7488; color: #fff; }
-.badge--func { background: #5E7868; color: #fff; }
-.badge--default { background: rgba(90, 104, 120, 0.1); color: #5A6878; }
+/* 部门标签 - 信息蓝灰 */
+.badge--dept { background: var(--info); color: #fff; }
+/* 功能标签 - 成功绿灰 */
+.badge--func { background: var(--success); color: #fff; }
+/* 技术栈标签 - 强调深灰蓝 */
+.badge--tech { background: var(--accent); color: #fff; }
+/* 教程标签 - 警告棕灰 */
+.badge--tutorial { background: var(--warning); color: #fff; }
+/* 文件大小标签 - 浅底描边 */
+.badge--size {
+  background: var(--border-lt);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+/* 默认标签 */
+.badge--default { background: rgba(90, 104, 120, 0.08); color: var(--text-2); }
 
 .project-header__actions {
   display: flex;
@@ -177,9 +232,9 @@ h1 {
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
-  border: 1px solid #E4E9EF;
+  border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.7);
-  color: #5A6878;
+  color: var(--text-2);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.15s;
@@ -190,19 +245,19 @@ h1 {
   height: 18px;
   image-rendering: pixelated;
 }
-.btn:hover { border-color: #7A8899; color: #3A4758; background: rgba(255, 255, 255, 0.9); }
+.btn:hover { border-color: var(--accent-lt); color: var(--accent-dark); background: rgba(255, 255, 255, 0.9); }
 .btn--edit {
   background: rgba(90, 104, 120, 0.06);
-  color: #3A4758;
+  color: var(--accent-dark);
   border-color: rgba(90, 104, 120, 0.25);
 }
-.btn--edit:hover { background: rgba(90, 104, 120, 0.12); }
+.btn--edit:hover { background: rgba(90, 104, 120, 0.12); color: var(--accent-dark); }
 .btn--github {
-  background: #5A6878;
+  background: var(--accent);
   color: #fff;
-  border-color: #5A6878;
+  border-color: var(--accent);
 }
-.btn--github:hover { background: #4E5C6C; color: #fff; border-color: #4E5C6C; }
+.btn--github:hover { background: var(--accent-hover); color: #fff; border-color: var(--accent-hover); }
 
 .download-bar {
   display: flex;
@@ -220,16 +275,18 @@ h1 {
   width: 22px;
   height: 22px;
 }
+/* 下载程序 - 成功绿灰 */
 .btn--program {
-  background: #5E7868;
+  background: var(--success);
   color: #fff;
-  border-color: #5E7868;
+  border-color: var(--success);
 }
 .btn--program:hover { background: #4E6458; color: #fff; border-color: #4E6458; }
+/* 下载全部 - 信息蓝灰 */
 .btn--full {
-  background: #5E7488;
+  background: var(--info);
   color: #fff;
-  border-color: #5E7488;
+  border-color: var(--info);
 }
 .btn--full:hover { background: #4E6070; color: #fff; border-color: #4E6070; }
 
@@ -239,7 +296,7 @@ h1 {
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid #E4E9EF;
+  border: 1px solid var(--border);
   border-radius: 8px 8px 0 0;
   padding: 0 8px;
   margin-bottom: 0;
@@ -250,7 +307,7 @@ h1 {
   background: transparent;
   cursor: pointer;
   font-size: 14px;
-  color: #5A6878;
+  color: var(--text-2);
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   transition: all 0.15s;
@@ -265,10 +322,10 @@ h1 {
   height: 20px;
   image-rendering: pixelated;
 }
-.tab-btn:hover { color: #3A4758; }
+.tab-btn:hover { color: var(--text); }
 .tab-btn.active {
-  color: #3A4758;
-  border-bottom-color: #5A6878;
+  color: var(--text);
+  border-bottom-color: var(--accent);
   font-weight: 600;
 }
 .tab-content { display: none; }
@@ -278,7 +335,7 @@ h1 {
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #E4E9EF;
+  border: 1px solid var(--border);
   border-radius: 0 0 8px 8px;
   padding: 24px;
   margin-bottom: 24px;
@@ -286,7 +343,7 @@ h1 {
 .download-section__title {
   margin: 0 0 16px 0;
   font-size: 18px;
-  color: #3A4758;
+  color: var(--text);
 }
 .file-item {
   display: flex;
@@ -294,7 +351,7 @@ h1 {
   padding: 10px 12px;
   gap: 10px;
   font-size: 14px;
-  border-bottom: 1px solid #EEF1F5;
+  border-bottom: 1px solid var(--border-lt);
 }
 .file-item:last-child { border-bottom: none; }
 .file-item__icon {
@@ -315,10 +372,10 @@ h1 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #3A4758;
+  color: var(--text);
 }
 .file-item__size {
-  color: #A8B4C0;
+  color: var(--text-3);
   font-size: 12px;
   flex-shrink: 0;
   min-width: 60px;
@@ -330,28 +387,28 @@ h1 {
   background: rgba(90, 104, 120, 0.04);
   font-size: 13px;
   font-weight: 600;
-  color: #5A6878;
+  color: var(--text-2);
   cursor: pointer;
   user-select: none;
   border-radius: 4px;
   margin: 4px 0;
 }
 .file-tree-dir__header:hover { background: rgba(90, 104, 120, 0.08); }
-.file-tree-dir__count { font-weight: normal; font-size: 12px; color: #A8B4C0; }
+.file-tree-dir__count { font-weight: normal; font-size: 12px; color: var(--text-3); }
 .file-tree-dir__body.hidden { display: none; }
 
 .ai-prompt-box {
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #E4E9EF;
+  border: 1px solid var(--border);
   border-radius: 0 0 8px 8px;
   padding: 24px;
   margin-bottom: 24px;
 }
 .ai-prompt-box pre {
   background: rgba(255, 255, 255, 0.7);
-  border: 1px solid #E4E9EF;
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 16px;
   overflow-x: auto;
@@ -360,7 +417,7 @@ h1 {
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
-  color: #3A4758;
+  color: var(--text);
 }
 
 @media (max-width: 768px) {
@@ -410,6 +467,12 @@ h1 {
         <span class="badge badge--dept">{{ topic_map.get(tag, tag) }}</span>
         {% elif tag.startswith('func-') %}
         <span class="badge badge--func">{{ topic_map.get(tag, tag) }}</span>
+        {% elif tag.startswith('tech-') %}
+        <span class="badge badge--tech">{{ topic_map.get(tag, tag) }}</span>
+        {% elif tag.startswith('tutorial-') %}
+        <span class="badge badge--tutorial">{{ topic_map.get(tag, tag) }}</span>
+        {% elif tag.startswith('size-') %}
+        <span class="badge badge--size">{{ topic_map.get(tag, tag) }}</span>
         {% else %}
         <span class="badge badge--default">{{ topic_map.get(tag, tag) }}</span>
         {% endif %}
@@ -441,12 +504,12 @@ h1 {
   <div class="download-bar">
     {% if project.program_download_url %}
     <a class="btn btn--large btn--program" href="{{ project.program_download_url }}">
-      <img src="../static/icons/deposit_upgrade.png" alt=""> 下载程序（源码）
+      <img src="../static/icons/empty_schematic.png" alt=""> 下载程序（源码）
     </a>
     {% endif %}
     {% if project.download_url %}
     <a class="btn btn--large btn--full" href="{{ project.download_url }}">
-      <img src="../static/icons/pickup_upgrade.png" alt=""> 下载全部文件
+      <img src="../static/icons/deposit_upgrade.png" alt=""> 下载全部文件
     </a>
     {% endif %}
   </div>
