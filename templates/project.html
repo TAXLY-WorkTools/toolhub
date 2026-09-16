@@ -43,18 +43,17 @@
     '文本生成': 'book_and_quill.png',
     '效率工具': 'diamond_pickaxe.png',
 } %}
-{% set project_icon = 'logo.png' %}
-{% set ns = namespace(found=false) %}
-{% for tag in project.tags %}
-  {% if tag in func_tag_list and not ns.found %}
-    {% set project_icon = func_icon_map[tag] %}
+{% set ns = namespace(project_icon='logo.png', found=false) %}
+{% for tag in func_tag_list %}
+  {% if tag in project.tags and not ns.found %}
+    {% set ns.project_icon = func_icon_map[tag] %}
     {% set ns.found = true %}
   {% endif %}
 {% endfor %}
 {% if not ns.found %}
-  {% for tag in project.tags %}
-    {% if tag in dept_tag_list and not ns.found %}
-      {% set project_icon = dept_icon_map[tag] %}
+  {% for tag in dept_tag_list %}
+    {% if tag in project.tags and not ns.found %}
+      {% set ns.project_icon = dept_icon_map[tag] %}
       {% set ns.found = true %}
     {% endif %}
   {% endfor %}
@@ -206,7 +205,7 @@ h1 {
 }
 .badge--dept { background: var(--info); color: #fff; }
 .badge--func { background: var(--success); color: #fff; }
-.badge--tech { background: var(--accent); color: #fff; }
+.badge--tech { background: var(--danger); color: #fff; }
 .badge--tutorial { background: var(--warning); color: #fff; }
 .badge--size {
   background: var(--border-lt);
@@ -415,7 +414,7 @@ h1 {
   <div class="project-header">
     <div class="project-header__top">
       <div class="project-header__icon">
-        <img src="../static/icons/{{ project_icon }}" alt="">
+        <img src="../static/icons/{{ ns.project_icon }}" alt="">
       </div>
       <div class="project-header__info">
         {% if project.cn_name %}
