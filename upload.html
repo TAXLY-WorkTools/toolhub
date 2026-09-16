@@ -5,195 +5,254 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>上传工具 - TAXLY WorkTools</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: #f5f6f8;
-  color: #24292f;
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 100vh;
-}
-.topbar {
-  background: #fff;
-  border-bottom: 1px solid #d0d7de;
-  padding: 12px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.topbar__title { font-size: 18px; font-weight: 600; }
-.topbar__title span { color: #0969da; }
-.topbar__back {
-  color: #0969da;
-  text-decoration: none;
-  font-size: 13px;
-}
-.topbar__back:hover { text-decoration: underline; }
-.container {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 0 24px;
-}
-.card {
-  background: #fff;
-  border: 1px solid #d0d7de;
-  border-radius: 8px;
-  padding: 24px;
-  margin-bottom: 16px;
-}
-.card__title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.field { margin-bottom: 16px; }
-.field:last-child { margin-bottom: 0; }
-.field__label {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 4px;
-  color: #424a53;
-}
-.field__label .required { color: #cf222e; margin-left: 2px; }
-.field__label .hint {
-  font-weight: 400;
-  font-style: italic;
-  color: #8b949e;
-  font-size: 12px;
-}
-input[type="text"], select {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #d0d7de;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: inherit;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  background: #fff;
-}
-input[type="text"]:focus, select:focus {
-  outline: none;
-  border-color: #0969da;
-  box-shadow: 0 0 0 3px rgba(9,105,218,0.15);
-}
-input.error, select.error {
-  border-color: #cf222e;
-  background: #ffebe9;
-}
-.file-upload-area {
-  border: 2px dashed #d0d7de;
-  border-radius: 8px;
-  padding: 24px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.15s;
-  background: #fafbfc;
-}
-.file-upload-area:hover, .file-upload-area.dragover {
-  border-color: #0969da;
-  background: #ddf4ff;
-}
-.file-upload-area__icon { font-size: 32px; margin-bottom: 8px; }
-.file-upload-area__text { font-size: 14px; color: #424a53; }
-.file-upload-area__hint { font-size: 12px; color: #8b949e; margin-top: 4px; }
-.file-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #ddf4ff;
-  border: 1px solid #0969da;
-  border-radius: 6px;
-  margin-bottom: 12px;
-}
-.file-info__icon { font-size: 24px; }
-.file-info__details { flex: 1; }
-.file-info__name { font-weight: 600; font-size: 13px; }
-.file-info__meta { font-size: 12px; color: #57606a; }
-.file-info__badge {
-  background: #2da44e;
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-}
-.file-info__remove {
-  color: #cf222e;
-  cursor: pointer;
-  font-size: 18px;
-  line-height: 1;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-.file-info__remove:hover { background: #ffebe9; }
-.auto-load-notice {
-  padding: 10px 14px;
-  background: #fff8c5;
-  border: 1px solid #d4a72c;
-  border-radius: 6px;
-  font-size: 12px;
-  color: #4d2d00;
-  margin-bottom: 12px;
-  display: none;
-}
-.auto-load-notice.show { display: block; }
-.btn-submit {
-  width: 100%;
-  padding: 12px;
-  background: #2da44e;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.btn-submit:hover { background: #22863a; }
-.btn-submit:disabled {
-  background: #94d3a2;
-  cursor: not-allowed;
-}
-.message {
-  margin-top: 12px;
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  display: none;
-}
-.message.show { display: block; }
-.message.error { background: #ffebe9; color: #82071e; border: 1px solid #ffc1c0; }
-.message.success { background: #dafbe1; color: #1a7f37; border: 1px solid #aceebb; }
-.message.info { background: #ddf4ff; color: #0550ae; border: 1px solid #54aeff; }
-.steps-guide {
-  background: #f6f8fa;
-  border: 1px solid #d0d7de;
-  border-radius: 8px;
-  padding: 16px 20px;
-  margin-top: 16px;
-}
-.steps-guide__title { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #57606a; }
-.steps-guide ol { margin-left: 20px; font-size: 12px; color: #57606a; line-height: 1.8; }
+  /* ===== MC主题商务风 - 配色变量 ===== */
+  :root {
+    --card: #FFFFFF;
+    --bg: #F7F8FA;
+    --border-lt: #EEF1F5;
+    --border: #E4E9EF;
+    --text-3: #A8B4C0;
+    --text-2: #7A8899;
+    --text: #3A4758;
+    --accent-lt: #7A8899;
+    --accent: #5A6878;
+    --accent-hover: #4E5C6C;
+    --accent-dark: #3A4758;
+    --success-lt: #B4C0B8;
+    --success: #5E7868;
+    --success-bg: #F0F4F1;
+    --info-lt: #B4BEC8;
+    --info: #5E7488;
+    --info-bg: #F0F2F5;
+    --warning-lt: #D0C8B0;
+    --warning: #8A7860;
+    --warning-bg: #F4F1EC;
+    --danger-lt: #D0B8B8;
+    --danger: #8A6262;
+    --danger-bg: #F4F0F0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background-color: var(--bg);
+    background-image: 
+      linear-gradient(135deg, rgba(90, 104, 120, 0.03) 25%, transparent 25%),
+      linear-gradient(225deg, rgba(90, 104, 120, 0.03) 25%, transparent 25%),
+      linear-gradient(45deg, rgba(90, 104, 120, 0.02) 25%, transparent 25%),
+      linear-gradient(315deg, rgba(90, 104, 120, 0.02) 25%, transparent 25%);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 0, 10px -10px, 0px 10px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .topbar {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border-bottom: 2px solid var(--accent-dark);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    max-width: 1680px;
+    margin: 0 auto;
+  }
+  .topbar__title { font-size: 18px; font-weight: 700; color: var(--accent-dark); display: flex; align-items: center; gap: 8px; }
+  .topbar__back {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .topbar__back:hover { background: rgba(90, 104, 120, 0.1); color: var(--accent-dark); }
+  .container {
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 0 24px;
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+  }
+  .card:hover {
+    border-color: var(--accent-lt);
+    box-shadow: 0 4px 16px rgba(90, 104, 120, 0.1);
+  }
+  .card__title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent-dark);
+  }
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  .field__label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .field__label .required { color: var(--danger); margin-left: 2px; }
+  .field__label .hint {
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-3);
+    font-size: 12px;
+  }
+  input[type="text"], select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.15s;
+    background: var(--card);
+    color: var(--text);
+  }
+  input[type="text"]:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(90, 104, 120, 0.1);
+  }
+  input.error, select.error {
+    border-color: var(--danger);
+    background: var(--danger-bg);
+  }
+  .file-upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: rgba(255, 255, 255, 0.3);
+  }
+  .file-upload-area:hover, .file-upload-area.dragover {
+    border-color: var(--accent);
+    background: rgba(90, 104, 120, 0.05);
+  }
+  .file-upload-area__text { font-size: 14px; color: var(--text); }
+  .file-upload-area__hint { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--info-bg);
+    border: 1px solid var(--info-lt);
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  .file-info__details { flex: 1; }
+  .file-info__name { font-weight: 600; font-size: 13px; color: var(--text); }
+  .file-info__meta { font-size: 12px; color: var(--text-2); }
+  .file-info__badge {
+    background: var(--success);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .file-info__remove {
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .file-info__remove:hover { background: var(--danger-bg); }
+  .auto-load-notice {
+    padding: 10px 14px;
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-lt);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--warning);
+    margin-bottom: 12px;
+    display: none;
+  }
+  .auto-load-notice.show { display: block; }
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--success);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-submit:hover { background: #4E6858; }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+  .message {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: none;
+  }
+  .message.show { display: block; }
+  .message.error { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-lt); }
+  .message.success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-lt); }
+  .message.info { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-lt); }
+  .steps-guide {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+  .steps-guide__title { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-2); }
+  .steps-guide ol { margin-left: 20px; font-size: 12px; color: var(--text-2); line-height: 1.8; }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar__title">📤 <span>TAXLY WorkTools</span> · 上传新工具</div>
+  <div class="topbar__title">
+    <img src="static/icons/firework_rocket.png" alt="logo" style="width:28px;height:28px;">
+    <span>TAXLY WorkTools</span> · 上传新工具
+  </div>
   <a class="topbar__back" href="index.html">← 返回工具库</a>
 </div>
 
 <div class="container">
   <div class="card">
-    <div class="card__title">📝 填写工具信息</div>
+    <div class="card__title">填写工具信息</div>
     <div class="auto-load-notice" id="autoLoadNotice">
-      ⏳ 正在从打包页面自动加载压缩包...
+      正在从打包页面自动加载压缩包...
     </div>
     <form id="uploadForm">
       <div class="field">
@@ -234,7 +293,6 @@ input.error, select.error {
         <label class="field__label">压缩包 <span class="required">*</span> <span class="hint">（.zip 格式，从打包页面生成）</span></label>
         <div id="fileInfo" style="display:none;">
           <div class="file-info">
-            <span class="file-info__icon">📦</span>
             <div class="file-info__details">
               <div class="file-info__name" id="fileName"></div>
               <div class="file-info__meta" id="fileMeta"></div>
@@ -244,18 +302,17 @@ input.error, select.error {
           </div>
         </div>
         <div class="file-upload-area" id="fileUploadArea" onclick="document.getElementById('fileInput').click()">
-          <div class="file-upload-area__icon">📂</div>
           <div class="file-upload-area__text">点击选择或拖拽 .zip 压缩包到此处</div>
           <div class="file-upload-area__hint">支持 .zip 格式，建议从打包页面生成</div>
         </div>
         <input type="file" id="fileInput" accept=".zip" style="display:none">
       </div>
-      <button type="submit" class="btn-submit" id="submitBtn">🚀 跳转 GitHub 上传</button>
+      <button type="submit" class="btn-submit" id="submitBtn">跳转 GitHub 上传</button>
     </form>
     <div class="message" id="message"></div>
   </div>
   <div class="steps-guide">
-    <div class="steps-guide__title">📋 上传流程</div>
+    <div class="steps-guide__title">上传流程</div>
     <ol>
       <li>在打包页面填写工具信息并生成 .zip 压缩包</li>
       <li>在此页面填写工具信息（从打包页面跳转会自动预填）</li>
@@ -336,7 +393,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   let author = params.get('author') || '';
   const displayName = params.get('display_name');
 
-  // 从描述中提取作者信息（格式：【作者：xxx】）
   const authorMatch = description.match(/【作者：([^】]+)】/);
   if (authorMatch && !author) {
     author = authorMatch[1];
@@ -354,12 +410,12 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (result && result.blob) {
         const file = new File([result.blob], (result.toolName || 'tool') + '.zip', { type: 'application/zip' });
         setFile(file, true);
-        showMessage('✅ 已自动从打包页面加载压缩包，请确认信息后提交', 'success');
+        showMessage('已自动从打包页面加载压缩包，请确认信息后提交', 'success');
       } else { throw new Error('No zip data'); }
     } catch (e) {
       console.warn('IndexedDB 自动加载失败:', e);
       document.getElementById('autoLoadNotice').classList.remove('show');
-      showMessage('⚠️ 自动加载压缩包失败，请手动选择 .zip 文件', 'info');
+      showMessage('自动加载压缩包失败，请手动选择 .zip 文件', 'info');
     }
   }
 });
@@ -367,7 +423,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 document.getElementById('fileInput').addEventListener('change', function(e) {
   if (e.target.files.length > 0) {
     const file = e.target.files[0];
-    if (!file.name.toLowerCase().endsWith('.zip')) { showMessage('❌ 请选择 .zip 格式的压缩包', 'error'); return; }
+    if (!file.name.toLowerCase().endsWith('.zip')) { showMessage('请选择 .zip 格式的压缩包', 'error'); return; }
     setFile(file, false);
   }
 });
@@ -380,7 +436,7 @@ dropZone.addEventListener('drop', function(e) {
   dropZone.classList.remove('dragover');
   if (e.dataTransfer.files.length > 0) {
     const file = e.dataTransfer.files[0];
-    if (!file.name.toLowerCase().endsWith('.zip')) { showMessage('❌ 请选择 .zip 格式的压缩包', 'error'); return; }
+    if (!file.name.toLowerCase().endsWith('.zip')) { showMessage('请选择 .zip 格式的压缩包', 'error'); return; }
     setFile(file, false);
   }
 });
@@ -395,7 +451,6 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
   const department = document.getElementById('department').value;
   const category = document.getElementById('category').value;
 
-  // 将作者信息添加到描述末尾
   if (author) {
     toolDesc += '【作者：' + author + '】';
   }
@@ -404,23 +459,23 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
   if (!toolName) { const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el; }
   else if (/[\u4e00-\u9fa5]/.test(toolName)) {
     const el = document.getElementById('toolName'); el.classList.add('error'); firstError = firstError || el;
-    showMessage('❌ 工具名称请用英文小写 + 下划线', 'error'); return;
+    showMessage('工具名称请用英文小写 + 下划线', 'error'); return;
   }
   if (!toolDesc) { const el = document.getElementById('toolDesc'); el.classList.add('error'); firstError = firstError || el; }
   if (!department) { const el = document.getElementById('department'); el.classList.add('error'); firstError = firstError || el; }
   if (!category) { const el = document.getElementById('category'); el.classList.add('error'); firstError = firstError || el; }
-  if (!loadedFile) { showMessage('❌ 请选择或加载 .zip 压缩包', 'error'); return; }
+  if (!loadedFile) { showMessage('请选择或加载 .zip 压缩包', 'error'); return; }
 
   if (firstError) {
     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
     firstError.focus();
-    showMessage('❌ 请完整填写所有必填字段', 'error');
+    showMessage('请完整填写所有必填字段', 'error');
     return;
   }
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  btn.textContent = '⏳ 正在跳转...';
+  btn.textContent = '正在跳转...';
 
   const url = 'https://github.com/TAXLY-WorkTools/upload-portal/issues/new?template=upload.yml' +
     '&tool_name=' + encodeURIComponent(toolName) +
@@ -429,12 +484,12 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
     '&department=' + encodeURIComponent(department) +
     '&category=' + encodeURIComponent(category);
 
-  showMessage('✅ 已跳转 GitHub，请在评论区拖拽上传压缩包：' + loadedFile.name, 'success');
+  showMessage('已跳转 GitHub，请在评论区拖拽上传压缩包：' + loadedFile.name, 'success');
   window.open(url, '_blank');
 
   setTimeout(() => {
     btn.disabled = false;
-    btn.textContent = '🚀 跳转 GitHub 上传';
+    btn.textContent = '跳转 GitHub 上传';
   }, 2000);
 });
 </script>
