@@ -46,6 +46,13 @@
     '10MB-50MB': '📦',
     '>50MB': '🗄️',
 } %}
+{% set watermark_map = {
+    '效率工具': 'static/icons/watermark_xiaolv.png',
+    '文本生成': 'static/icons/watermark_wenben.png',
+    '数据分析': 'static/icons/watermark_fenxi.png',
+    '文件管理': 'static/icons/watermark_wenjian.png',
+    '检查校对': 'static/icons/watermark_jiaodui.png',
+} %}
 {% set dept_tag_list = ['税审', '工程', '招标', '综合', '通用'] %}
 {% set func_tag_list = ['检查校对', '数据分析', '文件管理', '文本生成', '效率工具'] %}
 {% set tech_tag_list = ['Python', 'Web', 'Excel', 'exe'] %}
@@ -321,11 +328,25 @@ body {
   box-shadow: 0 2px 8px rgba(94, 116, 136, 0.08);
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 .project-card:hover {
   border-color: var(--accent-lt);
   box-shadow: 0 4px 16px rgba(90, 104, 120, 0.1);
   transform: translateY(-2px);
+}
+
+/* 卡片背景水印 */
+.card-watermark {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 180px;
+  width: auto;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
 }
 
 /* 卡片信息区 */
@@ -335,6 +356,8 @@ body {
   padding: 20px;
   flex: 1;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 .project-card__icon {
   width: 56px;
@@ -388,6 +411,8 @@ body {
   padding: 12px 20px;
   min-height: 60px;
   align-content: center;
+  position: relative;
+  z-index: 1;
 }
 .badge {
   display: inline-block;
@@ -426,6 +451,8 @@ body {
   border-top: 1px solid var(--border-lt);
   font-size: 11px;
   color: var(--text-3);
+  position: relative;
+  z-index: 1;
 }
 .project-card__footer-left {
   display: flex;
@@ -704,6 +731,13 @@ body {
          data-name="{{ p.cn_name or p.name }}"
          data-search="{{ (p.cn_name or p.name) }} {{ p.description or '' }} {{ p.tags | join(' ') }}"
          data-updated="{{ p.updated_at or '' }}">
+      {% set ns = namespace(watermark=false) %}
+      {% for tag in p.tags %}
+        {% if tag in watermark_map and not ns.watermark %}
+        <img src="{{ watermark_map[tag] }}" alt="" class="card-watermark">
+        {% set ns.watermark = true %}
+        {% endif %}
+      {% endfor %}
       <div class="project-card__header">
         <div class="project-card__icon">
           {% set ns = namespace(found=false) %}
@@ -798,6 +832,13 @@ body {
          data-name="{{ p.cn_name or p.name }}"
          data-search="{{ (p.cn_name or p.name) }} {{ p.description or '' }} {{ p.tags | join(' ') }}"
          data-updated="{{ p.updated_at or '' }}">
+      {% set ns = namespace(watermark=false) %}
+      {% for tag in p.tags %}
+        {% if tag in watermark_map and not ns.watermark %}
+        <img src="{{ watermark_map[tag] }}" alt="" class="card-watermark">
+        {% set ns.watermark = true %}
+        {% endif %}
+      {% endfor %}
       <div class="project-card__header">
         <div class="project-card__icon">
           {% set ns = namespace(found=false) %}
