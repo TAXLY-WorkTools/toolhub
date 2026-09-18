@@ -67,6 +67,7 @@ CACHE_TTL_HOURS = float(os.getenv("CACHE_TTL_HOURS", "1.0"))
 def _derive_site_url() -> str:
     """
     Derive the canonical site URL for the Atom feed when site.toml has no url.
+
     Priority:
       1. CUSTOM_DOMAIN env var  → https://{domain}
       2. GITHUB_REPOSITORY env var (set by Actions) → https://{user}.github.io/{repo}
@@ -403,19 +404,20 @@ def build(
 
     if static_dir.exists():
         shutil.copytree(static_dir, OUTPUT_DIR / "static")
-        shutil.copy2("templates/upload.html", "output/upload.html")
-        # 复制工具上传打包器（单文件HTML，零依赖）
-        if Path("pack.html").exists():
-            shutil.copy2("pack.html", "output/pack.html")
-            print("  [copy]  pack.html -> output/pack.html")
-        # 复制工具管理后台（单文件HTML，零依赖）
-        if Path("admin.html").exists():
-            shutil.copy2("admin.html", "output/admin.html")
-            print("  [copy]  admin.html -> output/admin.html")
-        # 复制关于页面（单文件HTML，零依赖）
-        if Path("templates/about.html").exists():
-            shutil.copy2("templates/about.html", "output/about.html")
-            print("  [copy]  about.html -> output/about.html")
+
+    # 复制独立静态HTML页面
+    if Path("upload.html").exists():
+        shutil.copy2("upload.html", "output/upload.html")
+        print("  [copy]  upload.html -> output/upload.html")
+    if Path("pack.html").exists():
+        shutil.copy2("pack.html", "output/pack.html")
+        print("  [copy]  pack.html -> output/pack.html")
+    if Path("admin.html").exists():
+        shutil.copy2("admin.html", "output/admin.html")
+        print("  [copy]  admin.html -> output/admin.html")
+    if Path("templates/about.html").exists():
+        shutil.copy2("templates/about.html", "output/about.html")
+        print("  [copy]  about.html -> output/about.html")
 
     env = Environment(
         loader=FileSystemLoader(templates_dir),
