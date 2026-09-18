@@ -1,4 +1,4 @@
-# /// script
+/// script
 # requires-python = ">=3.11"
 # dependencies = [
 #   "httpx",
@@ -178,7 +178,7 @@ def is_stale(cache_file: Path, ttl_hours: float) -> bool:
         return True
     if ttl_hours == 0:
         return True
-    age_seconds = time.time() - cache_file.stat().st_mtime
+    age_seconds = time.time - cache_file.stat().st_mtime
     return age_seconds > ttl_hours * 3600
 
 
@@ -250,7 +250,7 @@ def get_portfolio(client: httpx.Client, project: dict) -> dict:
         from lib.github import BASE_URL
         response = client.get(f"{BASE_URL}/gists/{project['gist_id']}")
         response.raise_for_status()
-        data = fetch_gist_portfolio(client, response.json())
+        data = fetch_gist_portfolio(response.json())
 
     cache_file.write_text(json.dumps(data), encoding="utf-8")
     return data
@@ -272,7 +272,7 @@ def _to_atom_date(iso: str) -> str:
     iso = iso.strip()
     if not iso.endswith("Z") and not re.search(r"[+-]\d{2}:\d{2}$", iso):
         iso += "Z"
-    # Ensure T separator (should already be present from GitHub)
+    # Ensure T separator should already be present from GitHub)
     return iso
 
 
@@ -412,6 +412,10 @@ def build(
         if Path("admin.html").exists():
             shutil.copy2("admin.html", "output/admin.html")
             print("  [copy]  admin.html -> output/admin.html")
+        # 复制关于页面（单文件HTML，零依赖）
+        if Path("templates/about.html").exists():
+            shutil.copy2("templates/about.html", "output/about.html")
+            print("  [copy]  about.html -> output/about.html")
 
     env = Environment(
         loader=FileSystemLoader(templates_dir),
@@ -465,6 +469,7 @@ def build(
         return 1
 
     # Sort by recency descending first (stable), then by section (stable)
+    enriched_projects.sort(key=lambda p: p.get("updated_at", ""), reverse=True)
     enriched_projects.sort(key=lambda p: p.get("updated_at", ""), reverse=True)
     enriched_projects.sort(key=section_order)
 
