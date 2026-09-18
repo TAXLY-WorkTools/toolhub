@@ -406,8 +406,8 @@ def build(
         shutil.copytree(static_dir, OUTPUT_DIR / "static")
 
     # 复制独立静态HTML页面
-    if Path("upload.html").exists():
-        shutil.copy2("upload.html", "output/upload.html")
+    if Path("templates/upload.html").exists():
+        shutil.copy2("templates/upload.html", "output/upload.html")
         print("  [copy]  upload.html -> output/upload.html")
     if Path("pack.html").exists():
         shutil.copy2("pack.html", "output/pack.html")
