@@ -1,4 +1,4 @@
-/// script
+# /// script
 # requires-python = ">=3.11"
 # dependencies = [
 #   "httpx",
@@ -272,7 +272,7 @@ def _to_atom_date(iso: str) -> str:
     iso = iso.strip()
     if not iso.endswith("Z") and not re.search(r"[+-]\d{2}:\d{2}$", iso):
         iso += "Z"
-    # Ensure T separator should already be present from GitHub)
+    # Ensure T separator (should already be present from GitHub)
     return iso
 
 
