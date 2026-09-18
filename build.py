@@ -178,7 +178,7 @@ def is_stale(cache_file: Path, ttl_hours: float) -> bool:
         return True
     if ttl_hours == 0:
         return True
-    age_seconds = time.time - cache_file.stat().st_mtime
+    age_seconds = time.time() - cache_file.stat().st_mtime
     return age_seconds > ttl_hours * 3600
 
 
@@ -469,7 +469,6 @@ def build(
         return 1
 
     # Sort by recency descending first (stable), then by section (stable)
-    enriched_projects.sort(key=lambda p: p.get("updated_at", ""), reverse=True)
     enriched_projects.sort(key=lambda p: p.get("updated_at", ""), reverse=True)
     enriched_projects.sort(key=section_order)
 
