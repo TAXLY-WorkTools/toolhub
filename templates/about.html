@@ -346,10 +346,9 @@ body {
           5. 相关资源
         </a>
         <div class="sidebar-sub">
-          <a href="javascript:void(0)" class="sidebar-sub-item" data-target="s5-1">5.1 GitHub其他用途</a>
-          <a href="javascript:void(0)" class="sidebar-sub-item" data-target="s5-2">5.2 推荐软件</a>
-          <a href="javascript:void(0)" class="sidebar-sub-item" data-target="s5-3">5.3 教程链接</a>
-          <a href="javascript:void(0)" class="sidebar-sub-item" data-target="s5-4">5.4 AI提示词指南</a>
+          <a href="javascript:void(0)" class="sidebar-sub-item" data-target="s5-1">5.1 AI提示词使用指南</a>
+          <a href="javascript:void(0)" class="sidebar-sub-item" data-target="s5-2">5.2 延伸阅读</a>
+          <a href="javascript:void(0)" class="sidebar-sub-item" data-target="s5-3">5.3 推荐软件</a>
         </div>
       </div>
 
@@ -380,14 +379,14 @@ body {
 
       <h3 class="subsection-title" id="s1-1">1.1 什么是GitHub？</h3>
       <p class="doc-text">
-        <strong>GitHub本质上是程序员用来管理代码文件的平台。</strong>
+        本手册为TAXLY工具仓库的配套使用说明，面向内部全体同事，覆盖工具浏览、下载、上传全流程操作指引。工具仓库依托GitHub平台搭建，下文将结合实际使用场景，说明平台选型原因、核心概念及操作步骤。
       </p>
       <img src="static/images/about/github_logo.png" alt="GitHub Logo" style="display:block;margin:16px auto;width:80px;height:auto;image-rendering:pixelated;">
       <p class="doc-text">
-        它最早是为开发者设计的——用户将编写完成的代码上传存储，每次更新版本都会生成历史快照，可追溯修改人、修改内容，出现问题时可回退至历史版本。全球有数以千万计的开发者在平台上分享开源代码与脚本，供免费使用。
+        GitHub是全球开发者常用的代码文件托管平台，核心能力为文件版本留存、修改记录追溯、多成员协作管理。需要说明的是，本工具站已将所有技术环节封装为可视化操作界面，普通同事无需掌握编程知识，即可完成工具检索、下载、上传全流程操作。
       </p>
       <p class="doc-text">
-        <strong>但它不止程序员在用：</strong>
+        平台本身并不局限于专业开发者使用：目前大量非技术岗位用户基于GitHub生态搭建各类实用站点，包括技术书籍的在线阅读站点（作者可在线更新内容、读者提交勘误）、设计团队的项目文档与设计稿托管平台、团队内部SOP知识库、课件与习题集公开分享站点等。这类场景均以文字、图片、表格为主要内容，不涉及代码开发，和本工具站的使用场景高度相似。
       </p>
 
       <div class="card-grid">
@@ -467,6 +466,7 @@ body {
           <strong>② 功能拓展性：</strong>GitHub拥有丰富的开源生态，本站即基于开源项目toolhub二次开发。后续功能拓展可基于现有开源生态快速实现。<br>
           <strong>③ 组织管理与权限：</strong>支持细粒度的权限分级管理。<br>
           <strong>④ 版本管理：</strong>所有修改均留存历史版本，出现异常可一键回退。<br><br>
+          上述四项能力为支撑工具站自动化构建、展示、管理流程的必要条件，其他协作平台无法同时满足，因此选定GitHub作为本工具仓库的承载平台。<br><br>
           国内访问偶发延迟的问题，<a href="#s4-1">详见后续解决方案</a>。
         </div>
       </div>
@@ -531,7 +531,7 @@ body {
           <tr>
             <td><strong>md文件<br>(Markdown)</strong></td>
             <td>采用纯文本编写格式化内容的标记语言，#表示标题、-表示列表</td>
-            <td>每个工具的"使用说明"即一个md文件。采用Markdown语法编写内容，系统自动渲染为格式化的说明文档。</td>
+            <td>每个工具的"使用说明"即一个md文件。采用Markdown语法编写内容，系统自动渲染为格式化的说明文档。<br><span style="color:var(--text-3);font-size:12px;">（详细说明见本小节下文）</span></td>
           </tr>
           <tr>
             <td><strong>构建<br>(Build)</strong></td>
@@ -545,6 +545,42 @@ body {
           </tr>
         </tbody>
       </table>
+
+      <h4 style="font-size:15px;color:var(--text);margin:24px 0 12px;font-weight:600;">关于Markdown的补充说明</h4>
+      <p class="doc-text">
+        Markdown是目前全球通用的轻量排版格式，被大量笔记软件、文档平台、技术社区采用：个人笔记工具（Obsidian、Typora、Notion）、学术写作平台、技术文档站点、开源社区均以Markdown作为标准写作格式，全球有数亿用户日常使用该格式记录内容。
+      </p>
+      <p class="doc-text">
+        和传统Word相比，Markdown的优势在于：文件为纯文本格式，体积极小，长期保存不会出现版本兼容问题，任意时间在任意设备都可正常打开；不需要复杂排版操作，写作时可专注内容本身；支持版本对比，多人协作时能清晰看到每一处修改痕迹。该格式适配纯文字、说明类内容，不适合承载复杂图文混排、高级排版的正式宣传材料。
+      </p>
+      <p class="doc-text">
+        在GitHub平台上，所有项目说明文档、README文件、社区讨论均默认使用Markdown格式，平台原生支持排版渲染，上传文件后即可自动展示格式化效果，无需额外处理。
+      </p>
+      <table class="doc-table">
+        <thead>
+          <tr><th>显示效果</th><th>输入示例</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>一级标题</td><td><code># 这是一级标题</code></td></tr>
+          <tr><td>二级标题</td><td><code>## 这是二级标题</code></td></tr>
+          <tr><td>三级标题</td><td><code>### 这是三级标题</code></td></tr>
+          <tr><td>加粗重点文字</td><td><code>**这是需要重点突出的内容**</code></td></tr>
+          <tr><td>无序列表项</td><td><code>- 这是列表中的一条内容</code></td></tr>
+          <tr><td>插入截图</td><td>直接在打包器编辑器中上传图片即可，无需手写代码</td></tr>
+          <tr><td>分段换行</td><td>两段内容之间空一行即可</td></tr>
+        </tbody>
+      </table>
+      <p class="doc-text">
+        对内部同事的日常使用来说，在打包器中编写工具说明时，编辑器已自动处理大部分排版格式，无需刻意记忆上述规则，正常书写内容、上传截图即可。
+      </p>
+      <p class="doc-text">
+        除工具说明场景外，Markdown也适合个人日常使用：可用于记录工作笔记、编写长期留存的操作手册，纯文本格式不受软件版本限制，可长期保存不损坏。
+      </p>
+
+      <h4 style="font-size:15px;color:var(--text);margin:24px 0 12px;font-weight:600;">静态站点搭建案例参考</h4>
+      <p class="doc-text">
+        类似本站的工具仓库，大量非技术用户已依托GitHub Pages免费服务搭建个人教程、知识库类公开静态页面，无需额外购买服务器、配置域名。本页「延伸阅读」板块推荐的《GitHub零基础入门教程》，就是非技术用户借助GitHub服务搭建的完整教程站点，有需要的同事可访问参考其内容组织与页面排版。
+      </p>
 
       <p class="doc-text" style="margin-top:20px;"><strong>GitHub上的动作，以及和我们页面的关系：</strong></p>
       <table class="doc-table">
@@ -1268,80 +1304,95 @@ body {
     <section class="doc-section" id="s5">
       <h2 class="section-title"><span class="section-number">5</span> 相关资源</h2>
 
-      <h3 class="subsection-title" id="s5-1">5.1 GitHub其他用途</h3>
-      <p class="doc-text" style="color:var(--text-3);font-style:italic;">（后续根据各岗位需求补充具体建议和教程链接）</p>
-
-      <h3 class="subsection-title" id="s5-2">5.2 推荐软件</h3>
-      <table class="doc-table">
-        <thead>
-          <tr><th>软件</th><th>用途</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><strong>VSCode</strong></td><td>代码编辑与Markdown文档编写工具，免费开源</td></tr>
-          <tr><td><strong>Quicker</strong></td><td>Windows效率工具，支持鼠标手势与快捷操作</td></tr>
-          <tr><td><strong>Watt Toolkit</strong></td><td>GitHub访问加速工具，免费开源</td></tr>
-        </tbody>
-      </table>
-
-      <h3 class="subsection-title" id="s5-3">5.3 教程链接</h3>
+      <h3 class="subsection-title" id="s5-1">5.1 AI提示词使用指南</h3>
+      <p class="doc-text">平台收录的AI提示词均以.md纯文本格式存储，打开文件后可直接复制内容，粘贴至豆包、DeepSeek、WorkBuddy等大模型对话框直接使用，无需额外格式转换。</p>
+      <p class="doc-text"><strong>提示词收集与归档说明：</strong></p>
       <p class="doc-text">
-        · <a href="https://docs.github.com/cn" target="_blank">GitHub官方中文文档</a><br>
-        · <a href="https://www.ruanyifeng.com/blog/2018/05/git-tutorial.html" target="_blank">阮一峰Git教程（中文入门）</a><br>
-        · <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">Markdown语法教程（英文）</a><br>
-        · <a href="https://www.runoob.com/markdown/md-tutorial.html" target="_blank">Markdown入门教程（中文）</a>
+        1. <strong>现有导出功能的局限性</strong><br>
+        不调用API的普通网页版大模型，平台自带的导出功能会导出全量历史对话记录，不支持单独导出某一段对话内容；WorkBuddy这类内网部署的AI工具，内置导出功能仅支持从知识库分类导出内容，不支持直接导出聊天窗口内的单条对话。
+      </p>
+      <p class="doc-text">
+        2. <strong>可选扩展工具</strong><br>
+        Edge浏览器应用商店可安装两款成熟开源扩展插件：AI Chat Exporter（把AI对话导出为MD）、ChatSaver（AI聊天保存与导出），安装后打开目标对话页面，一键即可将当前单条对话导出为.md格式。两款插件所有处理均在本地浏览器完成，不上传对话内容到第三方服务器，基础导出功能免费使用，部分高级导出格式需要付费订阅。
+      </p>
+      <p class="doc-text">
+        3. <strong>推荐归档方式</strong><br>
+        调试完成可用的提示词后，直接在大模型对话页面点击「分享」按钮，生成公开可访问的对话分享链接，将链接粘贴到打包器的AI提示词区域提交即可。同事打开链接即可查看完整对话内容，不需要额外导出、整理本地文件。
+      </p>
+      <p class="doc-text">
+        4. <strong>上传前检查</strong><br>
+        检查对话分享链接的内容，移除涉及公司未公开业务数据、敏感项目信息的内容后再归档。
       </p>
 
-      <h3 class="subsection-title" id="s5-4">5.4 AI提示词使用指南</h3>
-      <p class="doc-text">若工具需配合AI使用（如AI生成报告、AI分析数据），可将提示词模板上传至工具库，便于同事直接参考使用。</p>
-
-      <p class="doc-text"><strong>1. 提示词文件格式</strong></p>
-      <p class="doc-text">
-        提示词采用纯文本格式编写，使用Markdown语法，文件后缀为 <code>.md</code>。<br>
-        可直接在打包器的"AI提示词"输入框中粘贴内容，或上传现成的 <code>.md</code> 文件。
-      </p>
-
-      <p class="doc-text"><strong>2. 各平台对话导出与分享方式</strong></p>
+      <h3 class="subsection-title" id="s5-2">5.2 延伸阅读</h3>
+      <p class="doc-text">按优先级整理的入门学习资源，建议按顺序阅读：</p>
       <table class="doc-table">
         <thead>
-          <tr><th>平台</th><th>对话导出方式</th><th>推荐做法</th></tr>
+          <tr><th style="width:40%">资源名称</th><th style="width:45%">内容说明</th><th style="width:15%">优先级</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>豆包</strong></td>
-            <td>对话右上角 → 分享 → 生成分享链接</td>
-            <td>将分享链接粘贴至提示词文件中，接收方可直接访问查看完整对话</td>
+            <td><a href="https://knowledgefxg.github.io/github-guide/" target="_blank">GitHub零基础入门完整教程</a></td>
+            <td>面向非技术用户的GitHub全流程图文教程，同时也是GitHub Pages静态站搭建的参考案例</td>
+            <td><strong>优先阅读</strong></td>
           </tr>
           <tr>
-            <td><strong>ChatGPT</strong></td>
-            <td>对话 → Share → 生成公开链接</td>
-            <td>同上，粘贴链接即可。因国内访问延迟，建议同时保存文本备份</td>
+            <td><a href="https://githubdocs.cn/en/get-started/learning-to-code/learning-to-debug-with-github-copilot" target="_blank">GitHub Copilot调试入门官方指南</a></td>
+            <td>GitHub官方Copilot工具使用入门教程</td>
+            <td><strong>次优先推荐</strong></td>
           </tr>
           <tr>
-            <td><strong>Kimi / 文心一言</strong></td>
-            <td>对话 → 分享 → 复制链接</td>
-            <td>直接粘贴链接，国内访问速度较快</td>
+            <td><a href="https://www.zhihu.com/column/c_1242848320789647360" target="_blank">知乎GitHub入门系列专栏</a></td>
+            <td>国内技术作者整理的GitHub基础概念通俗讲解</td>
+            <td>入门参考</td>
           </tr>
           <tr>
-            <td><strong>本地大模型</strong></td>
-            <td>不支持分享功能</td>
-            <td>将提示词内容复制保存为.md文件后上传</td>
+            <td><a href="https://zhuanlan.zhihu.com/p/664195515" target="_blank">知乎GitHub使用场景介绍</a></td>
+            <td>GitHub非技术使用场景案例汇总</td>
+            <td>入门参考</td>
+          </tr>
+          <tr>
+            <td><a href="https://segmentfault.com/a/1190000022632919" target="_blank">SegmentFault GitHub基础操作指南</a></td>
+            <td>GitHub核心操作步骤图解</td>
+            <td>操作参考</td>
+          </tr>
+          <tr>
+            <td><a href="https://blog.csdn.net/msdcp/article/details/127033151" target="_blank">GitHub Pages静态站搭建教程</a></td>
+            <td>本站背后的静态站搭建原理说明</td>
+            <td>原理参考</td>
+          </tr>
+          <tr>
+            <td><a href="https://blog.csdn.net/fq1986614/article/details/148582401" target="_blank">GitHub组织与权限管理指南</a></td>
+            <td>组织权限配置逻辑说明</td>
+            <td>管理员参考</td>
+          </tr>
+          <tr>
+            <td><a href="https://www.runoob.com/vscode/vscode-tutorial.html" target="_blank">菜鸟教程VSCode手册</a></td>
+            <td>VSCode基础操作入门教程</td>
+            <td>工具参考</td>
+          </tr>
+          <tr>
+            <td><a href="https://www.runoob.com/" target="_blank">菜鸟教程主站</a></td>
+            <td>各类开发工具、基础语法入门教程合集</td>
+            <td>拓展参考</td>
+          </tr>
+          <tr>
+            <td><a href="https://getquicker.net/KC/Manual" target="_blank">Quicker官方操作手册</a></td>
+            <td>Quicker软件官方使用文档</td>
+            <td>工具参考</td>
           </tr>
         </tbody>
       </table>
 
-      <p class="doc-text"><strong>3. 推荐的导出格式</strong></p>
-      <p class="doc-text">
-        · <strong>首选：分享链接</strong> —— 操作简便，接收方可直接查看完整对话上下文<br>
-        · <strong>备份：纯文本/.md文件</strong> —— 将提示词内容保存为.md文件，作为链接失效时的备份<br>
-        · <strong>不推荐：截图</strong> —— 截图无法复制文本，使用时需手动转录，效率较低
-      </p>
-
-      <div class="tip-box">
-        <img src="https://taxly-worktools.github.io/toolhub/static/icons/enchanted_book.png" alt="">
-        <div>
-          <strong>编写要点：</strong>优质提示词应包含：角色设定 + 任务描述 + 输出格式要求 + 示例。避免仅写"帮我写个报告"，应明确说明"你是审计专家，请根据以下数据撰写审计发现，采用表格输出，包含问题/影响/建议三列"。
-        </div>
-      </div>
+      <h3 class="subsection-title" id="s5-3">5.3 推荐软件</h3>
+      <table class="doc-table">
+        <thead><tr><th>软件</th><th>用途</th><th>获取渠道</th></tr></thead>
+        <tbody>
+          <tr><td><strong>VSCode</strong></td><td>代码编辑与Markdown文档编写工具</td><td>微软官网免费下载</td></tr>
+          <tr><td><strong>Quicker</strong></td><td>Windows效率工具，支持快捷操作</td><td>Quicker官网个人版免费使用</td></tr>
+          <tr><td><strong>Watt Toolkit</strong></td><td>GitHub访问加速工具</td><td>微软应用商店免费安装</td></tr>
+        </tbody>
+      </table>
     </section>
 
     <div class="doc-footer">
