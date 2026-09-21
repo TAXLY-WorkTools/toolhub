@@ -220,7 +220,7 @@
     color: var(--accent-dark);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
   }
   .section__title .num {
     display: inline-flex;
@@ -232,6 +232,11 @@
     color: #fff;
     border-radius: 50%;
     font-size: 12px;
+  }
+  .section__title img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
   }
   .field { margin-bottom: 12px; }
   .field:last-child { margin-bottom: 0; }
@@ -271,7 +276,7 @@
   }
   input::placeholder, textarea::placeholder { color: var(--text-3); font-style: italic; }
   textarea { resize: none; overflow: hidden; min-height: 60px; }
-  .md-toolbar { display: flex; gap: 4px; margin-bottom: 4px; flex-wrap: wrap; }
+  .md-toolbar { display: flex; gap: 4px; margin-bottom: 4px; flex-wrap: wrap; align-items: center; }
   .md-toolbar button {
     padding: 4px 8px;
     border: 1px solid var(--border);
@@ -281,6 +286,14 @@
     font-size: 12px;
     transition: all 0.15s;
     line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .md-toolbar button img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
   }
   .md-toolbar button:hover {
     background: rgba(90, 104, 120, 0.08);
@@ -317,6 +330,14 @@
     font-size: 13px;
     transition: all 0.15s;
     margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-add img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
   }
   .btn-add:hover { background: rgba(90, 104, 120, 0.1); border-color: var(--accent); }
   .step-card {
@@ -472,7 +493,13 @@
     border-color: var(--accent);
     background: rgba(90, 104, 120, 0.05);
   }
-  .drop-zone__icon { font-size: 32px; margin-bottom: 8px; }
+  .drop-zone img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    opacity: 0.7;
+    margin-bottom: 8px;
+  }
   .drop-zone__text { font-size: 14px; color: var(--text); }
   .drop-zone__hint { font-size: 12px; color: var(--text-3); margin-top: 4px; }
   .file-list {
@@ -491,7 +518,23 @@
     font-size: 13px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     color: var(--accent-dark);
+  }
+  .clear-btn {
+    padding: 3px 10px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--card);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .clear-btn:hover {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border-color: var(--danger-lt);
   }
   .file-list__body { max-height: 240px; overflow-y: auto; }
   .file-item {
@@ -650,7 +693,7 @@
   <div class="left-panel">
     <div id="formMode">
       <div class="section">
-        <div class="section__title"><span class="num">1</span>基本信息</div>
+        <div class="section__title"><span class="num">1</span><img src="static/icons/book_and_quill.png" alt="">基本信息</div>
         <div class="field">
           <label class="field__label">中文显示名 <span class="required">*</span> <span class="hint">（展示页大标题，必填）</span></label>
           <input type="text" id="displayName" placeholder="如：函证批量生成器">
@@ -674,17 +717,17 @@
         </div>
       </div>
       <div class="section">
-        <div class="section__title"><span class="num">2</span>主要功能</div>
+        <div class="section__title"><span class="num">2</span><img src="static/icons/anvil.webp" alt="">主要功能</div>
         <div id="featuresList"></div>
         <button class="btn-add" onclick="addFeature()">+ 添加一条功能</button>
       </div>
       <div class="section">
-        <div class="section__title"><span class="num">3</span>环境要求</div>
+        <div class="section__title"><span class="num">3</span><img src="static/icons/anvil.webp" alt="">环境要求</div>
         <div id="envList"></div>
         <button class="btn-add" onclick="addEnv()">+ 添加一条要求</button>
       </div>
       <div class="section">
-        <div class="section__title"><span class="num">4</span>使用步骤 <span style="font-weight:400;font-size:12px;color:var(--text-3);">（支持 Markdown：**加粗**、[链接](url)、代码、| 表格 |）</span></div>
+        <div class="section__title"><span class="num">4</span><img src="static/icons/recipe_book.png" alt="">使用步骤 <span style="font-weight:400;font-size:12px;color:var(--text-3);">（支持 Markdown：**加粗**、[链接](url)、代码、| 表格 |）</span></div>
         <div id="stepsList"></div>
         <button class="btn-add" onclick="addStep()">+ 添加步骤</button>
       </div>
@@ -699,7 +742,7 @@
         <button class="btn-add" onclick="addFaq()">+ 添加问题</button>
       </div>
       <div class="section">
-        <div class="section__title"><span class="num">7</span>AI 提示词 <span style="font-weight:400;font-size:12px;color:var(--text-3);">（可选，支持 Markdown）</span></div>
+        <div class="section__title"><span class="num">7</span><img src="static/icons/bottle_o_enchanting.png" alt="">AI 提示词 <span style="font-weight:400;font-size:12px;color:var(--text-3);">（可选，支持 Markdown）</span></div>
         <div class="field">
           <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
             <button class="btn-add" style="margin-top:0;" onclick="document.getElementById('aiFileInput').click()">上传 prompt 文件</button>
@@ -714,7 +757,7 @@
             <button type="button" onclick="insertMdToTextarea('aiPrompt','bold')"><b>B</b></button>
             <button type="button" onclick="openLinkModal('aiPrompt')">链接</button>
             <button type="button" onclick="insertMdToTextarea('aiPrompt','code')">&lt;/&gt; 代码</button>
-            <button type="button" onclick="insertMdToTextarea('aiPrompt','table')">表格</button>
+            <button type="button" onclick="insertMdToTextarea('aiPrompt','table')"><img src="static/icons/safety_net.png" alt="">表格</button>
             <button type="button" onclick="clearAiContent()" style="margin-left:auto;color:var(--danger);border-color:#D0B8B8;">清空</button>
           </div>
           <textarea id="aiPrompt" rows="4" placeholder="在此粘贴 AI 提示词内容，支持 Markdown 语法...&#10;&#10;## 系统提示词&#10;你是一个专业的...&#10;&#10;## 用户提示词模板&#10;请帮我..."></textarea>
@@ -752,14 +795,15 @@
       </div>
     </div>
     <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <img src="static/icons/clipboard.png" alt="">
       <div class="drop-zone__text">拖拽代码文件/文件夹到此处，或点击选择文件</div>
       <div class="drop-zone__hint">支持文件夹拖拽，保留子目录结构，所有文件归 src/</div>
       <input type="file" id="fileInput" multiple style="display:none">
     </div>
     <div class="file-list">
       <div class="file-list__header">
-        <span>已添加文件（src/）</span>
-        <span id="fileCount">0</span>
+        <span>已添加文件（src/） <span id="fileCount">0</span></span>
+        <button class="clear-btn" onclick="clearAllFiles()">清除所有</button>
       </div>
       <div class="file-list__body" id="fileListBody">
         <div class="file-list__empty">暂无文件</div>
@@ -968,7 +1012,7 @@ function renderSteps() {
           <button type="button" onclick="openLinkModal('stepContent_${s.id}')">链接</button>
           <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','image')">图片</button>
           <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','code')">&lt;/&gt; 代码</button>
-          <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','table')">表格</button>
+          <button type="button" onclick="insertMdToTextarea('stepContent_${s.id}','table')"><img src="static/icons/safety_net.png" alt="">表格</button>
         </div>
         <textarea id="stepContent_${s.id}" rows="2" placeholder="详细操作说明，支持 Markdown 语法（**加粗**、[链接](url)、代码、| 表格 |）" oninput="updateStepContent('${s.id}', this.value)">${escapeHtml(s.content)}</textarea>
       </div>
@@ -981,7 +1025,7 @@ function renderSteps() {
               <span class="remove" onclick="removeStepScreenshot('${s.id}', ${i})">×</span>
             </div>`).join('')}
         </div>` : ''}
-      <button class="btn-add" style="margin-top:8px;" onclick="addStepScreenshot('${s.id}')">+ 添加步骤截图（自动插入引用）</button>
+      <button class="btn-add" style="margin-top:8px;" onclick="addStepScreenshot('${s.id}')"><img src="static/icons/painting6I.webp" alt="">添加步骤截图（自动插入引用）</button>
       <input type="file" id="stepImg_${s.id}" accept="image/*" multiple style="display:none" onchange="handleStepScreenshot('${s.id}', this.files)">
     </div>`).join('');
   initAutoResize();
@@ -1176,6 +1220,14 @@ function handleFiles(files) {
   addUploadedFiles(fileList);
 }
 function removeFile(index) { uploadedFiles.splice(index, 1); renderFileList(); updatePreview(); }
+function clearAllFiles() {
+  if(confirm("确认清空所有已上传文件？")) {
+    uploadedFiles = [];
+    renderFileList();
+    updatePreview();
+    showToast("已清空所有上传文件", "info");
+  }
+}
 function renderFileList() {
   const body = document.getElementById('fileListBody');
   const count = document.getElementById('fileCount');
