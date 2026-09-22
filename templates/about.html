@@ -698,11 +698,11 @@ body {
           </div>
         </div>
 
-        <div style="text-align:center;color:var(--text-2);font-size:20px;margin:4px 0;">↓</div>
+        <div style="text-align:center;color:var(--text-2);font-size:18px;margin:8px 0;">↓</div>
 
         <!-- 阶段3：GitHub Issue页面 -->
-        <div style="border:2px dashed var(--warning);border-radius:8px;padding:24px 20px 16px;position:relative;margin-bottom:16px;background:#F4F1EC;">
-          <div style="position:absolute;top:-12px;left:16px;padding:2px 12px;border-radius:4px;font-size:12px;font-weight:600;background:var(--warning);color:#fff;">
+        <div style="border:2px dashed var(--warning);border-radius:8px;padding:28px 20px 16px;position:relative;margin-bottom:24px;background:#F4F1EC;">
+          <div style="position:absolute;top:-14px;left:16px;padding:6px 20px;border-radius:6px;font-size:15px;font-weight:700;color:#fff;background:var(--warning);box-shadow:0 2px 4px rgba(0,0,0,0.15);">
             🐙 阶段3：GitHub Issue页面 — 用户操作
           </div>
           <div style="display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;">
@@ -723,11 +723,11 @@ body {
           </div>
         </div>
 
-        <div style="text-align:center;color:var(--text-2);font-size:20px;margin:4px 0;">↓</div>
+        <div style="text-align:center;color:var(--text-2);font-size:18px;margin:8px 0;">↓</div>
 
         <!-- 阶段4：GitHub Actions自动处理 -->
-        <div style="border:2px dashed var(--success);border-radius:8px;padding:24px 20px 16px;position:relative;margin-bottom:16px;background:#F0F4F1;">
-          <div style="position:absolute;top:-12px;left:16px;padding:2px 12px;border-radius:4px;font-size:12px;font-weight:600;background:var(--success);color:#fff;">
+        <div style="border:2px dashed var(--success);border-radius:8px;padding:28px 20px 16px;position:relative;margin-bottom:24px;background:#F0F4F1;">
+          <div style="position:absolute;top:-14px;left:16px;padding:6px 20px;border-radius:6px;font-size:15px;font-weight:700;color:#fff;background:var(--success);box-shadow:0 2px 4px rgba(0,0,0,0.15);">
             ⚙️ 阶段4：GitHub Actions — 系统自动执行（无需用户操作）
           </div>
           <div style="display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;">
@@ -1264,6 +1264,21 @@ body {
               <strong>说明：</strong>首次上传因需完成账号注册及组织加入，约需10分钟。后续上传从打包步骤开始，约5分钟即可完成。
             </div>
           </div>
+          <div class="tip-box warning" style="margin-top:12px;">
+            <img src="https://taxly-worktools.github.io/toolhub/static/icons/anvil.webp" alt="">
+            <div>
+              <strong>上传前注意事项（必看）：</strong><br><br>
+              <strong>一、压缩包大小限制</strong><br>
+              GitHub评论区附件单文件硬上限为25MB，超过将直接上传失败。建议打包后压缩包大小不超过20MB，预留余量避免边界失败。超过20MB时，请移除不必要的截图、视频、缓存文件，或拆分为多个工具库分别上传。<br>
+              <strong>上传速度说明：</strong>GitHub服务器位于境外，跨境上传受网络带宽和加速器节点影响，即使是几MB的文件也可能需要数分钟才能上传完成。上传过程中请勿关闭页面或刷新，否则将中断需重新上传。<br><br>
+              <strong>二、文件命名规范（避免中文乱码）</strong><br>
+              <strong>问题现象：</strong>中文文件名上传到GitHub后可能显示为乱码。<br>
+              <strong>原因：</strong>Windows系统下打包的ZIP文件，中文文件名默认使用GBK编码，GitHub解压时按UTF-8解析，导致文件名显示乱码。乱码仅影响文件名显示，不影响文件内容本身，但会导致下载后无法识别文件用途。<br>
+              <strong>强制要求：</strong>所有上传文件（代码、截图、示例文件）统一使用「英文小写+数字+下划线/连字符」命名。中文名称统一记录在README描述和工具显示名中，不体现在文件名里。<br>
+              <strong>正确示例：</strong>audit_workpaper_organizer.py、step1_screenshot.png<br>
+              <strong>错误示例：</strong>底稿整理工具.py、步骤1截图.png
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1290,7 +1305,12 @@ body {
 
       <h3 class="subsection-title" id="s4-3">4.3 GitHub是英文界面？</h3>
       <p class="doc-text">
-        可安装浏览器翻译插件（推荐<strong>沉浸式翻译</strong>），系统将自动将GitHub界面翻译为中文。
+        <strong>方案一（推荐）：安装「GitHub 中文汉化翻译插件」</strong><br>
+        该插件专门针对GitHub界面进行本地化，将菜单、按钮、标题、提示语等界面文本翻译为简体中文。优势是针对GitHub术语精准翻译，不干扰代码和README内容。获取渠道：Microsoft Edge加载项商店搜索「GitHub 中文汉化翻译插件」。
+      </p>
+      <p class="doc-text">
+        <strong>方案二（备选）：安装「沉浸式翻译」</strong><br>
+        通用网页翻译插件，支持双语对照。适用于需要阅读README文档、Issue讨论等用户生成的英文内容时使用。注意：GitHub页面翻译可能不彻底，代码区域建议关闭翻译避免误译。
       </p>
       <div class="tip-box warning">
         <img src="https://taxly-worktools.github.io/toolhub/static/icons/spyglass.png" alt="">
