@@ -458,6 +458,34 @@ body {
         </tbody>
       </table>
 
+
+      <p class="doc-text" style="margin-top:20px;">
+        <strong>补充论证：关于"借助AI工具搭建全栈应用"的方案分析</strong>
+      </p>
+      <p class="doc-text">
+        上述表格为各类平台的横向定位对比。另有一类方案需单独说明：借助 WorkBuddy / CodeBuddy 等 AI 代码生成工具，搭建一个功能更完整的网页应用。该方案与当前方案的核心差异对比如下：
+      </p>
+
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th style="width:20%;">对比维度</th>
+            <th style="width:40%;">GitHub静态仓库（当前方案）</th>
+            <th style="width:40%;">AI生成全栈应用（WorkBuddy/CodeBuddy）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>国内访问速度</strong></td><td class="partial">受跨境网络影响，偶尔加载较慢</td><td class="yes">部署于国内服务器，访问稳定快速</td></tr>
+          <tr><td><strong>工具文件下载</strong></td><td class="yes">下载稳定，支持大文件，无流量限制</td><td class="partial">存在单文件大小限制，下载流量超出后需付费</td></tr>
+          <tr><td><strong>上传后生效速度</strong></td><td class="partial">提交后系统自动处理，约2-5分钟后页面更新</td><td class="yes">提交后即时生效，无需等待</td></tr>
+          <tr><td><strong>功能范围</strong></td><td class="partial">工具展示、分类筛选、检索下载，满足核心需求</td><td class="yes">可实现用户登录、下载统计、在线评论等更多功能</td></tr>
+        </tbody>
+      </table>
+
+      <p class="doc-text" style="margin-top:16px;">
+        <strong>选型结论：</strong>全栈应用方案在访问速度和上传即时生效方面具备优势，功能也更为丰富。但本项目的核心需求是工具文件的集中存储与便捷下载，当前方案已能充分满足。全栈方案提供的用户登录、数据统计等额外功能超出实际使用场景，反而在文件下载限制方面引入新的问题。综合评估，本项目继续采用 GitHub 静态仓库方案，不迁移至 AI 全栈应用架构。
+      </p>
+
       <div class="tip-box">
         <img src="https://taxly-worktools.github.io/toolhub/static/icons/redstone_comparator.png" alt="">
         <div>
