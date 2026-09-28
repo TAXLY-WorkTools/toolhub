@@ -764,7 +764,7 @@ body {
       </div>
       <div class="project-card__meta">
         {% for tag in p.tags %}
-          {% if tag not in ['仓库', '代码片段', 'Python'] %}
+          {% if tag not in ['仓库', '代码片段'] %}
             {% if tag in dept_tag_list %}
           <button class="badge badge--tag badge--dept" data-tag="{{ tag }}" type="button">{{ tag }}</button>
             {% elif tag in func_tag_list %}
@@ -865,7 +865,7 @@ body {
       </div>
       <div class="project-card__meta">
         {% for tag in p.tags %}
-          {% if tag not in ['仓库', '代码片段', 'Python'] %}
+          {% if tag not in ['仓库', '代码片段'] %}
             {% if tag in dept_tag_list %}
           <button class="badge badge--tag badge--dept" data-tag="{{ tag }}" type="button">{{ tag }}</button>
             {% elif tag in func_tag_list %}
