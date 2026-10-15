@@ -8,7 +8,6 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
 <style>
-  /* ===== MC主题商务风 - 配色变量 ===== */
   :root {
     --card: #FFFFFF;
     --bg: #F7F8FA;
@@ -98,8 +97,6 @@
     font-weight: 500;
   }
   .topbar__btn--primary:hover { background: #4E6858; }
-
-  /* ===== 流程状态图 ===== */
   .flow-steps {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(8px);
@@ -159,7 +156,6 @@
     .flow-step__text { font-size: 12px; }
     .flow-step__arrow { display: none; }
   }
-
   .mode-switch {
     display: flex;
     gap: 0;
@@ -255,7 +251,7 @@
     font-size: 12px;
   }
   .field__label .required { color: var(--danger); margin-left: 2px; }
-  input[type="text"], textarea {
+  input[type="text"], textarea, select, input[type="number"] {
     width: 100%;
     padding: 10px 14px;
     border: 1px solid var(--border);
@@ -266,7 +262,7 @@
     background: var(--card);
     color: var(--text);
   }
-  input[type="text"]:focus, textarea:focus {
+  input[type="text"]:focus, textarea:focus, select:focus, input[type="number"]:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(90, 104, 120, 0.1);
@@ -638,6 +634,40 @@
     color: var(--text);
   }
   .modal-actions .primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .compress-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 0;
+  }
+  .compress-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+  .compress-range-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .compress-range-wrap input[type="range"] {
+    flex: 1;
+    cursor: pointer;
+  }
+  .compress-range-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 32px;
+    text-align: right;
+  }
+  .compress-hint {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
   @media (max-width: 1024px) {
     .main { flex-direction: column; }
     .right-panel { width: 100%; position: static; }
@@ -658,7 +688,6 @@
   </div>
 </div>
 
-<!-- ===== 流程状态图 ===== -->
 <div class="flow-steps" id="flowSteps">
   <div class="flow-step active" onclick="setFlowStep(0)">
     <div class="flow-step__num">1</div>
@@ -831,12 +860,50 @@
     </div>
   </div>
 </div>
+<div class="modal-overlay" id="compressModal">
+  <div class="modal">
+    <h3>图片压缩设置</h3>
+    <div class="field">
+      <label class="compress-toggle">
+        <input type="checkbox" id="compressEnabled" checked onchange="toggleCompressQuality()">
+        <span>启用图片压缩（步骤截图和示例图片自动压缩）</span>
+      </label>
+    </div>
+    <div class="field">
+      <label class="field__label">输出格式</label>
+      <select id="compressFormat" onchange="toggleCompressQuality()">
+        <option value="webp">WebP（推荐，体积最小）</option>
+        <option value="jpeg">JPEG（兼容性好）</option>
+        <option value="png">PNG（无损，体积较大）</option>
+      </select>
+    </div>
+    <div class="field" id="qualityField">
+      <label class="field__label">压缩质量</label>
+      <div class="compress-range-wrap">
+        <input type="range" id="compressQuality" min="0.1" max="1.0" step="0.1" value="0.8"
+               oninput="document.getElementById('qualityValue').textContent=this.value">
+        <span class="compress-range-val" id="qualityValue">0.8</span>
+      </div>
+      <div class="compress-hint">数值越大画质越好、体积越大；PNG 为无损格式，此项不生效</div>
+    </div>
+    <div class="field">
+      <label class="field__label">最大宽度（px）</label>
+      <input type="number" id="compressMaxWidth" value="1920" min="100" step="100">
+      <div class="compress-hint">超过此宽度的图片等比缩放，不超过则保持原尺寸</div>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeModal('compressModal')">取消</button>
+      <button class="primary" onclick="saveCompressSettings()">保存</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 <script>
 marked.setOptions({ breaks: true, gfm: true });
 let features = [], envs = [], steps = [], examples = [], faqs = [];
 let uploadedFiles = [], customReadmeContent = null, customReadmeName = null;
 let currentMode = 'form', isPackaged = false, currentLinkTarget = null;
+let compressSettings = { enabled: true, format: 'webp', quality: 0.8, maxWidth: 1920 };
 
 function showToast(msg, type = 'info') {
   const toast = document.getElementById('toast');
@@ -856,6 +923,77 @@ function sanitizeFilename(filename) {
   name = name.replace(/\s+/g, '_').replace(/[^\u4e00-\u9fa5a-zA-Z0-9_-]/g, '').replace(/_+/g, '_').replace(/^_|_$/g, '');
   if (!name) name = 'file_' + Date.now();
   return name + ext;
+}
+function getCompressedExt(filename, format) {
+  const dot = filename.lastIndexOf('.');
+  const name = dot > 0 ? filename.substring(0, dot) : filename;
+  const extMap = { webp: '.webp', jpeg: '.jpg', png: '.png' };
+  return name + (extMap[format] || '.webp');
+}
+function compressImage(file, settings) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (settings.maxWidth && w > settings.maxWidth) {
+          h = Math.round(h * settings.maxWidth / w);
+          w = settings.maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const mimeType = settings.format === 'webp' ? 'image/webp' :
+                         settings.format === 'jpeg' ? 'image/jpeg' : 'image/png';
+        canvas.toBlob((blob) => {
+          if (!blob) { reject(new Error('压缩失败')); return; }
+          const arrReader = new FileReader();
+          arrReader.onload = (ev) => resolve(ev.target.result);
+          arrReader.onerror = reject;
+          arrReader.readAsArrayBuffer(blob);
+        }, mimeType, settings.quality);
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function readFileAsArrayBuffer(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = (e) => resolve(e.target.result);
+    r.onerror = reject;
+    r.readAsArrayBuffer(file);
+  });
+}
+function openCompressModal() {
+  document.getElementById('compressEnabled').checked = compressSettings.enabled;
+  document.getElementById('compressFormat').value = compressSettings.format;
+  document.getElementById('compressQuality').value = compressSettings.quality;
+  document.getElementById('qualityValue').textContent = compressSettings.quality;
+  document.getElementById('compressMaxWidth').value = compressSettings.maxWidth;
+  toggleCompressQuality();
+  document.getElementById('compressModal').classList.add('show');
+}
+function toggleCompressQuality() {
+  const format = document.getElementById('compressFormat').value;
+  const enabled = document.getElementById('compressEnabled').checked;
+  const field = document.getElementById('qualityField');
+  const input = document.getElementById('compressQuality');
+  const disabled = format === 'png' || !enabled;
+  field.style.opacity = disabled ? '0.4' : '1';
+  input.disabled = disabled;
+}
+function saveCompressSettings() {
+  compressSettings.enabled = document.getElementById('compressEnabled').checked;
+  compressSettings.format = document.getElementById('compressFormat').value;
+  compressSettings.quality = parseFloat(document.getElementById('compressQuality').value);
+  compressSettings.maxWidth = parseInt(document.getElementById('compressMaxWidth').value) || 1920;
+  closeModal('compressModal');
+  showToast('压缩设置已保存' + (compressSettings.enabled ? '（已启用）' : '（已停用）'), 'success');
 }
 function autoResizeTextarea(ta) {
   ta.style.height = 'auto';
@@ -1026,7 +1164,10 @@ function renderSteps() {
               <span class="remove" onclick="removeStepScreenshot('${s.id}', ${i})">×</span>
             </div>`).join('')}
         </div>` : ''}
-      <button class="btn-add" style="margin-top:8px;" onclick="addStepScreenshot('${s.id}')"><img src="static/icons/painting6I.webp" alt="">添加步骤截图（自动插入引用）</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn-add" style="margin-top:0;" onclick="addStepScreenshot('${s.id}')"><img src="static/icons/painting6I.webp" alt="">添加步骤截图（自动插入引用）</button>
+        <button class="btn-add" style="margin-top:0;" onclick="openCompressModal()" title="图片压缩参数设置">⚙ 压缩设置</button>
+      </div>
       <input type="file" id="stepImg_${s.id}" accept="image/*" multiple style="display:none" onchange="handleStepScreenshot('${s.id}', this.files)">
     </div>`).join('');
   initAutoResize();
@@ -1034,33 +1175,45 @@ function renderSteps() {
 function updateStepTitle(id, value) { const s = steps.find(x => x.id === id); if (s) { s.title = value; updatePreview(); } }
 function updateStepContent(id, value) { const s = steps.find(x => x.id === id); if (s) { s.content = value; updatePreview(); } }
 function addStepScreenshot(stepId) { document.getElementById('stepImg_' + stepId).click(); }
-function handleStepScreenshot(stepId, files) {
+async function handleStepScreenshot(stepId, files) {
   const s = steps.find(x => x.id === stepId);
   if (!s) return;
   const existingNames = [];
   steps.forEach(st => st.screenshots.forEach(sc => existingNames.push(sc.name)));
-  Array.from(files).forEach(file => {
-    const cleanName = sanitizeFilename(file.name);
-    let finalName = cleanName, counter = 2;
+  for (const file of Array.from(files)) {
+    let finalName = sanitizeFilename(file.name);
+    let data;
+    const originalKB = (file.size / 1024).toFixed(1);
+    if (compressSettings.enabled && file.type.startsWith('image/')) {
+      try {
+        data = await compressImage(file, compressSettings);
+        finalName = getCompressedExt(finalName, compressSettings.format);
+        const compressedKB = (data.byteLength / 1024).toFixed(1);
+        showToast('截图已压缩: ' + originalKB + 'KB → ' + compressedKB + 'KB', 'success');
+      } catch (err) {
+        console.warn('压缩失败，使用原图', err);
+        data = await readFileAsArrayBuffer(file);
+        showToast('压缩失败，已使用原图: ' + file.name, 'error');
+      }
+    } else {
+      data = await readFileAsArrayBuffer(file);
+    }
+    let counter = 2;
+    const baseName = finalName;
     while (existingNames.includes(finalName)) {
-      const dot = cleanName.lastIndexOf('.');
-      const name = dot > 0 ? cleanName.substring(0, dot) : cleanName;
-      const ext = dot > 0 ? cleanName.substring(dot) : '';
+      const dot = baseName.lastIndexOf('.');
+      const name = dot > 0 ? baseName.substring(0, dot) : baseName;
+      const ext = dot > 0 ? baseName.substring(dot) : '';
       finalName = name + '_' + counter + ext; counter++;
     }
     existingNames.push(finalName);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      s.screenshots.push({ name: finalName, originalName: file.name, data: e.target.result });
-      const altText = file.name.replace(/\.[^/.]+$/, '');
-      if (!s.content.includes('images/' + finalName)) {
-        s.content = (s.content ? s.content.trim() + '\n\n' : '') + '![' + altText + '](images/' + finalName + ')';
-      }
-      renderSteps(); updatePreview();
-      showToast('已添加截图并自动插入引用: ' + file.name, 'success');
-    };
-    reader.readAsArrayBuffer(file);
-  });
+    s.screenshots.push({ name: finalName, originalName: file.name, data });
+    const altText = file.name.replace(/\.[^/.]+$/, '');
+    if (!s.content.includes('images/' + finalName)) {
+      s.content = (s.content ? s.content.trim() + '\n\n' : '') + '![' + altText + '](images/' + finalName + ')';
+    }
+    renderSteps(); updatePreview();
+  }
 }
 function removeStepScreenshot(stepId, idx) {
   const s = steps.find(x => x.id === stepId);
@@ -1111,17 +1264,29 @@ function renderExamples() {
 }
 function updateExampleTitle(id, value) { const e = examples.find(x => x.id === id); if (e) { e.title = value; updatePreview(); } }
 function updateExampleContent(id, value) { const e = examples.find(x => x.id === id); if (e) { e.content = value; updatePreview(); } }
-function handleExampleFile(id, files) {
+async function handleExampleFile(id, files) {
   const e = examples.find(x => x.id === id);
   if (!e || files.length === 0) return;
-  const file = files[0], cleanName = sanitizeFilename(file.name);
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    e.file = { name: cleanName, originalName: file.name, data: ev.target.result, size: file.size };
-    renderExamples(); updatePreview();
-    showToast('已添加示例文件: ' + file.name, 'success');
-  };
-  reader.readAsArrayBuffer(file);
+  const file = files[0];
+  let cleanName = sanitizeFilename(file.name);
+  let data;
+  if (compressSettings.enabled && file.type.startsWith('image/')) {
+    try {
+      data = await compressImage(file, compressSettings);
+      cleanName = getCompressedExt(cleanName, compressSettings.format);
+      const originalKB = (file.size / 1024).toFixed(1);
+      const compressedKB = (data.byteLength / 1024).toFixed(1);
+      showToast('示例图片已压缩: ' + originalKB + 'KB → ' + compressedKB + 'KB', 'success');
+    } catch (err) {
+      console.warn('压缩失败，使用原图', err);
+      data = await readFileAsArrayBuffer(file);
+    }
+  } else {
+    data = await readFileAsArrayBuffer(file);
+  }
+  e.file = { name: cleanName, originalName: file.name, data, size: file.size };
+  renderExamples(); updatePreview();
+  showToast('已添加示例文件: ' + file.name, 'success');
 }
 function removeExampleFile(id) { const e = examples.find(x => x.id === id); if (e) { e.file = null; renderExamples(); updatePreview(); } }
 function addFaq() {
@@ -1328,7 +1493,6 @@ function updatePreview() {
 function clearErrors() { document.querySelectorAll('.error').forEach(el => el.classList.remove('error')); }
 function scrollToError(element) { element.scrollIntoView({ behavior: 'smooth', block: 'center' }); element.focus(); }
 
-/* ===== 流程状态图交互 ===== */
 function setFlowStep(index) {
   const steps = document.querySelectorAll('#flowSteps .flow-step');
   steps.forEach((step, i) => {
