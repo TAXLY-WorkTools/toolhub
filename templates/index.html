@@ -306,7 +306,7 @@ body {
   display: grid;
   position: relative;
   z-index: 1;
-  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+  grid-template-columns: repeat(3, 1fr);   /* 默认一行三列 */
   gap: 20px;
 }
 .project-card {
@@ -685,6 +685,22 @@ body {
   margin-right: 6px;
   vertical-align: middle;
 }
+
+@media (max-width: 1280px) {
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .project-grid { grid-template-columns: 1fr; }
+}
+
+/* 最近更新定位高亮 */
+.locate-flash { animation: locate-flash 2s ease; }
+@keyframes locate-flash {
+  0% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.55); }
+  70% { box-shadow: 0 0 0 14px rgba(255, 152, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
+}
+
 
 @media (max-width: 768px) {
   .search-bar, .filter-panel, .project-grid, .project-list, .archived-toggle, .no-results, .section-heading {
@@ -1390,30 +1406,64 @@ body {
   var listEl = document.getElementById('recentUpdatesList');
   var countEl = document.getElementById('recentUpdatesCount');
   var dotEl = document.getElementById('recentUpdatesDot');
+  countEl.textContent = recentList.length;
   if (recentList.length > 0) {
-    countEl.textContent = recentList.length;
     dotEl.style.display = '';
     listEl.innerHTML = recentList.map(function(item) {
-      return '<a class="recent-update-item" href="' + item.href + '" target="_blank" rel="noopener">' +
+      return '<a class="recent-update-item" href="javascript:void(0)" data-name="' + item.name + '">' +
         '<div class="recent-update-item__top"><span class="recent-update-item__name">' + item.name + '</span>' +
         '<span class="recent-update-item__time">' + item.time + '</span></div>' +
         (item.desc ? '<div class="recent-update-item__desc">' + item.desc + '</div>' : '') +
         '</a>';
     }).join('');
-    btn.onclick = function(e) {
-      e.stopPropagation();
-      panel.classList.toggle('show');
-    };
-    document.getElementById('recentUpdatesClose').onclick = function(e) {
-      e.stopPropagation();
-      panel.classList.remove('show');
-    };
-    document.addEventListener('click', function(e) {
-      if (!fab.contains(e.target)) panel.classList.remove('show');
+    listEl.querySelectorAll('.recent-update-item').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        locateToolByName(el.getAttribute('data-name'));
+      });
     });
   } else {
-    fab.style.display = 'none';
+    dotEl.style.display = 'none';
+    listEl.innerHTML = '<div class="recent-updates-empty">最近3天无上传工具</div>';
   }
+  function resetAllFilters() {
+    searchQuery = '';
+    var si = document.getElementById('searchInput');
+    if (si) si.value = '';
+    selectedDepts.clear(); selectedFuncs.clear(); selectedTechs.clear();
+    selectedTutorials.clear(); selectedSizes.clear();
+    document.querySelectorAll('.tag-btn.active').forEach(function(b) { b.classList.remove('active'); });
+    renderSelectedTags();
+    applyFilters();
+  }
+  function locateToolByName(name) {
+    switchView('card');
+    resetAllFilters();
+    var card = null;
+    var grid = document.getElementById('activeGrid');
+    if (grid) {
+      Array.from(grid.children).forEach(function(c) {
+        if ((c.dataset.name || '') === name) card = c;
+      });
+    }
+    if (!card) return;
+    card.classList.remove('page-hidden');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.classList.add('locate-flash');
+    setTimeout(function() { card.classList.remove('locate-flash'); }, 2200);
+    if (panel) panel.classList.remove('show');
+  }
+  btn.onclick = function(e) {
+    e.stopPropagation();
+    panel.classList.toggle('show');
+  };
+  document.getElementById('recentUpdatesClose').onclick = function(e) {
+    e.stopPropagation();
+    panel.classList.remove('show');
+  };
+  document.addEventListener('click', function(e) {
+    if (!fab.contains(e.target)) panel.classList.remove('show');
+  });
 
   applyFilters();
 }());
